@@ -1,0 +1,180 @@
+@import "./color.scss";
+
+$border-radius: 8px;
+$transition-style: all 0.2s ease 0s;
+$border-style: 1px solid #cfcfcf;
+
+@for $i from 0 through 30 {
+  .fx-gap-#{$i} > * {
+    margin: 0 #{$i}px;
+
+    &:first-child {
+      margin-left: 0px;
+    }
+
+    &:last-child {
+      margin-right: 0px;
+    }
+  }
+
+  .h-#{$i} {
+    height: #{$i * 0.25}rem;
+  }
+
+  .w-#{$i} {
+    width: #{$i * 0.25}rem;
+  }
+
+  .p-#{$i} {
+    padding: #{$i * 0.25}rem;
+  }
+
+  .px-#{$i} {
+    padding-left: #{$i * 0.25}rem;
+    padding-right: #{$i * 0.25}rem;
+  }
+
+  .py-#{$i} {
+    padding-top: #{$i * 0.25}rem;
+    padding-bottom: #{$i * 0.25}rem;
+  }
+
+  .pt-#{$i} {
+    padding-top: #{$i * 0.25}rem;
+  }
+
+  .pl-#{$i} {
+    padding-left: #{$i * 0.25}rem;
+  }
+
+  .pr-#{$i} {
+    padding-right: #{$i * 0.25}rem;
+  }
+
+  .pb-#{$i} {
+    padding-bottom: #{$i * 0.25}rem;
+  }
+
+  .m-#{$i} {
+    margin: #{$i * 0.25}rem;
+  }
+
+  .mx-#{$i} {
+    margin-left: #{$i * 0.25}rem;
+    margin-right: #{$i * 0.25}rem;
+  }
+
+  .my-#{$i} {
+    margin-top: #{$i * 0.25}rem;
+    margin-bottom: #{$i * 0.25}rem;
+  }
+
+  .mt-#{$i} {
+    margin-top: #{$i * 0.25}rem;
+  }
+
+  .ml-#{$i} {
+    margin-left: #{$i * 0.25}rem;
+  }
+
+  .mr-#{$i} {
+    margin-right: #{$i * 0.25}rem;
+  }
+
+  .mb-#{$i} {
+    margin-bottom: #{$i * 0.25}rem;
+  }
+}
+
+@for $i from 0 through 10 {
+  .b-radius-#{$i} {
+    border-radius: #{$i}px;
+  }
+
+  .b-radius {
+    border-radius: $border-radius;
+  }
+
+  .vw-#{$i * 10} {
+    width: #{$i * 10}vw;
+  }
+
+  .vh-#{$i * 10} {
+    height: #{$i * 10}vh;
+  }
+}
+
+.h-full {
+  height: 100%;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.fx {
+  display: flex;
+}
+
+.fx-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.fx-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.fx-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.f-big-1 {
+  font-size: 28px;
+}
+
+.f-big-2 {
+  font-size: 22px;
+}
+
+.f-big-3 {
+  font-size: 16px;
+}
+
+.f-normal {
+  font-size: 14px;
+}
+
+.f-small-1 {
+  font-size: 12px;
+}
+
+.bl {
+  display: block;
+}
+
+.il-bl {
+  display: inline-block;
+}
+
+.shadow {
+  -webkit-box-shadow: 0 0 4px 1px rgba(63, 63, 68, 0.05),
+    0 1px 3px 0 rgba(63, 63, 68, 0.15);
+  box-shadow: 0 0 4px 1px rgba(63, 63, 68, 0.05),
+    0 1px 3px 0 rgba(63, 63, 68, 0.15);
+}
+
+.default-stroke {
+  stroke: $primary-text-color;
+}
