@@ -23,6 +23,12 @@ body {
 }
 
 .pointer-link {
-  @extend .default-stroke;
-  stroke-width: 4px;
+  .pointer-link__line {
+    @extend .default-stroke-lighter;
+    stroke-width: 4px;
+  }
+
+  .pointer-link__arrow {
+    fill: lighten($primary-text-color, 15%);
+  }
 }

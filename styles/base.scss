@@ -178,3 +178,7 @@ $border-style: 1px solid #cfcfcf;
 .default-stroke {
   stroke: $primary-text-color;
 }
+
+.default-stroke-lighter {
+  stroke: lighten($primary-text-color, 15%);
+}

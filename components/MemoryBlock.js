@@ -8,15 +8,33 @@ export class MemoryBlock extends Component {
     };
   }
 
-  moveDown(amount) {
+  move(amount, direction) {
     const { transformList } = this.state;
-    const transformText = `translate(0 ${amount})`;
+    let transformText;
+    switch (direction) {
+      case "top":
+        transformText = `translate(0 ${-amount})`;
+        break;
+      case "down":
+        transformText = `translate(0 ${amount})`;
+        break;
+      case "left":
+        transformText = `translate(${-amount} 0)`;
+        break;
+      case "right":
+        transformText = `translate(${amount} 0)`;
+        break;
+    }
     this.setState({ transformList: [...transformList, transformText] });
   }
 
   produceTransformString() {
     const { transformList } = this.state;
     return transformList.join(" ");
+  }
+
+  resetTransform() {
+    this.setState({ transformList: [] });
   }
 
   render() {
