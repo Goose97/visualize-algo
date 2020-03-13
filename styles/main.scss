@@ -18,14 +18,10 @@ body {
   stroke-width: 1px;
 }
 
-.has-transition {
-  transition: $transition-style;
-}
-
 .pointer-link {
   .pointer-link__line {
     @extend .default-stroke-lighter;
-    stroke-width: 4px;
+    stroke-width: 2px;
   }
 
   .pointer-link__arrow {

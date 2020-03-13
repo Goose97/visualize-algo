@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 const ANIMATION_STEP_COUNT = 20;
 
@@ -9,50 +9,80 @@ export class PointerLink extends Component {
     this.state = {
       // We will use this offset to animate
       offsetFromFinish: 0,
-      transformList: []
+      transformList: [],
     };
+    this.intervalToken = [];
+
+    this.setUpNewOrigin();
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { isAnimating } = this.props;
-    if (isAnimating && !prevProps.isAnimating) {
-      this.initiateAnimation();
+  componentDidUpdate(prevProps) {
+    const {
+      visible,
+      finish: { x, y },
+    } = this.props;
+    if (visible !== prevProps.visible) {
+      if (!visible) this.hide();
+    }
+
+    if (x !== prevProps.finish.x) {
+      if (this.getLinkLength(this.props) !== this.getLinkLength(prevProps)) {
+        this.initiateAnimation(prevProps.finish.x, x);
+        this.setUpNewOrigin();
+      } else {
+        this.move(x - prevProps.finish.x, 'horizontal');
+      }
     }
   }
 
-  initiateAnimation() {
-    this.setState({ offsetFromFinish: 100 });
-    this.step = 100 / ANIMATION_STEP_COUNT;
-    this.intervalToken = setInterval(this.updateOffset, 20);
+  getLinkLength(props) {
+    const {
+      start: { x: xStart },
+      finish: { x: xFinish },
+    } = props;
+    return Math.abs(xFinish - xStart);
+  }
+
+  initiateAnimation(oldX, newX) {
+    const distance = Math.abs(newX - oldX);
+    this.setState({ offsetFromFinish: distance });
+    this.step = distance / ANIMATION_STEP_COUNT;
+    this.intervalToken.push(setInterval(this.updateOffset, 20));
+  }
+
+  setUpNewOrigin() {
+    const { start, finish } = this.props;
+    this.original = {
+      start,
+      finish,
+    };
+  }
+
+  hide() {
+    this.setState({ isDisappearing: true });
   }
 
   updateOffset = () => {
     const { offsetFromFinish } = this.state;
     const newOffset = Math.max(offsetFromFinish - this.step, 0);
     this.setState({ offsetFromFinish: newOffset });
-    if (offsetFromFinish <= 0) this.handleFinishAnimation();
+    if (offsetFromFinish <= 0) {
+      this.handleFinishAnimation();
+    }
   };
 
   handleFinishAnimation() {
-    const { onFinishAnimation } = this.props;
-    onFinishAnimation && onFinishAnimation();
-    window.clearInterval(this.intervalToken);
+    this.intervalToken.forEach(token => window.clearInterval(token));
   }
 
   move(amount, direction) {
     const { transformList } = this.state;
     let transformText;
     switch (direction) {
-      case "top":
-        transformText = `translate(0 ${-amount})`;
-        break;
-      case "down":
+      case 'vertical':
         transformText = `translate(0 ${amount})`;
         break;
-      case "left":
-        transformText = `translate(${-amount} 0)`;
-        break;
-      case "right":
+      case 'horizontal':
         transformText = `translate(${amount} 0)`;
         break;
     }
@@ -61,33 +91,44 @@ export class PointerLink extends Component {
 
   produceTransformString() {
     const { transformList } = this.state;
-    return transformList.join(" ");
+    return transformList.join(' ');
   }
 
   resetTransform() {
     this.setState({ transformList: [] });
   }
 
+  produceClassName() {
+    const { isDisappearing } = this.state;
+    let baseClassName = 'pointer-link has-transition';
+    if (isDisappearing) baseClassName += ' disappearing';
+    return baseClassName;
+  }
+
   render() {
     const {
       start: { x: xStart, y: yStart },
-      finish: { x: xFinish, y: yFinish }
-    } = this.props;
+      finish: { x: xFinish, y: yFinish },
+    } = this.original;
     const { offsetFromFinish } = this.state;
 
     const constructPath = () => {
-      return `M ${xStart + 50} ${yStart + 25} H ${xFinish -
+      return `M ${xStart} ${yStart} L ${xFinish -
         10 -
-        offsetFromFinish}`;
+        offsetFromFinish} ${yFinish}`;
     };
 
     return (
-      <g className="pointer-link" transform={this.produceTransformString()}>
-        <path d={constructPath()} className="pointer-link__line" />
+      <g
+        className={this.produceClassName()}
+        transform={this.produceTransformString()}
+      >
+        <path d={constructPath()} className='pointer-link__line' />
         <path
-          d={`M ${xFinish - 10 - offsetFromFinish} ${yStart +
-            25} l -2 5 l 12 -5 l -12 -5 l 2 5`}
-          className="pointer-link__arrow"
+          d={`M ${xFinish -
+            10 -
+            offsetFromFinish} ${yStart} l -2 5 l 12 -5 l -12 -5 l 2 5`}
+          className='pointer-link__arrow'
         />
       </g>
     );
