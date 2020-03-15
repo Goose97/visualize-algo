@@ -17,6 +17,10 @@ $border-style: 1px solid #cfcfcf;
     }
   }
 
+  .fx-#{$i} {
+    flex: #{$i};
+  }
+
   .h-#{$i} {
     height: #{$i * 0.25}rem;
   }
@@ -129,7 +133,7 @@ $border-style: 1px solid #cfcfcf;
   flex-direction: row;
 }
 
-.fx-column {
+.fx-col {
   display: flex;
   flex-direction: column;
 }

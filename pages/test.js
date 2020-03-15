@@ -1,7 +1,8 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import { LinkedList, CanvasContainer } from "components";
-import "styles/main.scss";
+import { LinkedList, CanvasContainer } from 'components';
+import { VisualAlgo } from 'layout';
+import 'styles/main.scss';
 
 export class Test extends Component {
   constructor(props) {
@@ -11,10 +12,24 @@ export class Test extends Component {
   }
 
   render() {
+    const code = `search(value) {
+  let index = 0;
+  let current = this.list;
+  while (current.val !== value) {
+    current = current.next;
+    index++;
+    if (!current) return null;
+  }
+
+  return index;
+}`;
+
     return (
-      <CanvasContainer height={800}>
-        <LinkedList x={100} y={100} />
-      </CanvasContainer>
+      <VisualAlgo code={code} highlightLine={1}>
+        <CanvasContainer height={800}>
+          <LinkedList x={100} y={100} />
+        </CanvasContainer>
+      </VisualAlgo>
     );
   }
 }
