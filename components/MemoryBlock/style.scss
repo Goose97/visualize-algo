@@ -1,0 +1,25 @@
+@import '../../styles/base.scss';
+
+.memory-block__wrapper {
+  .memory-block__block {
+    @extend .default-stroke;
+    @extend .has-transition;
+    fill: $background-dark-1;
+    stroke-width: 1px;
+  }
+
+  .memory-block__text {
+    @extend .has-transition;
+  }
+
+  &.visited {
+    .memory-block__block {
+      fill: $disable-background;
+      opacity: 0.3;
+    }
+
+    .memory-block__text {
+      fill: $disable-text-color;
+    }
+  }
+}

@@ -11,20 +11,3 @@ body {
   width: 100%;
   height: 100%;
 }
-
-.memory-block {
-  @extend .default-stroke;
-  fill: $background-dark-1;
-  stroke-width: 1px;
-}
-
-.pointer-link {
-  .pointer-link__line {
-    @extend .default-stroke-lighter;
-    stroke-width: 2px;
-  }
-
-  .pointer-link__arrow {
-    fill: lighten($primary-text-color, 15%);
-  }
-}

@@ -20,6 +20,7 @@ export class LinkedList extends Component {
       ...this.caculateblockInfo(index),
       value,
       visible: true,
+      visited: false,
       key: index,
     }));
   }
@@ -31,8 +32,14 @@ export class LinkedList extends Component {
 
   componentDidMount() {
     setTimeout(() => {
-      this.addNode(20, 2);
+      this.visitNode(0);
     }, 3000);
+  }
+
+  visitNode(nodeIndex) {
+    this.setState({
+      blockInfo: this.produceNewBlockInfo('visit', { index: nodeIndex }),
+    });
   }
 
   removeNode(nodeIndex) {
@@ -57,6 +64,8 @@ export class LinkedList extends Component {
     }, 800);
   }
 
+  // nodeAboutToAppear is a list of node which already in the state
+  // but about to get animated to appear
   addOrRemoveNodeAboutToAppear(nodeKey) {
     const { nodeAboutToAppear } = this.state;
     if (nodeAboutToAppear.has(nodeKey)) {
@@ -87,6 +96,7 @@ export class LinkedList extends Component {
           value,
           key: this.key++,
           visible: false,
+          visited: false,
         };
         return produce(blockInfo, draft => {
           draft.splice(index, 0, newNodeInfo);
@@ -95,6 +105,13 @@ export class LinkedList extends Component {
             .slice(index + 1)
             .map(blockInfo => ({ ...blockInfo, x: blockInfo.x + 125 }));
           draft.splice(index + 1, shiftedNodes.length, ...shiftedNodes);
+        });
+      }
+
+      case 'visit': {
+        const { index } = payload;
+        return produce(blockInfo, draft => {
+          draft[index].visited = true;
         });
       }
 
@@ -115,11 +132,12 @@ export class LinkedList extends Component {
   renderPointerLinkForMemoryBlock(blockIndex) {
     const { blockInfo } = this.state;
     const startAndFinish = this.caculateStartAndFinishOfPointer(blockIndex);
-    let { visible, key } = blockInfo[blockIndex];
+    let { visible, visited, key } = blockInfo[blockIndex];
     if (startAndFinish)
       return (
         <PointerLink
           {...startAndFinish}
+          visited={visited}
           visible={visible}
           key={key}
           name={blockInfo[blockIndex].key}

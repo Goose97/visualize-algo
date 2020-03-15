@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import './style.scss';
+
 const ANIMATION_STEP_COUNT = 20;
 
 export class PointerLink extends Component {
@@ -100,8 +102,10 @@ export class PointerLink extends Component {
 
   produceClassName() {
     const { isDisappearing } = this.state;
+    const { visited } = this.props;
     let baseClassName = 'pointer-link has-transition';
     if (isDisappearing) baseClassName += ' disappearing';
+    if (visited) baseClassName += ' visited';
     return baseClassName;
   }
 

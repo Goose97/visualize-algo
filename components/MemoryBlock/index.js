@@ -1,4 +1,6 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
+
+import './style.scss';
 
 export class MemoryBlock extends Component {
   constructor(props) {
@@ -13,7 +15,7 @@ export class MemoryBlock extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    ["x", "y", "visible"].forEach(attribute =>
+    ['x', 'y', 'visible'].forEach(attribute =>
       this.checkDiffAndReact(
         prevProps[attribute],
         this.props[attribute],
@@ -24,11 +26,11 @@ export class MemoryBlock extends Component {
 
   checkDiffAndReact(prev, now, attribute) {
     switch (attribute) {
-      case "visible":
+      case 'visible':
         return this.checkVisibleAndReact(prev, now);
-      case "x":
+      case 'x':
         return this.checkXAxisAndReact(prev, now);
-      case "y":
+      case 'y':
         return this.checkYAxisAndReact(prev, now);
     }
   }
@@ -54,22 +56,22 @@ export class MemoryBlock extends Component {
   }
 
   checkXAxisAndReact(prev, now) {
-    if (prev !== now) this.move(now - prev, "horizontal");
+    if (prev !== now) this.move(now - prev, 'horizontal');
   }
 
   checkYAxisAndReact(prev, now) {
-    if (prev !== now) this.move(now - prev, "vertical");
+    if (prev !== now) this.move(now - prev, 'vertical');
   }
 
   move(amount, direction) {
     const { transformList } = this.state;
     let transformText;
     switch (direction) {
-      case "vertical":
+      case 'vertical':
         transformText = `translate(0 ${amount})`;
         break;
 
-      case "horizontal":
+      case 'horizontal':
         transformText = `translate(${amount} 0)`;
         break;
     }
@@ -78,7 +80,7 @@ export class MemoryBlock extends Component {
 
   produceTransformString() {
     const { transformList } = this.state;
-    return transformList.join(" ");
+    return transformList.join(' ');
   }
 
   resetTransform() {
@@ -86,12 +88,13 @@ export class MemoryBlock extends Component {
   }
 
   produceClassName() {
-    const { visible } = this.props;
+    const { visible, visited } = this.props;
     const { isHiding, isShowing } = this.state;
-    let baseClassName = "has-transition";
-    if (isHiding) baseClassName += " disappearing";
-    if (isShowing) baseClassName += " appearing";
-    if (!visible) baseClassName += " invisible";
+    let baseClassName = 'memory-block__wrapper has-transition';
+    if (isHiding) baseClassName += ' disappearing';
+    if (isShowing) baseClassName += ' appearing';
+    if (!visible) baseClassName += ' invisible';
+    if (visited) baseClassName += ' visited';
     return baseClassName;
   }
 
@@ -108,13 +111,14 @@ export class MemoryBlock extends Component {
           y={this.original.y}
           width={MEM_BLOCK_WIDTH}
           height={MEM_BLOCK_HEIGHT}
-          className='memory-block'
+          className='memory-block__block'
         ></rect>
         <text
           x={this.original.x + MEM_BLOCK_WIDTH / 2}
           y={this.original.y + MEM_BLOCK_HEIGHT / 2}
           dominantBaseline='middle'
           textAnchor='middle'
+          className='memory-block__text'
         >
           {value}
         </text>
