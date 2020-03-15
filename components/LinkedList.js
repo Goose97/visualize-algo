@@ -30,17 +30,32 @@ export class LinkedList extends Component {
     return { x: baseX + blockIndex * 125, y: baseY };
   }
 
-  componentDidMount() {
-    setTimeout(() => {
-      this.visitNode(0);
-    }, 3000);
+  focusNode(nodeIndex) {
+    this.setState({ currentFocusNode: nodeIndex });
   }
 
   visitNode(nodeIndex) {
-    this.setState({
-      blockInfo: this.produceNewBlockInfo('visit', { index: nodeIndex }),
-    });
+    this.followLinkToNode(nodeIndex);
   }
+
+  followLinkToNode(nodeIndex) {
+    const { blockInfo } = this.state;
+    this.setState({ nodeAboutToVisit: blockInfo[nodeIndex].key });
+  }
+
+  handleFinishFollowLink = startBlockIndex => () => {
+    // mark the node who hold the link as visited
+    const destinationNodeIndex = this.findNextBlock(startBlockIndex, true);
+    this.setState({
+      nodeAboutToVisit: null,
+      blockInfo: this.produceNewBlockInfo('visit', {
+        index: startBlockIndex,
+      }),
+    });
+
+    // mark the node on the other end as current focus
+    this.focusNode(destinationNodeIndex);
+  };
 
   removeNode(nodeIndex) {
     this.setState({
@@ -137,10 +152,12 @@ export class LinkedList extends Component {
       return (
         <PointerLink
           {...startAndFinish}
+          following={this.isLinkNeedToBeFollowed(blockIndex)}
           visited={visited}
           visible={visible}
           key={key}
           name={blockInfo[blockIndex].key}
+          onFinishFollow={this.handleFinishFollowLink(key)}
         />
       );
   }
@@ -166,21 +183,32 @@ export class LinkedList extends Component {
     }
   }
 
+  // Start block is the block which hold the link and point to another block
+  isLinkNeedToBeFollowed(startBlockIndex) {
+    const { nodeAboutToVisit } = this.state;
+    const nextVisibleBlock = this.findNextBlock(startBlockIndex);
+    return nextVisibleBlock.key === nodeAboutToVisit;
+  }
+
   // Find block which is still visible or in about to appear state
-  findNextBlock(index) {
+  findNextBlock(index, getIndex = false) {
     const { blockInfo, nodeAboutToAppear } = this.state;
     for (let i = index + 1; i < blockInfo.length; i++) {
       const { visible, key } = blockInfo[i];
       if (visible || nodeAboutToAppear.has(key)) {
-        return blockInfo[i];
+        return getIndex ? i : blockInfo[i];
       }
     }
   }
 
   render() {
-    const { blockInfo } = this.state;
+    const { blockInfo, currentFocusNode } = this.state;
     const listMemoryBlock = blockInfo.map(blockInfo => (
-      <MemoryBlock {...blockInfo} name={blockInfo.key} />
+      <MemoryBlock
+        {...blockInfo}
+        name={blockInfo.key}
+        focus={currentFocusNode === blockInfo.key}
+      />
     ));
 
     const listPointerLink = blockInfo

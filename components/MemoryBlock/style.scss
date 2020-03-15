@@ -10,6 +10,7 @@
 
   .memory-block__text {
     @extend .has-transition;
+    @extend .f-big-2;
   }
 
   &.visited {
@@ -20,6 +21,18 @@
 
     .memory-block__text {
       fill: $disable-text-color;
+    }
+  }
+
+  &.focus {
+    .memory-block__block {
+      fill: $primary-color-5;
+      stroke: $primary-color;
+    }
+
+    .memory-block__text {
+      // fill: white;
+      fill: $primary-color;
     }
   }
 }

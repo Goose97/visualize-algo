@@ -88,13 +88,14 @@ export class MemoryBlock extends Component {
   }
 
   produceClassName() {
-    const { visible, visited } = this.props;
+    const { visible, visited, focus } = this.props;
     const { isHiding, isShowing } = this.state;
     let baseClassName = 'memory-block__wrapper has-transition';
     if (isHiding) baseClassName += ' disappearing';
     if (isShowing) baseClassName += ' appearing';
     if (!visible) baseClassName += ' invisible';
     if (visited) baseClassName += ' visited';
+    if (focus) baseClassName += ' focus';
     return baseClassName;
   }
 
@@ -109,6 +110,7 @@ export class MemoryBlock extends Component {
         <rect
           x={this.original.x}
           y={this.original.y}
+          rx={MEM_BLOCK_WIDTH / 15}
           width={MEM_BLOCK_WIDTH}
           height={MEM_BLOCK_HEIGHT}
           className='memory-block__block'

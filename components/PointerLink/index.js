@@ -18,15 +18,25 @@ export class PointerLink extends Component {
     this.setUpNewOrigin();
   }
 
+  setUpNewOrigin() {
+    const { start, finish } = this.props;
+    this.original = {
+      start,
+      finish,
+    };
+  }
+
   componentDidUpdate(prevProps) {
     const {
       visible,
       finish: { x, y },
+      following,
     } = this.props;
     if (visible !== prevProps.visible) {
       if (!visible) this.hide();
     }
 
+    // Change in position
     if (x !== prevProps.finish.x) {
       if (this.getLinkLength(this.props) !== this.getLinkLength(prevProps)) {
         this.initiateAnimation(prevProps.finish.x, x);
@@ -34,6 +44,11 @@ export class PointerLink extends Component {
       } else {
         this.move(x - prevProps.finish.x, 'horizontal');
       }
+    }
+
+    // Change in following state
+    if (following && !prevProps.following) {
+      this.follow();
     }
   }
 
@@ -52,18 +67,6 @@ export class PointerLink extends Component {
     this.intervalToken.push(setInterval(this.updateOffset, 20));
   }
 
-  setUpNewOrigin() {
-    const { start, finish } = this.props;
-    this.original = {
-      start,
-      finish,
-    };
-  }
-
-  hide() {
-    this.setState({ isDisappearing: true });
-  }
-
   updateOffset = () => {
     const { offsetFromFinish } = this.state;
     const newOffset = Math.max(offsetFromFinish - this.step, 0);
@@ -73,8 +76,13 @@ export class PointerLink extends Component {
     }
   };
 
-  handleFinishAnimation() {
+  handleFinishAnimation(callback) {
     this.intervalToken.forEach(token => window.clearInterval(token));
+    if (callback) callback();
+  }
+
+  hide() {
+    this.setState({ isDisappearing: true });
   }
 
   move(amount, direction) {
@@ -90,6 +98,42 @@ export class PointerLink extends Component {
     }
     this.setState({ transformList: [...transformList, transformText] });
   }
+
+  // animate the action of follow the pointer link
+  // use offsetOfFollowAnimation to create animation
+  follow() {
+    const {
+      start: { x: xStart },
+      finish: { x: xFinish },
+    } = this.original;
+    const initialOffset = Math.abs(xFinish - xStart) - 10;
+    this.setState(
+      {
+        isFollowing: true,
+      },
+      () => this.initiateFollowAnimation(initialOffset),
+    );
+  }
+
+  initiateFollowAnimation(distance) {
+    this.setState({ offsetOfFollowAnimation: distance });
+    this.step = distance / ANIMATION_STEP_COUNT;
+    this.intervalToken.push(setInterval(this.updateOffsetOfFollow, 20));
+  }
+
+  updateOffsetOfFollow = () => {
+    const { onFinishFollow } = this.props;
+    const { offsetOfFollowAnimation } = this.state;
+    const newOffset = Math.max(offsetOfFollowAnimation - this.step, 0);
+    this.setState({ offsetOfFollowAnimation: newOffset });
+    if (offsetOfFollowAnimation <= 0) {
+      const cb = () => {
+        this.setState({ isDoneFollowing: true });
+        onFinishFollow && onFinishFollow();
+      };
+      this.handleFinishAnimation(cb);
+    }
+  };
 
   produceTransformString() {
     const { transformList } = this.state;
@@ -109,30 +153,54 @@ export class PointerLink extends Component {
     return baseClassName;
   }
 
+  produceArrowClassName() {
+    const { isFollowing, isDoneFollowing } = this.state;
+    let baseClassName = 'pointer-link__arrow';
+    if (isFollowing && isDoneFollowing) baseClassName += ' follow';
+    return baseClassName;
+  }
+
+  constructLinkPath(offsetFromFinish) {
+    const {
+      start: { x: xStart, y: yStart },
+      finish: { x: xFinish, y: yFinish },
+    } = this.original;
+    return `M ${xStart} ${yStart} L ${xFinish -
+      10 -
+      offsetFromFinish} ${yFinish}`;
+  }
+
   render() {
     const {
       start: { x: xStart, y: yStart },
       finish: { x: xFinish, y: yFinish },
     } = this.original;
-    const { offsetFromFinish } = this.state;
-
-    const constructPath = () => {
-      return `M ${xStart} ${yStart} L ${xFinish -
-        10 -
-        offsetFromFinish} ${yFinish}`;
-    };
+    const {
+      offsetFromFinish,
+      isFollowing,
+      offsetOfFollowAnimation,
+    } = this.state;
 
     return (
       <g
         className={this.produceClassName()}
         transform={this.produceTransformString()}
       >
-        <path d={constructPath()} className='pointer-link__line' />
+        <path
+          d={this.constructLinkPath(offsetFromFinish)}
+          className='pointer-link__line'
+        />
+        {isFollowing && (
+          <path
+            d={this.constructLinkPath(offsetOfFollowAnimation || 0)}
+            className='pointer-link__line follow'
+          />
+        )}
         <path
           d={`M ${xFinish -
             10 -
             offsetFromFinish} ${yStart} l -2 5 l 12 -5 l -12 -5 l 2 5`}
-          className='pointer-link__arrow'
+          className={this.produceArrowClassName()}
         />
       </g>
     );
