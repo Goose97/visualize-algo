@@ -7,12 +7,46 @@ export class LinkedList extends Component {
   constructor(props) {
     super(props);
 
-    this.data = [1, 2, 3, 4, 5];
+    this.data = props.data;
     this.key = this.data.length;
     this.state = {
       blockInfo: this.initiateMemoryBlockInfo(),
       nodeAboutToAppear: new Set([]),
+      currentFocusNode: props.currentNode,
     };
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    const { currentFocusNode } = state;
+    if (
+      'currentFocusNode' in props &&
+      props.currentFocusNode !== currentFocusNode
+    )
+      return { currentFocusNode: props.currentFocusNode };
+
+    return {};
+  }
+
+  componentDidUpdate(prevProps) {
+    const { data, currentNode } = this.props;
+    this.detectChangeInDataAndReact(prevProps.data, data);
+    if (currentNode !== prevProps.currentNode) {
+      this.visitNode(currentNode);
+    }
+  }
+
+  detectChangeInDataAndReact(oldData, newData) {
+    for (let i = 0; i < oldData.length; i++) {
+      if (oldData[i] !== newData[i]) {
+        // there is some changes
+        if (oldData.length < newData.length) {
+          this.addNode(newData[i], i);
+        } else if (oldData.length > newData.length) {
+          this.removeNode(i);
+        }
+        break;
+      }
+    }
   }
 
   initiateMemoryBlockInfo() {

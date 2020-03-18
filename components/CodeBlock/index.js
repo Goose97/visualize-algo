@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import Prism from 'prismjs';
 
 import LineHighlight from './LineHightlight';
-import '../../styles/prism.css';
+import './prism.css';
+import './style.scss';
 
 export class CodeBlock extends Component {
   constructor(props) {
@@ -26,7 +27,7 @@ export class CodeBlock extends Component {
     const { code, highlightLine } = this.props;
     return (
       <pre ref={this.codeBlockRef} data-line={highlightLine}>
-        <code className='language-javascript'>{code}</code>
+        <code className='language-javascript visual-algo-code'>{code}</code>
       </pre>
     );
   }
