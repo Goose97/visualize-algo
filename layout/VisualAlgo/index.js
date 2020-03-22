@@ -15,26 +15,34 @@ export class VisualAlgo extends Component {
       explanationStep,
     } = this.props;
 
-    return (
-      <div className='fx-row vh-100'>
-        <div className='fx-col fx-1'>
-          {/* <Select
-            options={apiList}
-            className='api-select'
-            classNamePrefix='api-select'
-            placeholder='Chọn API'
-          /> */}
-          <div className='fx-3 code-container'>
-            <CodeBlock code={code} highlightLine={highlightLine} />
-          </div>
-          <div className='fx-2'>
-            <ExplanationBlock
-              explanation={explanation}
-              currentStep={explanationStep}
-            />
-          </div>
+    const visualizationScreen = (
+      <div className='fx-1 visual-container shadow'>{children}</div>
+    );
+
+    const codeAndExplanation = (
+      <div className='fx-row fx-1'>
+        {/* <Select
+      options={apiList}
+      className='api-select'
+      classNamePrefix='api-select'
+      placeholder='Chọn API'
+    /> */}
+        <div className='fx-3 code-container'>
+          <CodeBlock code={code} highlightLine={highlightLine} />
         </div>
-        <div className='fx-1 visual-container shadow'>{children}</div>
+        <div className='fx-2'>
+          <ExplanationBlock
+            explanation={explanation}
+            currentStep={explanationStep}
+          />
+        </div>
+      </div>
+    );
+
+    return (
+      <div className='fx-col vh-100'>
+        {visualizationScreen}
+        {codeAndExplanation}
       </div>
     );
   }

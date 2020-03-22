@@ -1,8 +1,8 @@
 const CanvasContainer = ({ children }) => {
   return (
     <svg
-      className='canvas'
-      viewBox='0 0 1000 1000'
+      className='canvas vw-100 vh-50'
+      viewBox='0 0 1200 1200'
       preserveAspectRatio='xMinYMin slice'
     >
       {children}
