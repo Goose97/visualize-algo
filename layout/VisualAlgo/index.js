@@ -16,17 +16,19 @@ export class VisualAlgo extends Component {
     } = this.props;
 
     const visualizationScreen = (
-      <div className='fx-1 visual-container shadow'>{children}</div>
+      <div className='fx-3 visual-container shadow'>
+        {/* <Select
+          options={apiList}
+          className='api-select'
+          classNamePrefix='api-select'
+          placeholder='Chọn API'
+        /> */}
+        {children}
+      </div>
     );
 
     const codeAndExplanation = (
-      <div className='fx-row fx-1'>
-        {/* <Select
-      options={apiList}
-      className='api-select'
-      classNamePrefix='api-select'
-      placeholder='Chọn API'
-    /> */}
+      <div className='fx-row fx-2'>
         <div className='fx-3 code-container'>
           <CodeBlock code={code} highlightLine={highlightLine} />
         </div>

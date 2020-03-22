@@ -102,7 +102,7 @@ export class Test extends Component {
         explanationStep={explanationStep}
       >
         <CanvasContainer>
-          <LinkedList x={100} y={100} data={data} currentNode={currentNode} />
+          <LinkedList x={100} y={200} data={data} currentNode={currentNode} />
         </CanvasContainer>
       </VisualAlgo>
     );
