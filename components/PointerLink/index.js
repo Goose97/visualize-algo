@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import { classNameHelper } from '../../utils';
 import './style.scss';
 
 const ANIMATION_STEP_COUNT = 20;
@@ -147,17 +148,19 @@ export class PointerLink extends Component {
   produceClassName() {
     const { isDisappearing } = this.state;
     const { visited } = this.props;
-    let baseClassName = 'pointer-link has-transition';
-    if (isDisappearing) baseClassName += ' disappearing';
-    if (visited) baseClassName += ' visited';
-    return baseClassName;
+    return classNameHelper({
+      base: 'pointer-link has-transition',
+      disappearing: isDisappearing,
+      visited,
+    });
   }
 
   produceArrowClassName() {
     const { isFollowing, isDoneFollowing } = this.state;
-    let baseClassName = 'pointer-link__arrow';
-    if (isFollowing && isDoneFollowing) baseClassName += ' follow';
-    return baseClassName;
+    return classNameHelper({
+      base: 'pointer-link__arrow',
+      follow: isFollowing && isDoneFollowing,
+    });
   }
 
   constructLinkPath(offsetFromFinish) {

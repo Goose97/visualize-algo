@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 
+import { classNameHelper } from '../../utils';
 import './style.scss';
 
 export class ExplanationBlock extends Component {
   produceClassNameForStep(stepIndex) {
     const { currentStep } = this.props;
-    let baseClass = 'explanation-block__step';
-    if (currentStep === stepIndex) baseClass += ' focus';
-    return baseClass;
+    return classNameHelper({
+      base: 'explanation-block__step',
+      focus: currentStep === stepIndex,
+    });
   }
 
   render() {
