@@ -15,7 +15,7 @@
     "next": "9.2.2",
     "node-sass": "^4.13.1",
     "path": "^0.12.7",
-    "prismjs": "^1.19.0",
+    "prismjs": "https://github.com/Goose97/forked-prism.git",
     "react": "16.13.0",
     "react-dom": "16.13.0",
     "react-select": "^3.0.8",

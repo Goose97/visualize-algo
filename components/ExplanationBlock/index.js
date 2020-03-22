@@ -16,7 +16,7 @@ export class ExplanationBlock extends Component {
       <div className='explanation-block__wrapper'>
         <ul className='explanation-block__list-step'>
           {explanation.map((item, index) => (
-            <li className={this.produceClassNameForStep(index + 1)}>
+            <li className={this.produceClassNameForStep(index + 1)} key={index}>
               {index + 1}. {item}
             </li>
           ))}
