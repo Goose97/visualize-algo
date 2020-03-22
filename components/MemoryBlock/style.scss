@@ -4,7 +4,7 @@
   .memory-block__block {
     @extend .default-stroke;
     @extend .has-transition;
-    fill: $background-dark-1;
+    fill: $background-light;
     stroke-width: 1px;
   }
 
@@ -13,8 +13,13 @@
     @extend .f-big-2;
   }
 
+  .memory-block__separate-line {
+    @extend .default-stroke;
+  }
+
   &.visited {
-    .memory-block__block {
+    .memory-block__block,
+    .memory-block__separate-line {
       fill: $disable-background;
       opacity: 0.3;
     }
@@ -25,13 +30,13 @@
   }
 
   &.focus {
-    .memory-block__block {
+    .memory-block__block,
+    .memory-block__separate-line {
       fill: $primary-color-5;
       stroke: $primary-color;
     }
 
     .memory-block__text {
-      // fill: white;
       fill: $primary-color;
     }
   }

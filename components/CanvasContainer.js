@@ -1,6 +1,6 @@
-const CanvasContainer = ({ children, width, height }) => {
+const CanvasContainer = ({ children }) => {
   return (
-    <svg className="canvas" width={width} height={height}>
+    <svg className='canvas' viewBox='0 0 1000 1000' preserveAspectRatio='slice'>
       {children}
     </svg>
   );

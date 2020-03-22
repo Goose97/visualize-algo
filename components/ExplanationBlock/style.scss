@@ -1,0 +1,30 @@
+@import '../../styles/base.scss';
+
+.explanation-block__wrapper {
+  padding: 15px 30px;
+  .explanation-block__list-step {
+    list-style-type: none;
+    padding-left: 0;
+
+    .explanation-block__step {
+      @extend .has-transition;
+      padding: 10px 20px 10px 10px;
+      font-size: 18px;
+
+      &.focus {
+        @extend .shadow;
+        background-color: $primary-color-5;
+        position: relative;
+        &:after {
+          content: '';
+          width: 2px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          background-color: $primary-color;
+        }
+      }
+    }
+  }
+}
