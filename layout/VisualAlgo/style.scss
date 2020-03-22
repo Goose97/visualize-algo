@@ -2,4 +2,19 @@
 
 .visual-container {
   border: $border-style;
+  background-color: $background-light;
+}
+
+.code-container {
+  background-color: #272822;
+}
+
+.api-select {
+  margin-top: 10px;
+  margin-left: 20px;
+  width: 150px;
+
+  .api-select__menu {
+    z-index: 20;
+  }
 }

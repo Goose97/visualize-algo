@@ -1,4 +1,4 @@
-import React, { Component, Fragment, useImperativeHandle } from 'react';
+import React, { Component } from 'react';
 import produce from 'immer';
 
 import { MemoryBlock, PointerLink } from 'components';
@@ -61,7 +61,7 @@ export class LinkedList extends Component {
 
   caculateblockInfo(blockIndex) {
     const { x: baseX, y: baseY } = this.props;
-    return { x: baseX + blockIndex * 125, y: baseY };
+    return { x: baseX + blockIndex * (2 * LINKED_LIST_BLOCK_WIDTH), y: baseY };
   }
 
   focusNode(nodeIndex) {
@@ -201,7 +201,10 @@ export class LinkedList extends Component {
     let { x, y, visible, key } = blockInfo[blockIndex];
     let nextVisibleBlock = this.findNextBlock(blockIndex);
 
-    const start = { x: x + MEM_BLOCK_WIDTH, y: y + MEM_BLOCK_HEIGHT / 2 };
+    const start = {
+      x: x + LINKED_LIST_BLOCK_WIDTH - 10,
+      y: y + LINKED_LIST_BLOCK_HEIGHT / 2,
+    };
     let finish;
     if (nextVisibleBlock && visible) {
       let { x: x1, y: y1 } = nextVisibleBlock;
@@ -209,7 +212,7 @@ export class LinkedList extends Component {
       if (nodeAboutToAppear.has(key)) {
         finish = { ...start };
       } else {
-        finish = { x: x1, y: y1 + MEM_BLOCK_HEIGHT / 2 };
+        finish = { x: x1, y: y1 + LINKED_LIST_BLOCK_HEIGHT / 2 };
       }
       return { start, finish };
     } else {
@@ -235,6 +238,42 @@ export class LinkedList extends Component {
     }
   }
 
+  renderHeadPointer() {
+    const firstBlock = this.findNextBlock(-1);
+    if (firstBlock) {
+      const { x, y } = firstBlock;
+      const start = {
+        x: x + LINKED_LIST_BLOCK_WIDTH / 2,
+        y: y + LINKED_LIST_BLOCK_HEIGHT * 3,
+      };
+      const finish = {
+        x: x + LINKED_LIST_BLOCK_WIDTH / 2,
+        y: y + LINKED_LIST_BLOCK_HEIGHT,
+      };
+
+      return (
+        <g>
+          <text
+            x={x + LINKED_LIST_BLOCK_WIDTH / 2}
+            y={y + LINKED_LIST_BLOCK_HEIGHT * 3}
+            dominantBaseline='middle'
+            textAnchor='middle'
+          >
+            HEAD
+          </text>
+          <path
+            d={`M ${start.x} ${start.y - 15} L ${finish.x} ${finish.y + 10}`}
+            className='default-stroke'
+          />
+          <path
+            d={`M ${finish.x} ${finish.y + 15} l -5 2 l 5 -12 l 5 12 l -5 -2`}
+            className='default-stroke'
+          />
+        </g>
+      );
+    } else return null;
+  }
+
   render() {
     const { blockInfo, currentFocusNode } = this.state;
     const listMemoryBlock = blockInfo.map(blockInfo => (
@@ -250,10 +289,11 @@ export class LinkedList extends Component {
       .map((_, index) => this.renderPointerLinkForMemoryBlock(index));
 
     return (
-      <Fragment>
+      <g>
+        {this.renderHeadPointer()}
         {listMemoryBlock}
         {listPointerLink}
-      </Fragment>
+      </g>
     );
   }
 }

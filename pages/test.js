@@ -5,8 +5,8 @@ import { VisualAlgo } from 'layout';
 import 'styles/main.scss';
 
 const code = `search(value) {
-  let index = 0;
   let current = this.list;
+  let index = 0;
   do {
     // Nếu tìm thấy thì return index
     if (current.val === value) return index;
@@ -17,32 +17,43 @@ const code = `search(value) {
   return index;
 } `;
 
-const DEFAULT_DURATION = 1000;
+const explanation = [
+  'Khởi tạo giá trị node hiện tại là head của linked list và giá trị index bằng 0',
+  'So sánh giá trị của node hiện tại với giá trị đang tìm kiếm',
+  'Nếu khớp thì trả về giá trị index',
+  'Nếu không thì đặt node tiếp theo (node.next) là node hiện tại và tăng index lên 1',
+  'Lặp lại bước 2',
+];
+
+const DEFAULT_DURATION = 1500;
 
 const animationDescription = [
   {
-    state: { currentNode: 0, codeLine: 3 },
+    state: { currentNode: 0, codeLine: '2-3', explanationStep: 1 },
   },
   {
-    state: { currentNode: 0, codeLine: 6 },
+    state: { codeLine: 6, explanationStep: 2 },
   },
   {
-    state: { currentNode: 1, codeLine: 7 },
+    state: { currentNode: 1, codeLine: '7-8', explanationStep: 4 },
   },
   {
-    state: { codeLine: 8 },
+    state: { explanationStep: 5 },
   },
   {
-    state: { codeLine: 6 },
+    state: { codeLine: 6, explanationStep: 2 },
   },
   {
-    state: { currentNode: 2, codeLine: 7 },
+    state: { currentNode: 2, codeLine: '7-8', explanationStep: 4 },
   },
   {
-    state: { codeLine: 8 },
+    state: { explanationStep: 5 },
   },
   {
-    state: { codeLine: 6 },
+    state: { codeLine: 6, explanationStep: 2 },
+  },
+  {
+    state: { explanationStep: 3 },
   },
 ];
 
@@ -52,8 +63,7 @@ export class Test extends Component {
 
     this.state = {
       data: [1, 2, 3, 4, 5],
-      currentNode: 0,
-      codeLine: 3,
+      ...animationDescription[0].state,
     };
     this.ref = React.createRef();
   }
@@ -64,9 +74,9 @@ export class Test extends Component {
     if (nextStep >= animationDescription.length) return;
     const { state: stateInNextStep, duration } = animationDescription[nextStep];
     stateInNextStep &&
-      this.setState({ ...stateInNextStep, currentStep: nextStep }, () =>
-        setTimeout(this.consumeAnimationStep, duration || DEFAULT_DURATION),
-      );
+      this.setState({ ...stateInNextStep, currentStep: nextStep }, () => {
+        setTimeout(this.consumeAnimationStep, duration || DEFAULT_DURATION);
+      });
   };
 
   componentDidMount() {
@@ -76,17 +86,23 @@ export class Test extends Component {
   }
 
   render() {
-    const { data, currentNode, codeLine } = this.state;
+    const { data, currentNode, codeLine, explanationStep } = this.state;
+    const apiList = [
+      { value: 'search', label: 'Search' },
+      { value: 'insert', label: 'Insert' },
+      { value: 'delete', label: 'Delete' },
+    ];
 
     return (
-      <VisualAlgo code={code} highlightLine={codeLine}>
-        <CanvasContainer height={800}>
-          <LinkedList
-            x={100}
-            y={100}
-            data={data}
-            currentNode={currentNode}
-          />
+      <VisualAlgo
+        code={code}
+        explanation={explanation}
+        highlightLine={codeLine}
+        apiList={apiList}
+        explanationStep={explanationStep}
+      >
+        <CanvasContainer>
+          <LinkedList x={100} y={100} data={data} currentNode={currentNode} />
         </CanvasContainer>
       </VisualAlgo>
     );

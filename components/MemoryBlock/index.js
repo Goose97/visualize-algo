@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 
+import PointerLink from '../PointerLink';
 import './style.scss';
+
+const POINTER_HOLDER_WIDTH = 20;
 
 export class MemoryBlock extends Component {
   constructor(props) {
@@ -99,6 +102,12 @@ export class MemoryBlock extends Component {
     return baseClassName;
   }
 
+  constructSeparateLinePath() {
+    return `M ${this.original.x +
+      LINKED_LIST_BLOCK_WIDTH -
+      POINTER_HOLDER_WIDTH} ${this.original.y} v${LINKED_LIST_BLOCK_HEIGHT}`;
+  }
+
   render() {
     const { value } = this.props;
 
@@ -110,14 +119,20 @@ export class MemoryBlock extends Component {
         <rect
           x={this.original.x}
           y={this.original.y}
-          rx={MEM_BLOCK_WIDTH / 15}
-          width={MEM_BLOCK_WIDTH}
-          height={MEM_BLOCK_HEIGHT}
+          width={LINKED_LIST_BLOCK_WIDTH}
+          height={LINKED_LIST_BLOCK_HEIGHT}
           className='memory-block__block'
         ></rect>
+        <path
+          d={this.constructSeparateLinePath()}
+          className='memory-block__separate-line'
+        />
         <text
-          x={this.original.x + MEM_BLOCK_WIDTH / 2}
-          y={this.original.y + MEM_BLOCK_HEIGHT / 2}
+          x={
+            this.original.x +
+            (LINKED_LIST_BLOCK_WIDTH - POINTER_HOLDER_WIDTH) / 2
+          }
+          y={this.original.y + LINKED_LIST_BLOCK_HEIGHT / 2}
           dominantBaseline='middle'
           textAnchor='middle'
           className='memory-block__text'
