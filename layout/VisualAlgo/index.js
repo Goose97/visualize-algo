@@ -29,7 +29,10 @@ export class VisualAlgo extends Component {
     if (stateInNewStep) {
       this.setState(
         { ...stateInNewStep },
-        () => autoPlay && this.scheduleNextStepConsumation(duration),
+        () =>
+          autoPlay &&
+          this.caculateProgress() !== 100 &&
+          this.scheduleNextStepConsumation(duration),
       );
 
       onStepChange && onStepChange(stateInNewStep);
@@ -66,6 +69,17 @@ export class VisualAlgo extends Component {
     this.setState({ currentStep: currentStep - 1 });
   };
 
+  goToFinalStep() {
+    console.log('123', 123);
+  }
+
+  caculateProgress() {
+    const { currentStep } = this.state;
+    const { stepDescription } = this.props;
+    const total = stepDescription.length - 1;
+    return (currentStep * 100) / total;
+  }
+
   render() {
     const { children, code, explanation } = this.props;
     const { codeLine, explanationStep, autoPlay } = this.state;
@@ -80,10 +94,12 @@ export class VisualAlgo extends Component {
         /> */}
         <ProgressControl
           onForward={this.increaseCurrentStep}
+          onFastForward={this.goToFinalStep}
           onBackward={this.decreaseCurrentStep}
           onPlay={() => this.handleTogglePlay(true)}
           onStop={() => this.handleTogglePlay(false)}
           isPlaying={autoPlay}
+          progress={this.caculateProgress()}
         />
         {children}
       </div>

@@ -28,38 +28,50 @@ const explanation = [
 
 const DEFAULT_DURATION = 1500;
 
+// const stepDescription = [
+//   {
+//     state: {
+//       data: [1, 2, 3, 4, 5],
+//       currentNode: 0,
+//       codeLine: '2-3',
+//       explanationStep: 1,
+//     },
+//   },
+//   {
+//     state: { codeLine: 6, explanationStep: 2 },
+//   },
+//   {
+//     state: { currentNode: 1, codeLine: '7-8', explanationStep: 4 },
+//   },
+//   {
+//     state: { explanationStep: 5 },
+//   },
+//   {
+//     state: { codeLine: 6, explanationStep: 2 },
+//   },
+//   {
+//     state: { currentNode: 2, codeLine: '7-8', explanationStep: 4 },
+//   },
+//   {
+//     state: { explanationStep: 5 },
+//   },
+//   {
+//     state: { codeLine: 6, explanationStep: 2 },
+//   },
+//   {
+//     state: { explanationStep: 3 },
+//   },
+// ];
+
 const stepDescription = [
   {
-    state: {
-      data: [1, 2, 3, 4, 5],
-      currentNode: 0,
-      codeLine: '2-3',
-      explanationStep: 1,
-    },
+    state: { data: [1, 2, 3, 4, 5] },
   },
   {
-    state: { codeLine: 6, explanationStep: 2 },
+    state: { data: [1, 2, 4, 5] },
   },
   {
-    state: { currentNode: 1, codeLine: '7-8', explanationStep: 4 },
-  },
-  {
-    state: { explanationStep: 5 },
-  },
-  {
-    state: { codeLine: 6, explanationStep: 2 },
-  },
-  {
-    state: { currentNode: 2, codeLine: '7-8', explanationStep: 4 },
-  },
-  {
-    state: { explanationStep: 5 },
-  },
-  {
-    state: { codeLine: 6, explanationStep: 2 },
-  },
-  {
-    state: { explanationStep: 3 },
+    state: { data: [1, 2, 3, 4, 5] },
   },
 ];
 

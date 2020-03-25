@@ -1,23 +1,55 @@
 @import '../../styles/base.scss';
 
 .progress-control__wrapper {
-  @extend .il-fx;
-  @extend .shadow;
   padding: 10px;
-  border: $border-style;
-  border-radius: $border-radius;
+  display: inline-flex;
+  flex-direction: column;
+  width: 40vw;
+  max-width: 600px;
+  align-items: center;
+  
+  .progress-control__button-wrapper {
+    @extend .il-fx;
+    @extend .shadow;
+    padding: 5px 10px;
+    border: $border-style;
+    border-radius: $border-radius;
+    position: relative;
 
-  .progress-control__button {
-    @extend .has-transition;
-    @extend .fx-center;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
+    .progress-control__button {
+      @extend .has-transition;
+      @extend .fx-center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      z-index: 10;
 
-    &:hover {
-      @extend .shadow;
-      background-color: $primary-color-5;
-      cursor: pointer;
+      &:hover:not(.disabled) {
+        @extend .shadow;
+        background-color: $primary-color-5;
+        cursor: pointer;
+      }
+
+      &.disabled {
+        cursor: not-allowed;
+        & > svg > path {
+          fill: rgba(0, 0, 0, 0.2);
+        }
+      }
+    }
+  }
+
+  .progress-control__progress-indicator {
+    margin-top: 10px;
+    height: 6px;
+    width: 100%;
+    background-color: $disable-background-1;
+    border-radius: 3px;
+
+    .progress-control__progress-bar {
+      background-color: $primary-color-3;
+      height: 100%;
+      border-radius: 3px;
     }
   }
 }
