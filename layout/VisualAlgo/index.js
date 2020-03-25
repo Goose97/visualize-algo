@@ -35,7 +35,7 @@ export class VisualAlgo extends Component {
           this.scheduleNextStepConsumation(duration),
       );
 
-      onStepChange && onStepChange(stateInNewStep);
+      onStepChange && onStepChange(stateInNewStep, newStep);
     }
   }
 

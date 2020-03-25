@@ -65,13 +65,10 @@ const DEFAULT_DURATION = 1500;
 
 const stepDescription = [
   {
-    state: { data: [1, 2, 3, 4, 5] },
+    state: { currentNode: 1, data: [1, 2, 4, 5] },
   },
   {
-    state: { data: [1, 2, 4, 5] },
-  },
-  {
-    state: { data: [1, 2, 3, 4, 5] },
+    state: { currentNode: 2 },
   },
 ];
 
@@ -86,20 +83,21 @@ export class Test extends Component {
 
     this.state = {
       ...initialState,
+      currentStep: 0,
     };
     this.ref = React.createRef();
   }
 
-  handleStepChange = stateInNewStep => {
+  handleStepChange = (stateInNewStep, stepIndex) => {
     const { data, currentNode } = stateInNewStep;
     let changes = {};
     if (data) changes.data = data;
     if (currentNode) changes.currentNode = currentNode;
-    this.setState({ ...changes });
+    this.setState({ ...changes, currentStep: stepIndex });
   };
 
   render() {
-    const { data, currentNode } = this.state;
+    const { data, currentNode, currentStep } = this.state;
     const apiList = [
       { value: 'search', label: 'Search' },
       { value: 'insert', label: 'Insert' },
@@ -115,7 +113,13 @@ export class Test extends Component {
         onStepChange={this.handleStepChange}
       >
         <CanvasContainer>
-          <LinkedList x={100} y={200} data={data} currentNode={currentNode} />
+          <LinkedList
+            x={100}
+            y={200}
+            data={data}
+            currentNode={currentNode}
+            currentStep={currentStep}
+          />
         </CanvasContainer>
       </VisualAlgo>
     );

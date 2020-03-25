@@ -14,6 +14,17 @@ export class LinkedList extends Component {
       nodeAboutToAppear: new Set([]),
       currentFocusNode: props.currentNode,
     };
+    this.actionLogs = [];
+  }
+
+  saveActionToLogs(actionName, params) {
+    const { currentStep } = this.props;
+    const action = {
+      name: actionName,
+      params,
+      step: currentStep,
+    };
+    this.actionLogs.push(action);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -28,15 +39,24 @@ export class LinkedList extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { data, currentNode } = this.props;
+    const { data, currentNode, currentStep } = this.props;
+    // Handle backward step
+    // Abort any other changes handler below
+    if (currentStep < prevProps.currentStep) {
+      return this.handleBackwardStep(currentStep);
+    }
+
+    // Handle data changes
     this.detectChangeInDataAndReact(prevProps.data, data);
+
+    // Handle currentNode changes
     if (currentNode !== prevProps.currentNode) {
       this.visitNode(currentNode);
     }
   }
 
   detectChangeInDataAndReact(oldData, newData) {
-    for (let i = 0; i < oldData.length; i++) {
+    for (let i = 0; i < newData.length; i++) {
       if (oldData[i] !== newData[i]) {
         // there is some changes
         if (oldData.length < newData.length) {
@@ -65,10 +85,14 @@ export class LinkedList extends Component {
   }
 
   focusNode(nodeIndex) {
+    const { currentFocusNode } = this.state;
+    this.saveActionToLogs('focusNode', [currentFocusNode]);
     this.setState({ currentFocusNode: nodeIndex });
   }
 
   visitNode(nodeIndex) {
+    const { currentFocusNode } = this.state;
+    this.saveActionToLogs('visitNode', [currentFocusNode]);
     this.followLinkToNode(nodeIndex);
   }
 
@@ -92,12 +116,14 @@ export class LinkedList extends Component {
   };
 
   removeNode(nodeIndex) {
+    this.saveActionToLogs('removeNode', [nodeIndex]);
     this.setState({
       blockInfo: this.produceNewBlockInfo('remove', { index: nodeIndex }),
     });
   }
 
   addNode(value, nodeIndex) {
+    this.saveActionToLogs('addNode', [value, nodeIndex]);
     const newBlockInfo = this.produceNewBlockInfo('add', {
       value,
       index: nodeIndex,
@@ -113,21 +139,6 @@ export class LinkedList extends Component {
     }, 800);
   }
 
-  // nodeAboutToAppear is a list of node which already in the state
-  // but about to get animated to appear
-  addOrRemoveNodeAboutToAppear(nodeKey) {
-    const { nodeAboutToAppear } = this.state;
-    if (nodeAboutToAppear.has(nodeKey)) {
-      const cloneState = new Set(nodeAboutToAppear);
-      cloneState.delete(nodeKey);
-      this.setState({ nodeAboutToAppear: cloneState });
-    } else {
-      this.setState({
-        nodeAboutToAppear: nodeAboutToAppear.add(nodeKey),
-      });
-    }
-  }
-
   produceNewBlockInfo(operation, payload) {
     const { blockInfo } = this.state;
     switch (operation) {
@@ -135,6 +146,13 @@ export class LinkedList extends Component {
         const { index } = payload;
         return produce(blockInfo, draft => {
           draft[index].visible = false;
+        });
+      }
+
+      case 'reverseRemove': {
+        const { index } = payload;
+        return produce(blockInfo, draft => {
+          draft[index].visible = true;
         });
       }
 
@@ -152,8 +170,20 @@ export class LinkedList extends Component {
           // shift right every node in the right of the new node
           const shiftedNodes = draft
             .slice(index + 1)
-            .map(blockInfo => ({ ...blockInfo, x: blockInfo.x + 125 }));
+            .map(blockInfo => ({ ...blockInfo, x: blockInfo.x + 160 }));
           draft.splice(index + 1, shiftedNodes.length, ...shiftedNodes);
+        });
+      }
+
+      case 'reverseAdd': {
+        const { index, value } = payload;
+        return produce(blockInfo, draft => {
+          // shift left every node in the right of the removed node
+          const shiftedNodes = draft
+            .slice(index + 1)
+            .map(blockInfo => ({ ...blockInfo, x: blockInfo.x - 160 }));
+          draft.splice(index + 1, shiftedNodes.length, ...shiftedNodes);
+          draft.splice(index, 1);
         });
       }
 
@@ -164,8 +194,30 @@ export class LinkedList extends Component {
         });
       }
 
+      case 'reverseVisit': {
+        const { index } = payload;
+        return produce(blockInfo, draft => {
+          draft[index].visited = false;
+        });
+      }
+
       default:
         return blockInfo;
+    }
+  }
+
+  // nodeAboutToAppear is a list of node which already in the state
+  // but about to get animated to appear
+  addOrRemoveNodeAboutToAppear(nodeKey) {
+    const { nodeAboutToAppear } = this.state;
+    if (nodeAboutToAppear.has(nodeKey)) {
+      const cloneState = new Set(nodeAboutToAppear);
+      cloneState.delete(nodeKey);
+      this.setState({ nodeAboutToAppear: cloneState });
+    } else {
+      this.setState({
+        nodeAboutToAppear: nodeAboutToAppear.add(nodeKey),
+      });
     }
   }
 
@@ -237,6 +289,56 @@ export class LinkedList extends Component {
       }
     }
   }
+
+  // We will walk from currentStep to targetStep (backward)
+  handleBackwardStep(targetStep) {
+    const reverseHandler = {
+      addNode: this.reverseAddNode,
+      removeNode: this.reverseRemoveNode,
+      visitNode: this.reverseVisitNode,
+      focusNode: this.reverseFocusNode,
+    };
+    while (this.actionLogs.length) {
+      const stepToReverse = this.getLastStepToReverse();
+      if (!stepToReverse) return;
+      const { step, name, params } = stepToReverse;
+      if (step === targetStep) return;
+      const handler = reverseHandler[name];
+      handler && handler(...params);
+      this.actionLogs.pop();
+    }
+  }
+
+  getLastStepToReverse() {
+    const length = this.actionLogs.length;
+    return length ? this.actionLogs[length - 1] : null;
+  }
+
+  reverseAddNode = (value, nodeIndex) => {
+    const newBlockInfo = this.produceNewBlockInfo('reverseAdd', {
+      value,
+      index: nodeIndex,
+    });
+    this.setState({ blockInfo: newBlockInfo });
+  };
+
+  reverseRemoveNode = nodeIndex => {
+    const newBlockInfo = this.produceNewBlockInfo('reverseRemove', {
+      index: nodeIndex,
+    });
+    this.setState({ blockInfo: newBlockInfo });
+  };
+
+  reverseVisitNode = nodeIndex => {
+    const newBlockInfo = this.produceNewBlockInfo('reverseVisit', {
+      index: nodeIndex,
+    });
+    this.setState({ blockInfo: newBlockInfo });
+  };
+
+  reverseFocusNode = nodeBeforeFocus => {
+    this.setState({ currentFocusNode: nodeBeforeFocus });
+  };
 
   renderHeadPointer() {
     const firstBlock = this.findNextBlock(-1);
