@@ -1,0 +1,23 @@
+@import '../../styles/base.scss';
+
+.progress-control__wrapper {
+  @extend .il-fx;
+  @extend .shadow;
+  padding: 10px;
+  border: $border-style;
+  border-radius: $border-radius;
+
+  .progress-control__button {
+    @extend .has-transition;
+    @extend .fx-center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+
+    &:hover {
+      @extend .shadow;
+      background-color: $primary-color-5;
+      cursor: pointer;
+    }
+  }
+}

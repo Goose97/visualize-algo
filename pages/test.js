@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { pick } from 'lodash';
 
 import { LinkedList, CanvasContainer } from 'components';
 import { VisualAlgo } from 'layout';
@@ -27,9 +28,14 @@ const explanation = [
 
 const DEFAULT_DURATION = 1500;
 
-const animationDescription = [
+const stepDescription = [
   {
-    state: { currentNode: 0, codeLine: '2-3', explanationStep: 1 },
+    state: {
+      data: [1, 2, 3, 4, 5],
+      currentNode: 0,
+      codeLine: '2-3',
+      explanationStep: 1,
+    },
   },
   {
     state: { codeLine: 6, explanationStep: 2 },
@@ -61,32 +67,27 @@ export class Test extends Component {
   constructor(props) {
     super(props);
 
+    const initialState = pick(stepDescription[0].state, [
+      'data',
+      'currentNode',
+    ]);
+
     this.state = {
-      data: [1, 2, 3, 4, 5],
-      ...animationDescription[0].state,
+      ...initialState,
     };
     this.ref = React.createRef();
   }
 
-  consumeAnimationStep = () => {
-    const { currentStep } = this.state;
-    const nextStep = ~~currentStep + 1;
-    if (nextStep >= animationDescription.length) return;
-    const { state: stateInNextStep, duration } = animationDescription[nextStep];
-    stateInNextStep &&
-      this.setState({ ...stateInNextStep, currentStep: nextStep }, () => {
-        setTimeout(this.consumeAnimationStep, duration || DEFAULT_DURATION);
-      });
+  handleStepChange = stateInNewStep => {
+    const { data, currentNode } = stateInNewStep;
+    let changes = {};
+    if (data) changes.data = data;
+    if (currentNode) changes.currentNode = currentNode;
+    this.setState({ ...changes });
   };
 
-  componentDidMount() {
-    setTimeout(() => {
-      this.consumeAnimationStep();
-    }, 3000);
-  }
-
   render() {
-    const { data, currentNode, codeLine, explanationStep } = this.state;
+    const { data, currentNode } = this.state;
     const apiList = [
       { value: 'search', label: 'Search' },
       { value: 'insert', label: 'Insert' },
@@ -97,12 +98,12 @@ export class Test extends Component {
       <VisualAlgo
         code={code}
         explanation={explanation}
-        highlightLine={codeLine}
         apiList={apiList}
-        explanationStep={explanationStep}
+        stepDescription={stepDescription}
+        onStepChange={this.handleStepChange}
       >
         <CanvasContainer>
-          <LinkedList x={100} y={100} data={data} currentNode={currentNode} />
+          <LinkedList x={100} y={200} data={data} currentNode={currentNode} />
         </CanvasContainer>
       </VisualAlgo>
     );

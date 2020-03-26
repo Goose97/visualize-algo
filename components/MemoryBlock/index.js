@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import PointerLink from '../PointerLink';
+import { classNameHelper } from '../../utils';
 import './style.scss';
 
 const POINTER_HOLDER_WIDTH = 20;
@@ -93,13 +93,14 @@ export class MemoryBlock extends Component {
   produceClassName() {
     const { visible, visited, focus } = this.props;
     const { isHiding, isShowing } = this.state;
-    let baseClassName = 'memory-block__wrapper has-transition';
-    if (isHiding) baseClassName += ' disappearing';
-    if (isShowing) baseClassName += ' appearing';
-    if (!visible) baseClassName += ' invisible';
-    if (visited) baseClassName += ' visited';
-    if (focus) baseClassName += ' focus';
-    return baseClassName;
+    return classNameHelper({
+      base: 'memory-block__wrapper has-transition',
+      disappearing: isHiding,
+      appearing: isShowing,
+      invisible: !visible,
+      visited,
+      focus,
+    });
   }
 
   constructSeparateLinePath() {

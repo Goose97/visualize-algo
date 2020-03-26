@@ -11,21 +11,26 @@
     }
   }
 
+  &.visited {
+    .pointer-link__line {
+      fill: $disable-background;
+      opacity: 0.3;
+
+      &:not(.follow) {
+        opacity: 0;
+      }
+    }
+    .pointer-link__arrow {
+      fill: $disable-text-color;
+    }
+  }
+
   .pointer-link__arrow {
     fill: lighten($primary-text-color, 15%);
 
     &.follow {
       fill: $primary-color;
-    }
-  }
-
-  &.visited {
-    .pointer-link__line {
-      fill: $disable-background;
       opacity: 0.3;
-    }
-    .pointer-link__arrow {
-      fill: $disable-text-color;
     }
   }
 }

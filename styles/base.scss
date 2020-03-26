@@ -1,4 +1,4 @@
-@import "./color.scss";
+@import './color.scss';
 
 $border-radius: 8px;
 $transition-style: all 0.3s ease 0s;
@@ -126,16 +126,25 @@ $border-style: 1px solid #cfcfcf;
 
 .fx {
   display: flex;
+  &.fx-reverse {
+    flex-direction: row-reverse;
+  }
 }
 
 .fx-row {
   display: flex;
   flex-direction: row;
+  &.fx-reverse {
+    flex-direction: row-reverse;
+  }
 }
 
 .fx-col {
   display: flex;
   flex-direction: column;
+  &.fx-reverse {
+    flex-direction: column-reverse;
+  }
 }
 
 .fx-center {
@@ -170,6 +179,10 @@ $border-style: 1px solid #cfcfcf;
 
 .il-bl {
   display: inline-block;
+}
+
+.il-fx {
+  display: inline-flex;
 }
 
 .shadow {
