@@ -124,7 +124,7 @@ export class MemoryBlock extends Component {
           className='memory-block__block'
         ></rect>
         <path
-          d={this.constructSeparateLinePath()}
+          // d={this.constructSeparateLinePath()}
           className='memory-block__separate-line'
         />
         <text

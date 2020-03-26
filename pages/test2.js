@@ -15,18 +15,68 @@ const code = `search(value) {
     return index;
   } `;
 const codeline = 1;
+const explanation = [
+  'Khởi tạo giá trị node hiện tại là head của linked list và giá trị index bằng 0',
+  'So sánh giá trị của node hiện tại với giá trị đang tìm kiếm',
+  'Nếu khớp thì trả về giá trị index',
+  'Nếu không thì đặt node tiếp theo (node.next) là node hiện tại và tăng index lên 1',
+  'Lặp lại bước 2',
+];
+const animationDescription = [
+  {
+    state: { currentNode: 0, codeLine: '2-3', explanationStep: 1 },
+  },
+  {
+    state: { codeLine: 6, explanationStep: 2 },
+  },
+  {
+    state: { currentNode: 1, codeLine: '7-8', explanationStep: 4 },
+  },
+  {
+    state: { explanationStep: 5 },
+  },
+  {
+    state: { codeLine: 6, explanationStep: 2 },
+  },
+  {
+    state: { currentNode: 2, codeLine: '7-8', explanationStep: 4 },
+  },
+  {
+    state: { explanationStep: 5 },
+  },
+  {
+    state: { codeLine: 6, explanationStep: 2 },
+  },
+  {
+    state: { explanationStep: 3 },
+  },
+];
 
 class Test2 extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      data: [1, 2, 3, 4, 5],
+      ...animationDescription[0].state,
+    };
+    this.ref = React.createRef();
   }
 
   render() {
+    const { data, explanationStep } = this.state;
     return (
-      <VisualAlgo code={code} highlightline={codeline}>
-        <CanvasContainer height={800}>
-          <Array></Array>
+      <VisualAlgo 
+        code={code} 
+        highlightline={codeline}
+        explanation={explanation}
+        explanationStep={explanationStep}
+      >
+        <CanvasContainer>
+          <Array
+            x={100}
+            y={100}
+            data={data}
+          />
         </CanvasContainer>
       </VisualAlgo>
     );
