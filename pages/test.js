@@ -68,7 +68,7 @@ const stepDescription = [
     state: { currentNode: 1, data: [1, 2, 4, 5] },
   },
   {
-    state: { currentNode: 2 },
+    state: { currentNode: 1, data: [1, 2, 3, 4, 5] },
   },
 ];
 

@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import produce from 'immer';
 
 import { MemoryBlock, PointerLink } from 'components';
+import transformData from 'components/DataTransformer';
+import HeadPointer from './HeadPointer';
+import withReverseStep from 'hocs/withReverseStep';
 
 export class LinkedList extends Component {
   constructor(props) {
@@ -17,14 +20,9 @@ export class LinkedList extends Component {
     this.actionLogs = [];
   }
 
-  saveActionToLogs(actionName, params) {
-    const { currentStep } = this.props;
-    const action = {
-      name: actionName,
-      params,
-      step: currentStep,
-    };
-    this.actionLogs.push(action);
+  pushReverseAction(actionName, params) {
+    const { currentStep, saveReverseLogs } = this.props;
+    saveReverseLogs(actionName, params, currentStep);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -71,7 +69,7 @@ export class LinkedList extends Component {
 
   initiateMemoryBlockInfo() {
     return this.data.map((value, index) => ({
-      ...this.caculateblockInfo(index),
+      ...this.caculateBlockCoordinate(index),
       value,
       visible: true,
       visited: false,
@@ -79,20 +77,20 @@ export class LinkedList extends Component {
     }));
   }
 
-  caculateblockInfo(blockIndex) {
+  caculateBlockCoordinate(blockIndex) {
     const { x: baseX, y: baseY } = this.props;
     return { x: baseX + blockIndex * (2 * LINKED_LIST_BLOCK_WIDTH), y: baseY };
   }
 
   focusNode(nodeIndex) {
     const { currentFocusNode } = this.state;
-    this.saveActionToLogs('focusNode', [currentFocusNode]);
+    this.pushReverseAction('reverseFocusNode', [currentFocusNode]);
     this.setState({ currentFocusNode: nodeIndex });
   }
 
   visitNode(nodeIndex) {
     const { currentFocusNode } = this.state;
-    this.saveActionToLogs('visitNode', [currentFocusNode]);
+    this.pushReverseAction('reverseVisitNode', [currentFocusNode]);
     this.followLinkToNode(nodeIndex);
   }
 
@@ -116,17 +114,22 @@ export class LinkedList extends Component {
   };
 
   removeNode(nodeIndex) {
-    this.saveActionToLogs('removeNode', [nodeIndex]);
+    this.pushReverseAction('reverseRemoveNode', [nodeIndex]);
     this.setState({
       blockInfo: this.produceNewBlockInfo('remove', { index: nodeIndex }),
     });
   }
 
   addNode(value, nodeIndex) {
-    this.saveActionToLogs('addNode', [value, nodeIndex]);
-    const newBlockInfo = this.produceNewBlockInfo('add', {
+    this.pushReverseAction('reverseAddNode', [value, nodeIndex]);
+    const newNodeData = {
+      ...this.caculateBlockCoordinate(nodeIndex),
       value,
       index: nodeIndex,
+      key: this.key++,
+    };
+    const newBlockInfo = this.produceNewBlockInfo('add', {
+      nodeData: newNodeData,
     });
     const newNodeKey = newBlockInfo[nodeIndex].key;
     this.setState({
@@ -141,69 +144,7 @@ export class LinkedList extends Component {
 
   produceNewBlockInfo(operation, payload) {
     const { blockInfo } = this.state;
-    switch (operation) {
-      case 'remove': {
-        const { index } = payload;
-        return produce(blockInfo, draft => {
-          draft[index].visible = false;
-        });
-      }
-
-      case 'reverseRemove': {
-        const { index } = payload;
-        return produce(blockInfo, draft => {
-          draft[index].visible = true;
-        });
-      }
-
-      case 'add': {
-        const { index, value } = payload;
-        const newNodeInfo = {
-          ...this.caculateblockInfo(index),
-          value,
-          key: this.key++,
-          visible: false,
-          visited: false,
-        };
-        return produce(blockInfo, draft => {
-          draft.splice(index, 0, newNodeInfo);
-          // shift right every node in the right of the new node
-          const shiftedNodes = draft
-            .slice(index + 1)
-            .map(blockInfo => ({ ...blockInfo, x: blockInfo.x + 160 }));
-          draft.splice(index + 1, shiftedNodes.length, ...shiftedNodes);
-        });
-      }
-
-      case 'reverseAdd': {
-        const { index, value } = payload;
-        return produce(blockInfo, draft => {
-          // shift left every node in the right of the removed node
-          const shiftedNodes = draft
-            .slice(index + 1)
-            .map(blockInfo => ({ ...blockInfo, x: blockInfo.x - 160 }));
-          draft.splice(index + 1, shiftedNodes.length, ...shiftedNodes);
-          draft.splice(index, 1);
-        });
-      }
-
-      case 'visit': {
-        const { index } = payload;
-        return produce(blockInfo, draft => {
-          draft[index].visited = true;
-        });
-      }
-
-      case 'reverseVisit': {
-        const { index } = payload;
-        return produce(blockInfo, draft => {
-          draft[index].visited = false;
-        });
-      }
-
-      default:
-        return blockInfo;
-    }
+    return transformData('linkedList', blockInfo, operation, payload);
   }
 
   // nodeAboutToAppear is a list of node which already in the state
@@ -292,26 +233,8 @@ export class LinkedList extends Component {
 
   // We will walk from currentStep to targetStep (backward)
   handleBackwardStep(targetStep) {
-    const reverseHandler = {
-      addNode: this.reverseAddNode,
-      removeNode: this.reverseRemoveNode,
-      visitNode: this.reverseVisitNode,
-      focusNode: this.reverseFocusNode,
-    };
-    while (this.actionLogs.length) {
-      const stepToReverse = this.getLastStepToReverse();
-      if (!stepToReverse) return;
-      const { step, name, params } = stepToReverse;
-      if (step === targetStep) return;
-      const handler = reverseHandler[name];
-      handler && handler(...params);
-      this.actionLogs.pop();
-    }
-  }
-
-  getLastStepToReverse() {
-    const length = this.actionLogs.length;
-    return length ? this.actionLogs[length - 1] : null;
+    const { reverseToStep } = this.props;
+    reverseToStep(targetStep);
   }
 
   reverseAddNode = (value, nodeIndex) => {
@@ -340,42 +263,6 @@ export class LinkedList extends Component {
     this.setState({ currentFocusNode: nodeBeforeFocus });
   };
 
-  renderHeadPointer() {
-    const firstBlock = this.findNextBlock(-1);
-    if (firstBlock) {
-      const { x, y } = firstBlock;
-      const start = {
-        x: x + LINKED_LIST_BLOCK_WIDTH / 2,
-        y: y + LINKED_LIST_BLOCK_HEIGHT * 3,
-      };
-      const finish = {
-        x: x + LINKED_LIST_BLOCK_WIDTH / 2,
-        y: y + LINKED_LIST_BLOCK_HEIGHT,
-      };
-
-      return (
-        <g>
-          <text
-            x={x + LINKED_LIST_BLOCK_WIDTH / 2}
-            y={y + LINKED_LIST_BLOCK_HEIGHT * 3}
-            dominantBaseline='middle'
-            textAnchor='middle'
-          >
-            HEAD
-          </text>
-          <path
-            d={`M ${start.x} ${start.y - 15} L ${finish.x} ${finish.y + 10}`}
-            className='default-stroke'
-          />
-          <path
-            d={`M ${finish.x} ${finish.y + 15} l -5 2 l 5 -12 l 5 12 l -5 -2`}
-            className='default-stroke'
-          />
-        </g>
-      );
-    } else return null;
-  }
-
   render() {
     const { blockInfo, currentFocusNode } = this.state;
     const listMemoryBlock = blockInfo.map(blockInfo => (
@@ -392,7 +279,7 @@ export class LinkedList extends Component {
 
     return (
       <g>
-        {this.renderHeadPointer()}
+        <HeadPointer headBlock={this.findNextBlock(-1)} />
         {listMemoryBlock}
         {listPointerLink}
       </g>
@@ -400,4 +287,4 @@ export class LinkedList extends Component {
   }
 }
 
-export default LinkedList;
+export default withReverseStep(LinkedList);
