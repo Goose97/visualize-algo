@@ -10,12 +10,12 @@ export class LinkedList extends Component {
   constructor(props) {
     super(props);
 
-    this.data = props.data;
+    this.data = props.currentState.data;
     this.key = this.data.length;
     this.state = {
       blockInfo: this.initiateMemoryBlockInfo(),
       nodeAboutToAppear: new Set([]),
-      currentFocusNode: props.currentNode,
+      currentFocusNode: props.currentState.currentNode,
     };
     this.actionLogs = [];
   }
@@ -37,18 +37,63 @@ export class LinkedList extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { data, currentNode, currentStep } = this.props;
-    // Handle backward step
-    // Abort any other changes handler below
-    if (currentStep < prevProps.currentStep) {
-      return this.handleBackwardStep(currentStep);
+    const {
+      currentState: { data, currentNode },
+      currentStep,
+      reverseToStep,
+    } = this.props;
+
+    switch (this.getProgressDirection(prevProps.currentStep)) {
+      case 'forward':
+        // Handle data changes
+        this.detectChangeInDataAndReact(prevProps.currentState.data, data);
+
+        // Handle currentNode changes
+        if (currentNode !== prevProps.currentState.currentNode) {
+          this.visitNode(currentNode);
+        }
+
+        break;
+
+      case 'backward':
+        reverseToStep(currentStep);
+        break;
+
+      case 'fastForward':
+        console.log('fastForward');
+        this.handleFastForward();
+        break;
+
+      case 'fastBackward':
+        console.log('fastBackward');
+        break;
     }
+  }
+
+  getProgressDirection(previousStep) {
+    const { totalStep, currentStep } = this.props;
+    if (currentStep === previousStep) return 'stay';
+    if (currentStep > previousStep) {
+      if (currentStep - previousStep === 1) return 'forward';
+      else if (currentStep === totalStep) return 'fastForward';
+    } else {
+      if (previousStep - currentStep === 1) return 'backward';
+      else if (currentStep === 0) return 'fastBackward';
+    }
+  }
+
+  handleMoveForward(prevProps) {
+    const {
+      currentState: { data, currentNode },
+      currentStep,
+      reverseToStep,
+    } = this.props;
 
     // Handle data changes
-    this.detectChangeInDataAndReact(prevProps.data, data);
+    this.detectChangeInDataAndReact(prevProps.currentState.data, data);
 
     // Handle currentNode changes
-    if (currentNode !== prevProps.currentNode) {
+    if (currentNode !== prevProps.currentState.currentNode) {
       this.visitNode(currentNode);
     }
   }
@@ -231,12 +276,6 @@ export class LinkedList extends Component {
     }
   }
 
-  // We will walk from currentStep to targetStep (backward)
-  handleBackwardStep(targetStep) {
-    const { reverseToStep } = this.props;
-    reverseToStep(targetStep);
-  }
-
   reverseAddNode = (value, nodeIndex) => {
     const newBlockInfo = this.produceNewBlockInfo('reverseAdd', {
       value,
@@ -262,6 +301,10 @@ export class LinkedList extends Component {
   reverseFocusNode = nodeBeforeFocus => {
     this.setState({ currentFocusNode: nodeBeforeFocus });
   };
+
+  handleFastForward() {
+    const { fullState, currentStep } = this.props;
+  }
 
   render() {
     const { blockInfo, currentFocusNode } = this.state;

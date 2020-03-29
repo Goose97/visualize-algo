@@ -69,9 +69,11 @@ export class VisualAlgo extends Component {
     this.setState({ currentStep: currentStep - 1 });
   };
 
-  goToFinalStep() {
-    console.log('123', 123);
-  }
+  goToFinalStep = () => {
+    const { stepDescription } = this.props;
+    const finalStep = stepDescription.length - 1;
+    this.setState({ currentStep: finalStep });
+  };
 
   caculateProgress() {
     const { currentStep } = this.state;

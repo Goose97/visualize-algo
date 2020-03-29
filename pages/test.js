@@ -3,6 +3,7 @@ import { pick } from 'lodash';
 
 import { LinkedList, CanvasContainer } from 'components';
 import { VisualAlgo } from 'layout';
+import { produceFullState } from 'utils';
 import 'styles/main.scss';
 
 const code = `search(value) {
@@ -68,7 +69,10 @@ const stepDescription = [
     state: { currentNode: 1, data: [1, 2, 4, 5] },
   },
   {
-    state: { currentNode: 1, data: [1, 2, 3, 4, 5] },
+    state: { data: [1, 2, 3, 4, 5] },
+  },
+  {
+    state: { data: [1, 2, 3, 4, 5, 7] },
   },
 ];
 
@@ -103,6 +107,10 @@ export class Test extends Component {
       { value: 'insert', label: 'Insert' },
       { value: 'delete', label: 'Delete' },
     ];
+    const fullState = produceFullState(
+      stepDescription.map(({ state }) => state),
+      ['data', 'currentNode'],
+    );
 
     return (
       <VisualAlgo
@@ -116,9 +124,13 @@ export class Test extends Component {
           <LinkedList
             x={100}
             y={200}
-            data={data}
-            currentNode={currentNode}
             currentStep={currentStep}
+            totalStep={stepDescription.length - 1}
+            currentState={{
+              data,
+              currentNode,
+            }}
+            fullState={fullState}
           />
         </CanvasContainer>
       </VisualAlgo>
