@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import produce from 'immer';
+import { isEqual } from 'lodash';
 
 import { MemoryBlock, PointerLink } from 'components';
 import transformData from 'components/DataTransformer';
@@ -45,14 +46,9 @@ export class LinkedList extends Component {
 
     switch (this.getProgressDirection(prevProps.currentStep)) {
       case 'forward':
-        // Handle data changes
-        this.detectChangeInDataAndReact(prevProps.currentState.data, data);
-
-        // Handle currentNode changes
-        if (currentNode !== prevProps.currentState.currentNode) {
-          this.visitNode(currentNode);
-        }
-
+        this.getActionAndParams(prevProps).forEach(({ name, params }) =>
+          this[name](...params),
+        );
         break;
 
       case 'backward':
@@ -82,19 +78,82 @@ export class LinkedList extends Component {
     }
   }
 
-  handleMoveForward(prevProps) {
+  getActionAndParams(prevProps) {
     const {
-      currentState: { data, currentNode },
-      currentStep,
-      reverseToStep,
+      currentState: { data: newData, currentNode },
     } = this.props;
+    let actions = [];
 
-    // Handle data changes
-    this.detectChangeInDataAndReact(prevProps.currentState.data, data);
+    // Detect changes in data
+    const oldData = prevProps.currentState.data;
+    for (let i = 0; i < newData.length; i++) {
+      let action;
+      if (oldData[i] !== newData[i]) {
+        // there is some changes
+        if (oldData.length < newData.length) {
+          action = {
+            name: 'addNode',
+            params: [newData[i], i],
+          };
+        } else if (oldData.length > newData.length) {
+          action = {
+            name: 'removeNode',
+            params: [i],
+          };
+        }
 
-    // Handle currentNode changes
+        actions.push(action);
+        break;
+      }
+    }
+
+    // Detect changes in currentNode
     if (currentNode !== prevProps.currentState.currentNode) {
-      this.visitNode(currentNode);
+      actions.push({
+        name: 'visitNode',
+        params: [currentNode],
+      });
+    }
+
+    return actions;
+  }
+
+  produceNewState(currentState, action) {
+    const { blockInfo } = currentState;
+    const { name, params } = action;
+    switch (name) {
+      case 'addNode': {
+        const [value, nodeIndex] = params;
+        const newNodeData = {
+          ...this.caculateBlockCoordinate(nodeIndex),
+          value,
+          index: nodeIndex,
+          key: this.key++,
+        };
+        const newBlockInfo = transformData('linkedList', blockInfo, 'add', {
+          nodeData: newNodeData,
+        });
+        return {
+          blockInfo: newBlockInfo,
+        };
+      }
+
+      case 'removeNode': {
+        const [index] = params;
+        const newBlockInfo = transformData('linkedList', blockInfo, 'remove', {
+          index,
+        });
+        return {
+          blockInfo: newBlockInfo,
+        };
+      }
+
+      case 'visitNode': {
+        const [index] = params;
+        return {
+          currentFocusNode: index,
+        };
+      }
     }
   }
 
@@ -159,31 +218,29 @@ export class LinkedList extends Component {
   };
 
   removeNode(nodeIndex) {
-    this.pushReverseAction('reverseRemoveNode', [nodeIndex]);
-    this.setState({
-      blockInfo: this.produceNewBlockInfo('remove', { index: nodeIndex }),
+    const params = [nodeIndex];
+    this.pushReverseAction('reverseRemoveNode', params);
+    const newState = this.produceNewState(this.state, {
+      name: 'removeNode',
+      params,
     });
+    this.setState(newState);
   }
 
   addNode(value, nodeIndex) {
-    this.pushReverseAction('reverseAddNode', [value, nodeIndex]);
-    const newNodeData = {
-      ...this.caculateBlockCoordinate(nodeIndex),
-      value,
-      index: nodeIndex,
-      key: this.key++,
-    };
-    const newBlockInfo = this.produceNewBlockInfo('add', {
-      nodeData: newNodeData,
+    const params = [value, nodeIndex];
+    this.pushReverseAction('reverseAddNode', params);
+    const newState = this.produceNewState(this.state, {
+      name: 'addNode',
+      params,
     });
-    const newNodeKey = newBlockInfo[nodeIndex].key;
-    this.setState({
-      blockInfo: newBlockInfo,
-    });
-    this.addOrRemoveNodeAboutToAppear(newNodeKey);
+    this.setState(newState);
+
+    const keyOfNewNode = this.key - 1;
+    this.addOrRemoveNodeAboutToAppear(keyOfNewNode);
     setTimeout(() => {
       this.toggleNodeVisibility(nodeIndex);
-      this.addOrRemoveNodeAboutToAppear(newNodeKey);
+      this.addOrRemoveNodeAboutToAppear(keyOfNewNode);
     }, 800);
   }
 
