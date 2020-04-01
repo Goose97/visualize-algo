@@ -8,14 +8,16 @@ class Array extends Component {
 
     this.data = props.data;
     this.key = this.data.length;
+    this.structureType = 'array';
+     
     this.state = {
-			blockInfo: this.initiateMemoryBlockInfo()
+      blockInfo: this.initiateMemoryBlockInfo(),
 		};
   }
 
   caculateblockInfo(blockIndex) {
     const { x: baseX, y: baseY } = this.props;
-    return { x: baseX + blockIndex * (2 * LINKED_LIST_BLOCK_WIDTH), y: baseY };
+    return { x: baseX + blockIndex * (ARRAY_BLOCK_WIDTH), y: baseY };
   }
 
   initiateMemoryBlockInfo() {
@@ -28,18 +30,24 @@ class Array extends Component {
 		}));
   }
 
+
   render() {
-		const { blockInfo } = this.state;
+    const { blockInfo } = this.state;
+    const focusNode = this.props.focusNode;
+    console.log("arr", focusNode);
     const listMemoryBlock = blockInfo.map(blockInfo => (
 			<MemoryBlock
 				{...blockInfo}
 				name={blockInfo.key}
-				focus={blockInfo.key === 1}
+        focus={blockInfo.key === 1}
+        structureType={this.structureType}
+        focus={focusNode.includes(blockInfo.key)}
 			/>
 		))
     return (
       <Fragment>
         {listMemoryBlock}
+        
       </Fragment>
     );
   }

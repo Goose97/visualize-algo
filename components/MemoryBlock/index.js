@@ -3,13 +3,14 @@ import React, { Component } from 'react';
 import { classNameHelper } from '../../utils';
 import './style.scss';
 
-const POINTER_HOLDER_WIDTH = 20;
+let POINTER_HOLDER_WIDTH = 20;
 
 export class MemoryBlock extends Component {
   constructor(props) {
     super(props);
     this.state = {
       transformList: [],
+      focusNode: props.focusNode,
     };
     this.original = {
       x: props.x,
@@ -110,7 +111,25 @@ export class MemoryBlock extends Component {
   }
 
   render() {
-    const { value } = this.props;
+    const { value, structureType } = this.props;
+    let block_width = 0;
+    let block_height = 0;
+    switch(structureType){
+      case 'array':
+        block_width = ARRAY_BLOCK_WIDTH;
+        block_height = ARRAY_BLOCK_HEIGHT;
+        POINTER_HOLDER_WIDTH = 0;
+        break;
+      case 'list':
+        block_width = LINKED_LIST_BLOCK_WIDTH;
+        block_height = LINKED_LIST_BLOCK_HEIGHT;
+        break;
+      case 'tree':
+        block_width = ARRAY_BLOCK_WIDTH;
+        block_height = ARRAY_BLOCK_HEIGHT;
+        POINTER_HOLDER_WIDTH = 0;
+        break;
+    }
 
     return (
       <g
@@ -120,8 +139,8 @@ export class MemoryBlock extends Component {
         <rect
           x={this.original.x}
           y={this.original.y}
-          width={LINKED_LIST_BLOCK_WIDTH}
-          height={LINKED_LIST_BLOCK_HEIGHT}
+          width={block_width}
+          height={block_height}
           className='memory-block__block'
         ></rect>
         <path
@@ -131,15 +150,24 @@ export class MemoryBlock extends Component {
         <text
           x={
             this.original.x +
-            (LINKED_LIST_BLOCK_WIDTH - POINTER_HOLDER_WIDTH) / 2
+            (block_width - POINTER_HOLDER_WIDTH) / 2
           }
-          y={this.original.y + LINKED_LIST_BLOCK_HEIGHT / 2}
+          y={this.original.y + block_height / 2}
           dominantBaseline='middle'
           textAnchor='middle'
           className='memory-block__text'
         >
           {value}
         </text>
+        <animate 
+            xlinkHref="memory-block__block"
+            attributeName="cx"
+            from="50"
+            to="450" 
+            dur="1s"
+            begin="click"
+            fill="freeze" />
+          
       </g>
     );
   }
