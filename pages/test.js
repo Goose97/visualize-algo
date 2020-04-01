@@ -66,13 +66,13 @@ const DEFAULT_DURATION = 1500;
 
 const stepDescription = [
   {
-    state: { currentNode: 1, data: [1, 2, 4, 5] },
+    state: { currentNode: 1, data: [1, 2, 3, 4, 5, 7] },
   },
   {
-    state: { data: [1, 4, 5] },
+    state: { currentNode: 2 },
   },
   {
-    state: { data: [1, 2, 3, 4, 5, 7] },
+    state: { data: [1, 2, 7, 3, 4, 5] },
   },
 ];
 

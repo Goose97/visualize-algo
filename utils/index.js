@@ -1,3 +1,5 @@
+import { pick } from 'lodash';
+
 export const classNameHelper = object => {
   let baseClassName = object.base || '';
   Object.entries(object).forEach(([key, value]) => {
@@ -9,29 +11,12 @@ export const classNameHelper = object => {
 };
 
 export const produceFullState = (stepDescription, stateProperties) => {
-  const produceFullStateForOneProperty = (fullStep, property) => {
-    let result = [];
-    for (let i = 0; i < fullStep.length; i++) {
-      if (i === 0) {
-        const initialState = fullStep[i][property];
-        result.push(initialState);
-      } else {
-        const stateOfLastStep = result[result.length - 1];
-        let stateOfThisStep = fullStep[i][property];
-        stateOfThisStep =
-          stateOfThisStep === undefined ? stateOfLastStep : stateOfThisStep;
-        result.push(stateOfThisStep);
-      }
-    }
+  let result = [];
+  for (let i = 0; i < stepDescription.length; i++) {
+    let currentState = pick(stepDescription[i], stateProperties);
+    if (i !== 0) currentState = Object.assign({}, result[i - 1], currentState);
+    result.push(currentState);
+  }
 
-    return result;
-  };
-
-  return stateProperties.reduce(
-    (result, property) => ({
-      ...result,
-      [property]: produceFullStateForOneProperty(stepDescription, property),
-    }),
-    {},
-  );
+  return result;
 };

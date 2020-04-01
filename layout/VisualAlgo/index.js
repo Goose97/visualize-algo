@@ -75,6 +75,10 @@ export class VisualAlgo extends Component {
     this.setState({ currentStep: finalStep });
   };
 
+  goToFirstStep = () => {
+    this.setState({ currentStep: 0 });
+  };
+
   caculateProgress() {
     const { currentStep } = this.state;
     const { stepDescription } = this.props;
@@ -98,6 +102,7 @@ export class VisualAlgo extends Component {
           onForward={this.increaseCurrentStep}
           onFastForward={this.goToFinalStep}
           onBackward={this.decreaseCurrentStep}
+          onFastBackward={this.goToFirstStep}
           onPlay={() => this.handleTogglePlay(true)}
           onStop={() => this.handleTogglePlay(false)}
           isPlaying={autoPlay}

@@ -11,14 +11,26 @@ export class LinkedList extends Component {
   constructor(props) {
     super(props);
 
-    this.data = props.currentState.data;
-    this.key = this.data.length;
+    this.initialBlockInfo = this.initiateMemoryBlockInfo(props);
     this.state = {
-      blockInfo: this.initiateMemoryBlockInfo(),
+      blockInfo: this.initialBlockInfo,
       nodeAboutToAppear: new Set([]),
-      currentFocusNode: props.currentState.currentNode,
+      isVisible: true,
     };
+    this.key = this.state.blockInfo.length;
     this.actionLogs = [];
+  }
+
+  initiateMemoryBlockInfo(props) {
+    const { data, currentNode } = props.currentState;
+    return data.map((value, index) => ({
+      ...this.caculateBlockCoordinate(index),
+      value,
+      visible: true,
+      visited: false,
+      key: index,
+      focus: index === currentNode,
+    }));
   }
 
   pushReverseAction(actionName, params) {
@@ -26,29 +38,15 @@ export class LinkedList extends Component {
     saveReverseLogs(actionName, params, currentStep);
   }
 
-  static getDerivedStateFromProps(props, state) {
-    const { currentFocusNode } = state;
-    if (
-      'currentFocusNode' in props &&
-      props.currentFocusNode !== currentFocusNode
-    )
-      return { currentFocusNode: props.currentFocusNode };
-
-    return {};
-  }
-
   componentDidUpdate(prevProps) {
-    const {
-      currentState: { data, currentNode },
-      currentStep,
-      reverseToStep,
-    } = this.props;
+    const { currentStep, reverseToStep, currentState } = this.props;
 
     switch (this.getProgressDirection(prevProps.currentStep)) {
       case 'forward':
-        this.getActionAndParams(prevProps).forEach(({ name, params }) =>
-          this[name](...params),
-        );
+        this.getActionAndParams(
+          prevProps.currentState,
+          currentState,
+        ).forEach(({ name, params }) => this[name](...params));
         break;
 
       case 'backward':
@@ -62,6 +60,7 @@ export class LinkedList extends Component {
 
       case 'fastBackward':
         console.log('fastBackward');
+        this.handleFastBackward();
         break;
     }
   }
@@ -78,15 +77,13 @@ export class LinkedList extends Component {
     }
   }
 
-  getActionAndParams(prevProps) {
-    const {
-      currentState: { data: newData, currentNode },
-    } = this.props;
+  getActionAndParams(previousState, currentState) {
+    const { data: newData, currentNode } = currentState;
     let actions = [];
 
     // Detect changes in data
-    const oldData = prevProps.currentState.data;
-    for (let i = 0; i < newData.length; i++) {
+    const oldData = previousState.data;
+    for (let i = 0; i < Math.max(newData.length, oldData.length); i++) {
       let action;
       if (oldData[i] !== newData[i]) {
         // there is some changes
@@ -102,13 +99,13 @@ export class LinkedList extends Component {
           };
         }
 
-        actions.push(action);
+        action && actions.push(action);
         break;
       }
     }
 
     // Detect changes in currentNode
-    if (currentNode !== prevProps.currentState.currentNode) {
+    if (currentNode !== previousState.currentNode) {
       actions.push({
         name: 'visitNode',
         params: [currentNode],
@@ -118,8 +115,9 @@ export class LinkedList extends Component {
     return actions;
   }
 
-  produceNewState(currentState, action) {
-    const { blockInfo } = currentState;
+  // blockInfo is the single source of truth - all the data structure state is hold
+  // in this object
+  produceNewState(action, blockInfo = this.state.blockInfo) {
     const { name, params } = action;
     switch (name) {
       case 'addNode': {
@@ -129,13 +127,26 @@ export class LinkedList extends Component {
           value,
           index: nodeIndex,
           key: this.key++,
+          visible: true,
         };
         const newBlockInfo = transformData('linkedList', blockInfo, 'add', {
           nodeData: newNodeData,
         });
-        return {
-          blockInfo: newBlockInfo,
-        };
+        return newBlockInfo;
+      }
+
+      case 'reverseAddNode': {
+        const [value, index] = params;
+        const newBlockInfo = transformData(
+          'linkedList',
+          blockInfo,
+          'reverseAdd',
+          {
+            index,
+            value,
+          },
+        );
+        return newBlockInfo;
       }
 
       case 'removeNode': {
@@ -143,42 +154,39 @@ export class LinkedList extends Component {
         const newBlockInfo = transformData('linkedList', blockInfo, 'remove', {
           index,
         });
-        return {
-          blockInfo: newBlockInfo,
-        };
+        return newBlockInfo;
+      }
+
+      case 'reverseRemoveNode': {
+        const [index] = params;
+        const newBlockInfo = transformData(
+          'linkedList',
+          blockInfo,
+          'reverseRemove',
+          {
+            index,
+          },
+        );
+        return newBlockInfo;
       }
 
       case 'visitNode': {
+        return {};
+      }
+
+      case 'focusNode': {
         const [index] = params;
-        return {
-          currentFocusNode: index,
-        };
+        const newBlockInfo = transformData('linkedList', blockInfo, 'focus', {
+          index,
+        });
+        return newBlockInfo;
       }
     }
   }
 
-  detectChangeInDataAndReact(oldData, newData) {
-    for (let i = 0; i < newData.length; i++) {
-      if (oldData[i] !== newData[i]) {
-        // there is some changes
-        if (oldData.length < newData.length) {
-          this.addNode(newData[i], i);
-        } else if (oldData.length > newData.length) {
-          this.removeNode(i);
-        }
-        break;
-      }
-    }
-  }
-
-  initiateMemoryBlockInfo() {
-    return this.data.map((value, index) => ({
-      ...this.caculateBlockCoordinate(index),
-      value,
-      visible: true,
-      visited: false,
-      key: index,
-    }));
+  getCurrentFocusNode() {
+    const { blockInfo } = this.state;
+    return blockInfo.findIndex(({ focus }) => !!focus);
   }
 
   caculateBlockCoordinate(blockIndex) {
@@ -187,13 +195,19 @@ export class LinkedList extends Component {
   }
 
   focusNode(nodeIndex) {
-    const { currentFocusNode } = this.state;
+    const currentFocusNode = this.getCurrentFocusNode();
     this.pushReverseAction('reverseFocusNode', [currentFocusNode]);
-    this.setState({ currentFocusNode: nodeIndex });
+
+    const action = {
+      name: 'focusNode',
+      params: [nodeIndex],
+    };
+    const newBlockInfo = this.produceNewState(action);
+    this.setState({ blockInfo: newBlockInfo });
   }
 
   visitNode(nodeIndex) {
-    const { currentFocusNode } = this.state;
+    const currentFocusNode = this.getCurrentFocusNode();
     this.pushReverseAction('reverseVisitNode', [currentFocusNode]);
     this.followLinkToNode(nodeIndex);
   }
@@ -220,21 +234,31 @@ export class LinkedList extends Component {
   removeNode(nodeIndex) {
     const params = [nodeIndex];
     this.pushReverseAction('reverseRemoveNode', params);
-    const newState = this.produceNewState(this.state, {
+
+    const action = {
       name: 'removeNode',
       params,
-    });
-    this.setState(newState);
+    };
+    const newBlockInfo = this.produceNewState(action);
+    this.setState({ blockInfo: newBlockInfo });
   }
 
   addNode(value, nodeIndex) {
     const params = [value, nodeIndex];
     this.pushReverseAction('reverseAddNode', params);
-    const newState = this.produceNewState(this.state, {
+
+    const action = {
       name: 'addNode',
       params,
+    };
+    let newBlockInfo = this.produceNewState(action);
+    // We have to turn off visibility for the new node
+    // For the purpose of doing animation
+    newBlockInfo = produce(newBlockInfo, draft => {
+      const nodeTurnVisibleFalse = { ...draft[nodeIndex], visible: false };
+      draft[nodeIndex] = nodeTurnVisibleFalse;
     });
-    this.setState(newState);
+    this.setState({ blockInfo: newBlockInfo });
 
     const keyOfNewNode = this.key - 1;
     this.addOrRemoveNodeAboutToAppear(keyOfNewNode);
@@ -334,20 +358,24 @@ export class LinkedList extends Component {
   }
 
   reverseAddNode = (value, nodeIndex) => {
-    const newBlockInfo = this.produceNewBlockInfo('reverseAdd', {
-      value,
-      index: nodeIndex,
-    });
+    const action = {
+      name: 'reverseAddNode',
+      params: [value, nodeIndex],
+    };
+    const newBlockInfo = this.produceNewState(action);
     this.setState({ blockInfo: newBlockInfo });
   };
 
   reverseRemoveNode = nodeIndex => {
-    const newBlockInfo = this.produceNewBlockInfo('reverseRemove', {
-      index: nodeIndex,
-    });
+    const action = {
+      name: 'reverseRemoveNode',
+      params: [nodeIndex],
+    };
+    const newBlockInfo = this.produceNewState(action);
     this.setState({ blockInfo: newBlockInfo });
   };
 
+  // TODO need change
   reverseVisitNode = nodeIndex => {
     const newBlockInfo = this.produceNewBlockInfo('reverseVisit', {
       index: nodeIndex,
@@ -355,21 +383,48 @@ export class LinkedList extends Component {
     this.setState({ blockInfo: newBlockInfo });
   };
 
+  // TODO need change
   reverseFocusNode = nodeBeforeFocus => {
     this.setState({ currentFocusNode: nodeBeforeFocus });
   };
 
   handleFastForward() {
-    const { fullState, currentStep } = this.props;
+    const { blockInfo } = this.state;
+    const { fullState } = this.props;
+    let prevState = fullState[0];
+    let actions = [];
+    for (let i = 1; i < fullState.length; i++) {
+      const currentState = fullState[i];
+      const action = this.getActionAndParams(prevState, currentState);
+      actions.push(...action);
+      prevState = currentState;
+    }
+
+    let finalBlockInfo = blockInfo;
+    for (let i = 0; i < actions.length; i++) {
+      finalBlockInfo = this.produceNewState(actions[i], finalBlockInfo);
+    }
+
+    this.updateWithoutAnimation();
+  }
+
+  handleFastBackward() {
+    this.updateWithoutAnimation(this.initialBlockInfo);
+  }
+
+  updateWithoutAnimation(newBlockInfo) {
+    this.setState({ blockInfo: newBlockInfo, isVisible: false }, () =>
+      this.setState({ isVisible: true }),
+    );
   }
 
   render() {
-    const { blockInfo, currentFocusNode } = this.state;
+    const { blockInfo, isVisible } = this.state;
     const listMemoryBlock = blockInfo.map(blockInfo => (
       <MemoryBlock
         {...blockInfo}
         name={blockInfo.key}
-        focus={currentFocusNode === blockInfo.key}
+        focus={!!blockInfo.focus}
       />
     ));
 
@@ -378,11 +433,13 @@ export class LinkedList extends Component {
       .map((_, index) => this.renderPointerLinkForMemoryBlock(index));
 
     return (
-      <g>
-        <HeadPointer headBlock={this.findNextBlock(-1)} />
-        {listMemoryBlock}
-        {listPointerLink}
-      </g>
+      isVisible && (
+        <g>
+          <HeadPointer headBlock={this.findNextBlock(-1)} />
+          {listMemoryBlock}
+          {listPointerLink}
+        </g>
+      )
     );
   }
 }
