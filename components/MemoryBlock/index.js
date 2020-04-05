@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { classNameHelper } from '../../utils';
+import { classNameHelper } from 'utils';
 import './style.scss';
 
 const POINTER_HOLDER_WIDTH = 20;

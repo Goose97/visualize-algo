@@ -1,0 +1,19 @@
+@import '../../styles/base.scss';
+
+.visual-algo-input__wrapper {
+  @extend .has-transition;
+  @extend .pl-2;
+  min-height: 38px;
+  border: none;
+  border-radius: $border-radius;
+  box-shadow: 0 0 0 1px inset $border-color;
+
+  &:hover {
+    box-shadow: 0 0 0 1px inset $primary-color;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px inset $primary-color;
+  }
+}

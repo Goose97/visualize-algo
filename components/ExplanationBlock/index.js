@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { classNameHelper } from '../../utils';
+import { classNameHelper } from 'utils';
 import './style.scss';
 
 export class ExplanationBlock extends Component {
@@ -17,7 +17,7 @@ export class ExplanationBlock extends Component {
     return (
       <div className='explanation-block__wrapper'>
         <ul className='explanation-block__list-step'>
-          {explanation.map((item, index) => (
+          {(explanation || []).map((item, index) => (
             <li className={this.produceClassNameForStep(index + 1)} key={index}>
               {index + 1}. {item}
             </li>

@@ -1,6 +1,6 @@
 @import './color.scss';
 
-$border-radius: 8px;
+$border-radius: 4px;
 $transition-style: all 0.3s ease 0s;
 $border-style: 1px solid #cfcfcf;
 
@@ -153,6 +153,10 @@ $border-style: 1px solid #cfcfcf;
   align-items: center;
 }
 
+.fx-between {
+  justify-content: space-between;
+}
+
 .f-big-1 {
   font-size: 24px;
 }
@@ -220,4 +224,10 @@ $border-style: 1px solid #cfcfcf;
 
 .invisible {
   opacity: 0;
+}
+
+.clickable {
+  &:hover {
+    cursor: pointer;
+  }
 }

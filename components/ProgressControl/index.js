@@ -9,11 +9,11 @@ import {
   faFastForward,
 } from '@fortawesome/free-solid-svg-icons';
 
-import { classNameHelper } from '../../utils';
+import { classNameHelper } from 'utils';
 import './style.scss';
 
 export class ProgressControl extends Component {
-  handleControlProgress = index => () => {
+  handleControlProgress = (index) => () => {
     const handlerFunction = this.getHandlerFunction(index);
     handlerFunction && handlerFunction();
   };
@@ -62,7 +62,7 @@ export class ProgressControl extends Component {
     });
   }
 
-  isButtonDisabled = buttonIndex => {
+  isButtonDisabled = (buttonIndex) => {
     const { progress } = this.props;
     switch (buttonIndex) {
       case 0:
@@ -77,9 +77,11 @@ export class ProgressControl extends Component {
   };
 
   render() {
-    const { isPlaying } = this.props;
+    const { isPlaying, className } = this.props;
+    let baseClassName = 'progress-control__wrapper';
+    if (className) baseClassName += ` ${className}`;
     return (
-      <div className='progress-control__wrapper'>
+      <div className={baseClassName}>
         <div className='progress-control__button-wrapper'>
           {[
             faFastBackward,

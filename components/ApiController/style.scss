@@ -1,0 +1,7 @@
+@import '../../styles/base.scss';
+
+.api-control__wrapper {
+  & > i {
+    color: $primary-color;
+  }
+}

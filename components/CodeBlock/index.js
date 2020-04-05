@@ -13,9 +13,13 @@ export class CodeBlock extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { highlightLine } = this.props;
+    const { highlightLine, code } = this.props;
     if (prevProps.highlightLine !== highlightLine) {
       LineHighlight.reset();
+    }
+
+    if (prevProps.code !== code) {
+      Prism.highlightAll();
     }
   }
 

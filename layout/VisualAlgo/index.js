@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
-import Select from 'react-select';
+import { pick } from 'lodash';
 
-import { CodeBlock, ExplanationBlock, ProgressControl } from '../../components';
+import {
+  CodeBlock,
+  ExplanationBlock,
+  ProgressControl,
+  ApiController,
+} from '../../components';
 import './style.scss';
 
 const DEFAULT_WAIT = 1500;
@@ -10,8 +15,12 @@ export class VisualAlgo extends Component {
   constructor(props) {
     super(props);
 
-    const initialState = props.stepDescription[0].state;
-    this.state = { ...initialState, currentStep: 0, autoPlay: false };
+    this.state = {
+      data: [1, 2, 3],
+      currentNode: 0,
+      currentStep: 0,
+      autoPlay: false,
+    };
   }
 
   componentDidUpdate(_prevProps, prevState) {
@@ -91,23 +100,23 @@ export class VisualAlgo extends Component {
     const { codeLine, explanationStep, autoPlay } = this.state;
 
     const visualizationScreen = (
-      <div className='fx-3 visual-container shadow'>
-        {/* <Select
-          options={apiList}
-          className='api-select'
-          classNamePrefix='api-select'
-          placeholder='Chọn API'
-        /> */}
-        <ProgressControl
-          onForward={this.increaseCurrentStep}
-          onFastForward={this.goToFinalStep}
-          onBackward={this.decreaseCurrentStep}
-          onFastBackward={this.goToFirstStep}
-          onPlay={() => this.handleTogglePlay(true)}
-          onStop={() => this.handleTogglePlay(false)}
-          isPlaying={autoPlay}
-          progress={this.caculateProgress()}
-        />
+      <div className='fx-3 fx-col visual-container shadow'>
+        <div className='fx fx-between px-8 py-2'>
+          <ApiController
+            onStart={() => this.handleTogglePlay(true)}
+            {...pick(this.props, ['apiList', 'parameterInput', 'onApiChange'])}
+          />
+          <ProgressControl
+            onForward={this.increaseCurrentStep}
+            onFastForward={this.goToFinalStep}
+            onBackward={this.decreaseCurrentStep}
+            onFastBackward={this.goToFirstStep}
+            onPlay={() => this.handleTogglePlay(true)}
+            onStop={() => this.handleTogglePlay(false)}
+            isPlaying={autoPlay}
+            progress={this.caculateProgress()}
+          />
+        </div>
         {children}
       </div>
     );

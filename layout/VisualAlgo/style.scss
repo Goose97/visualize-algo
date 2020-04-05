@@ -3,18 +3,24 @@
 .visual-container {
   border: $border-style;
   background-color: $background-light;
+
+  .api-select {
+    height: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 150px;
+  
+    .api-select__menu {
+      z-index: 20;
+    }
+  }
+  
 }
 
 .code-container {
   background-color: #272822;
-}
 
-.api-select {
-  margin-top: 10px;
-  margin-left: 20px;
-  width: 150px;
-
-  .api-select__menu {
-    z-index: 20;
+  & > pre {
+    @extend .pl-12;
   }
 }

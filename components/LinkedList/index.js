@@ -5,7 +5,7 @@ import { isEqual } from 'lodash';
 import { MemoryBlock, PointerLink } from 'components';
 import transformData from 'components/DataTransformer';
 import HeadPointer from './HeadPointer';
-import withReverseStep from 'hocs/withReverseStep';
+import { withReverseStep } from 'hocs';
 
 export class LinkedList extends Component {
   constructor(props) {
@@ -217,7 +217,7 @@ export class LinkedList extends Component {
     this.setState({ nodeAboutToVisit: blockInfo[nodeIndex].key });
   }
 
-  handleFinishFollowLink = startBlockIndex => () => {
+  handleFinishFollowLink = (startBlockIndex) => () => {
     // mark the node who hold the link as visited
     const destinationNodeIndex = this.findNextBlock(startBlockIndex, true);
     this.setState({
@@ -254,7 +254,7 @@ export class LinkedList extends Component {
     let newBlockInfo = this.produceNewState(action);
     // We have to turn off visibility for the new node
     // For the purpose of doing animation
-    newBlockInfo = produce(newBlockInfo, draft => {
+    newBlockInfo = produce(newBlockInfo, (draft) => {
       const nodeTurnVisibleFalse = { ...draft[nodeIndex], visible: false };
       draft[nodeIndex] = nodeTurnVisibleFalse;
     });
@@ -290,7 +290,7 @@ export class LinkedList extends Component {
 
   toggleNodeVisibility(nodeIndex) {
     const { blockInfo } = this.state;
-    const newPosition = produce(blockInfo, draft => {
+    const newPosition = produce(blockInfo, (draft) => {
       const oldVisibleState = draft[nodeIndex].visible;
       draft[nodeIndex].visible = !oldVisibleState;
     });
@@ -366,7 +366,7 @@ export class LinkedList extends Component {
     this.setState({ blockInfo: newBlockInfo });
   };
 
-  reverseRemoveNode = nodeIndex => {
+  reverseRemoveNode = (nodeIndex) => {
     const action = {
       name: 'reverseRemoveNode',
       params: [nodeIndex],
@@ -376,7 +376,7 @@ export class LinkedList extends Component {
   };
 
   // TODO need change
-  reverseVisitNode = nodeIndex => {
+  reverseVisitNode = (nodeIndex) => {
     const newBlockInfo = this.produceNewBlockInfo('reverseVisit', {
       index: nodeIndex,
     });
@@ -384,7 +384,7 @@ export class LinkedList extends Component {
   };
 
   // TODO need change
-  reverseFocusNode = nodeBeforeFocus => {
+  reverseFocusNode = (nodeBeforeFocus) => {
     this.setState({ currentFocusNode: nodeBeforeFocus });
   };
 
@@ -420,7 +420,7 @@ export class LinkedList extends Component {
 
   render() {
     const { blockInfo, isVisible } = this.state;
-    const listMemoryBlock = blockInfo.map(blockInfo => (
+    const listMemoryBlock = blockInfo.map((blockInfo) => (
       <MemoryBlock
         {...blockInfo}
         name={blockInfo.key}
