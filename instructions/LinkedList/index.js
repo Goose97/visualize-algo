@@ -40,20 +40,21 @@ const searchInstruction = (data, { value }) => {
     } else {
       current = current.next;
       index++;
-      instructions.push({
-        currentNode: index,
-        ..._getExplanationAndCodeLine('moveNext'),
-      });
+      if (current) {
+        instructions.push({
+          currentNode: index,
+          ..._getExplanationAndCodeLine('moveNext'),
+        });
 
-      instructions.push({
-        ..._getExplanationAndCodeLine('repeat'),
-      });
+        instructions.push({
+          ..._getExplanationAndCodeLine('repeat'),
+        });
+      }
     }
   } while (current && !found);
 
   if (!found) {
     instructions.push({
-      currentNode: index,
       ..._getExplanationAndCodeLine('outOfLoop'),
     });
   }

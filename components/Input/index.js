@@ -13,7 +13,11 @@ export class Input extends Component {
   render() {
     const { className } = this.props;
     return (
-      <input className={className} onChange={this.handleInputValueChange} />
+      <input
+        {...this.props}
+        className={className}
+        onChange={this.handleInputValueChange}
+      />
     );
   }
 }

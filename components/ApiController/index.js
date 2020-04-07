@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 
-import { Input, Button } from 'components';
 import './style.scss';
 
 const arrowRightIcon = (
@@ -22,7 +21,12 @@ const arrowRightIcon = (
 
 export class ApiController extends Component {
   render() {
-    const { apiList, parameterInput, onApiChange, onStart } = this.props;
+    const {
+      apiList,
+      parameterInput,
+      onApiChange,
+      actionButton,
+    } = this.props;
 
     return (
       <div className='api-control__wrapper fx-center fx-gap-5'>
@@ -38,9 +42,7 @@ export class ApiController extends Component {
             {arrowRightIcon}
             {parameterInput}
             {arrowRightIcon}
-            <Button type='primary' onClick={onStart}>
-              Bắt đầu
-            </Button>
+            {actionButton}
           </>
         )}
       </div>

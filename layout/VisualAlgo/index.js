@@ -23,11 +23,31 @@ export class VisualAlgo extends Component {
     };
   }
 
-  componentDidUpdate(_prevProps, prevState) {
-    const { currentStep } = this.state;
+  static getDerivedStateFromProps(props, state) {
+    if ('autoPlay' in props && props.autoPlay !== state.autoPlay) {
+      return {
+        autoPlay: props.autoPlay,
+      };
+    }
+
+    return null;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { currentStep, autoPlay } = this.state;
+    // const { autoPlay } = this.props;
     if (currentStep !== prevState.currentStep) {
       this.handleStepChange(currentStep);
     }
+
+    if (autoPlay !== prevState.autoPlay) {
+      this.handleAutoPlayChange(autoPlay);
+    }
+  }
+
+  handleAutoPlayChange(newAutoPlayState) {
+    if (newAutoPlayState) this.increaseCurrentStep();
+    else this.cancelNextStepConsumation();
   }
 
   handleStepChange(newStep) {
@@ -56,11 +76,13 @@ export class VisualAlgo extends Component {
   }
 
   handleTogglePlay(isPlaying) {
-    if (isPlaying) {
-      this.setState({ autoPlay: true }, () => this.increaseCurrentStep());
+    const { onPlayingChange } = this.props;
+    // Nếu được component cha kiểm soát thì không lưu vào state mà gọi lên
+    // handler do cha truyền xuống
+    if ('autoPlay' in this.props) {
+      onPlayingChange && onPlayingChange(isPlaying);
     } else {
-      this.cancelNextStepConsumation();
-      this.setState({ autoPlay: false });
+      this.setState({ autoPlay: isPlaying });
     }
   }
 
@@ -103,8 +125,12 @@ export class VisualAlgo extends Component {
       <div className='fx-3 fx-col visual-container shadow'>
         <div className='fx fx-between px-8 py-2'>
           <ApiController
-            onStart={() => this.handleTogglePlay(true)}
-            {...pick(this.props, ['apiList', 'parameterInput', 'onApiChange'])}
+            {...pick(this.props, [
+              'apiList',
+              'parameterInput',
+              'onApiChange',
+              'actionButton',
+            ])}
           />
           <ProgressControl
             onForward={this.increaseCurrentStep}
@@ -113,7 +139,7 @@ export class VisualAlgo extends Component {
             onFastBackward={this.goToFirstStep}
             onPlay={() => this.handleTogglePlay(true)}
             onStop={() => this.handleTogglePlay(false)}
-            isPlaying={autoPlay}
+            autoPlay={autoPlay}
             progress={this.caculateProgress()}
           />
         </div>
