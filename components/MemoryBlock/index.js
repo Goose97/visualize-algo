@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { classNameHelper } from '../../utils';
-import './style.scss';
+import { classNameHelper } from "../../utils";
+import "./style.scss";
 
 let POINTER_HOLDER_WIDTH = 20;
 
@@ -19,22 +19,22 @@ export class MemoryBlock extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    ['x', 'y', 'visible'].forEach(attribute =>
+    ["x", "y", "visible"].forEach((attribute) =>
       this.checkDiffAndReact(
         prevProps[attribute],
         this.props[attribute],
-        attribute,
-      ),
+        attribute
+      )
     );
   }
 
   checkDiffAndReact(prev, now, attribute) {
     switch (attribute) {
-      case 'visible':
+      case "visible":
         return this.checkVisibleAndReact(prev, now);
-      case 'x':
+      case "x":
         return this.checkXAxisAndReact(prev, now);
-      case 'y':
+      case "y":
         return this.checkYAxisAndReact(prev, now);
     }
   }
@@ -60,22 +60,22 @@ export class MemoryBlock extends Component {
   }
 
   checkXAxisAndReact(prev, now) {
-    if (prev !== now) this.move(now - prev, 'horizontal');
+    if (prev !== now) this.move(now - prev, "horizontal");
   }
 
   checkYAxisAndReact(prev, now) {
-    if (prev !== now) this.move(now - prev, 'vertical');
+    if (prev !== now) this.move(now - prev, "vertical");
   }
 
   move(amount, direction) {
     const { transformList } = this.state;
     let transformText;
     switch (direction) {
-      case 'vertical':
+      case "vertical":
         transformText = `translate(0 ${amount})`;
         break;
 
-      case 'horizontal':
+      case "horizontal":
         transformText = `translate(${amount} 0)`;
         break;
     }
@@ -84,7 +84,7 @@ export class MemoryBlock extends Component {
 
   produceTransformString() {
     const { transformList } = this.state;
-    return transformList.join(' ');
+    return transformList.join(" ");
   }
 
   resetTransform() {
@@ -95,7 +95,7 @@ export class MemoryBlock extends Component {
     const { visible, visited, focus } = this.props;
     const { isHiding, isShowing } = this.state;
     return classNameHelper({
-      base: 'memory-block__wrapper has-transition',
+      base: "memory-block__wrapper has-transition",
       disappearing: isHiding,
       appearing: isShowing,
       invisible: !visible,
@@ -105,32 +105,41 @@ export class MemoryBlock extends Component {
   }
 
   constructSeparateLinePath() {
-    return `M ${this.original.x +
-      LINKED_LIST_BLOCK_WIDTH -
-      POINTER_HOLDER_WIDTH} ${this.original.y} v${LINKED_LIST_BLOCK_HEIGHT}`;
+    return `M ${
+      this.original.x + LINKED_LIST_BLOCK_WIDTH - POINTER_HOLDER_WIDTH
+    } ${this.original.y} v${LINKED_LIST_BLOCK_HEIGHT}`;
+  }
+
+  constructSwapPath(text_x, text_y) {
+    return `M ${text_x} ${text_y}
+    v -90 h -90 v -${ARRAY_BLOCK_HEIGHT}`;
   }
 
   render() {
     const { value, structureType } = this.props;
     let block_width = 0;
     let block_height = 0;
-    switch(structureType){
-      case 'array':
+    switch (structureType) {
+      case "array":
         block_width = ARRAY_BLOCK_WIDTH;
         block_height = ARRAY_BLOCK_HEIGHT;
         POINTER_HOLDER_WIDTH = 0;
         break;
-      case 'list':
+      case "list":
         block_width = LINKED_LIST_BLOCK_WIDTH;
         block_height = LINKED_LIST_BLOCK_HEIGHT;
         break;
-      case 'tree':
+      case "tree":
         block_width = ARRAY_BLOCK_WIDTH;
         block_height = ARRAY_BLOCK_HEIGHT;
         POINTER_HOLDER_WIDTH = 0;
         break;
     }
 
+    const text_x = this.original.x + (block_width - POINTER_HOLDER_WIDTH) / 2;
+    const text_y = this.original.y + block_height / 2;
+    console.log("text_x: ", text_x);
+    console.log("text_y: ", text_y);
     return (
       <g
         transform={this.produceTransformString()}
@@ -141,33 +150,32 @@ export class MemoryBlock extends Component {
           y={this.original.y}
           width={block_width}
           height={block_height}
-          className='memory-block__block'
+          className="memory-block__block"
         ></rect>
         <path
           // d={this.constructSeparateLinePath()}
-          className='memory-block__separate-line'
+          className="memory-block__separate-line"
         />
         <text
-          x={
-            this.original.x +
-            (block_width - POINTER_HOLDER_WIDTH) / 2
-          }
-          y={this.original.y + block_height / 2}
-          dominantBaseline='middle'
-          textAnchor='middle'
-          className='memory-block__text'
+          x={text_x}
+          y={text_y}
+          dominantBaseline="middle"
+          textAnchor="middle"
+          className="memory-block__text"
         >
+          <animateMotion dur="3s" fill="freeze">
+            <mpath xlinkHref="#swap_path"></mpath>
+          </animateMotion>
           {value}
         </text>
-        <animate 
-            xlinkHref="memory-block__block"
-            attributeName="cx"
-            from="50"
-            to="450" 
-            dur="1s"
-            begin="click"
-            fill="freeze" />
-          
+        <path
+          // d="M 2 2 V -90 H 90 V 2 "
+          d={this.constructSwapPath(text_x, text_y)}
+          // stroke="#529fd9"
+          // stroke-width="2"
+          id="swap_path"
+          fill="none"
+        ></path>
       </g>
     );
   }

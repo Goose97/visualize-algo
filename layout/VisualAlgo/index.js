@@ -78,13 +78,13 @@ export class VisualAlgo extends Component {
           classNamePrefix='api-select'
           placeholder='Chọn API'
         /> */}
-        <ProgressControl
+        {/* <ProgressControl
           onForward={this.increaseCurrentStep}
           onBackward={this.decreaseCurrentStep}
           onPlay={() => this.handleTogglePlay(true)}
           onStop={() => this.handleTogglePlay(false)}
           isPlaying={autoPlay}
-        />
+        /> */}
         {children}
       </div>
     );

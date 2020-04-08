@@ -16,11 +16,11 @@ const code = `search(value) {
   } `;
 const codeline = 1;
 const explanation = [
-  'Khởi tạo giá trị node hiện tại là head của linked list và giá trị index bằng 0',
-  'So sánh giá trị của node hiện tại với giá trị đang tìm kiếm',
-  'Nếu khớp thì trả về giá trị index',
-  'Nếu không thì đặt node tiếp theo (node.next) là node hiện tại và tăng index lên 1',
-  'Lặp lại bước 2',
+  "Khởi tạo giá trị node hiện tại là head của linked list và giá trị index bằng 0",
+  "So sánh giá trị của node hiện tại với giá trị đang tìm kiếm",
+  "Nếu khớp thì trả về giá trị index",
+  "Nếu không thì đặt node tiếp theo (node.next) là node hiện tại và tăng index lên 1",
+  "Lặp lại bước 2",
 ];
 
 const stepDescription = [
@@ -28,7 +28,7 @@ const stepDescription = [
     state: {
       data: [1, 2, 3, 4, 5],
       currentNode: 0,
-      codeLine: '2-3',
+      codeLine: "2-3",
       explanationStep: 1,
     },
   },
@@ -36,7 +36,7 @@ const stepDescription = [
     state: { codeLine: 6, explanationStep: 2 },
   },
   {
-    state: { currentNode: 1, codeLine: '7-8', explanationStep: 4 },
+    state: { currentNode: 1, codeLine: "7-8", explanationStep: 4 },
   },
   {
     state: { explanationStep: 5 },
@@ -45,7 +45,7 @@ const stepDescription = [
     state: { codeLine: 6, explanationStep: 2 },
   },
   {
-    state: { currentNode: 2, codeLine: '7-8', explanationStep: 4 },
+    state: { currentNode: 2, codeLine: "7-8", explanationStep: 4 },
   },
   {
     state: { explanationStep: 5 },
@@ -60,13 +60,13 @@ const stepDescription = [
 
 const animationDescription = [
   {
-    state: { currentNode: 0, codeLine: '2-3', explanationStep: 1 },
+    state: { currentNode: 0, codeLine: "2-3", explanationStep: 1 },
   },
   {
     state: { codeLine: 6, explanationStep: 2 },
   },
   {
-    state: { currentNode: 1, codeLine: '7-8', explanationStep: 4 },
+    state: { currentNode: 1, codeLine: "7-8", explanationStep: 4 },
   },
   {
     state: { explanationStep: 5 },
@@ -75,7 +75,7 @@ const animationDescription = [
     state: { codeLine: 6, explanationStep: 2 },
   },
   {
-    state: { currentNode: 2, codeLine: '7-8', explanationStep: 4 },
+    state: { currentNode: 2, codeLine: "7-8", explanationStep: 4 },
   },
   {
     state: { explanationStep: 5 },
@@ -99,48 +99,39 @@ class Test2 extends Component {
     this.ref = React.createRef();
   }
 
-  focusNode(nodeIndexs){
+  focusNode(nodeIndexs) {
     this.setState({ focusNode: nodeIndexs });
   }
 
   swap = (nodeIndexs) => () => {
     this.focusNode(nodeIndexs);
-    
-  }
+  };
 
   render() {
     const { data, explanationStep, focusNode } = this.state;
-    console.log(this.state.focusNode)
+    console.log(this.state.focusNode);
     return (
-      <VisualAlgo 
-        code={code} 
+      <VisualAlgo
+        code={code}
         highlightline={codeline}
         explanation={explanation}
         stepDescription={stepDescription}
         explanationStep={explanationStep}
       >
-        <button onClick={this.swap([1,2])}>SWAP</button>
+        {/* <button onClick={this.swap([1, 2])}>SWAP</button> */}
         <CanvasContainer>
-          <Array
-            x={100}
-            y={100}
-            data={data}
-            focusNode={focusNode}
-          />
+          <Array x={100} y={100} data={data} focusNode={focusNode} />
         </CanvasContainer>
-        <svg width="500" height="100">
-  <circle id="orange-circle" r="30" cx="50" cy="50" fill="orange" />
-  
-  <animate 
-           xlinkHref="#orange-circle"
-           attributeName="cx"
-           from="50"
-           to="450" 
-           dur="1s"
-           begin="click"
-           fill="freeze" />
-</svg>
-
+        {/* <svg
+          xmlns="http://www.w3.org/2000/svg"
+          version="1.1"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
+          width="360"
+          height="120"
+          viewBox="-10 10 360 55"
+        > */}
+          
+        {/* </svg> */}
       </VisualAlgo>
     );
   }
