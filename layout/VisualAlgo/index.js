@@ -16,9 +16,9 @@ export class VisualAlgo extends Component {
     super(props);
 
     this.state = {
-      data: [1, 2, 3],
-      currentNode: 0,
-      currentStep: 0,
+      // data: [1, 2, 3],
+      // currentNode: 0,
+      currentStep: -1,
       autoPlay: false,
     };
   }

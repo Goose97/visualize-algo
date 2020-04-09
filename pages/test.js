@@ -22,7 +22,6 @@ export class Test extends Component {
     super(props);
 
     this.state = {
-      currentStep: 0,
       parameters: {},
       stepDescription: [],
       autoPlay: false,
@@ -34,7 +33,7 @@ export class Test extends Component {
     const { data, currentNode } = stateInNewStep;
     let changes = {};
     if (data) changes.data = data;
-    if (currentNode) changes.currentNode = currentNode;
+    if (currentNode !== undefined) changes.currentNode = currentNode;
     this.setState({ ...changes, currentStep: stepIndex });
   };
 

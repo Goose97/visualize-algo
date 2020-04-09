@@ -66,7 +66,8 @@ const transformLinkedListData = (currentData, operation, payload) => {
       });
     }
 
-    case 'focus': {
+    case 'focus':
+    case 'reverseFocus': {
       const { index } = payload;
       return produce(currentData, draft => {
         draft.forEach(item => (item.focus = false));

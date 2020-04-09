@@ -26,7 +26,7 @@ export class ProgressControl extends Component {
       onStop,
       onForward,
       onFastForward,
-      isPlaying,
+      autoPlay,
     } = this.props;
     switch (buttonIndex) {
       case 0:
@@ -34,7 +34,7 @@ export class ProgressControl extends Component {
       case 1:
         return onBackward;
       case 2:
-        return isPlaying ? onStop : onPlay;
+        return autoPlay ? onStop : onPlay;
       case 3:
         return onForward;
       case 4:
@@ -77,7 +77,7 @@ export class ProgressControl extends Component {
   };
 
   render() {
-    const { isPlaying, className } = this.props;
+    const { autoPlay, className } = this.props;
     let baseClassName = 'progress-control__wrapper';
     if (className) baseClassName += ` ${className}`;
     return (
@@ -86,7 +86,7 @@ export class ProgressControl extends Component {
           {[
             faFastBackward,
             faStepBackward,
-            isPlaying ? faStop : faPlay,
+            autoPlay ? faStop : faPlay,
             faStepForward,
             faFastForward,
           ].map((icon, index) => (

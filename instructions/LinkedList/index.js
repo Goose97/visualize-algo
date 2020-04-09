@@ -97,7 +97,7 @@ const searchCode = `search(value) {
     index++;
   } while (current)
 
-  return index;
+  return null;
 }`;
 
 export const code = {

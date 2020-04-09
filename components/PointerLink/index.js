@@ -32,6 +32,7 @@ export class PointerLink extends Component {
       visible,
       finish: { x, y },
       following,
+      visited,
     } = this.props;
     if (visible !== prevProps.visible) {
       if (!visible) this.hide();
@@ -50,6 +51,10 @@ export class PointerLink extends Component {
     // Change in following state
     if (following && !prevProps.following) {
       this.follow();
+    }
+
+    if (!visited && prevProps.visited) {
+      this.setState({ isFollowing: false });
     }
   }
 
@@ -168,9 +173,9 @@ export class PointerLink extends Component {
       start: { x: xStart, y: yStart },
       finish: { x: xFinish, y: yFinish },
     } = this.original;
-    return `M ${xStart} ${yStart} L ${xFinish -
-      10 -
-      offsetFromFinish} ${yFinish}`;
+    return `M ${xStart} ${yStart} L ${
+      xFinish - 10 - offsetFromFinish
+    } ${yFinish}`;
   }
 
   render() {
@@ -200,9 +205,9 @@ export class PointerLink extends Component {
           />
         )}
         <path
-          d={`M ${xFinish -
-            10 -
-            offsetFromFinish} ${yStart} l -2 5 l 12 -5 l -12 -5 l 2 5`}
+          d={`M ${
+            xFinish - 10 - offsetFromFinish
+          } ${yStart} l -2 5 l 12 -5 l -12 -5 l 2 5`}
           className={this.produceArrowClassName()}
         />
       </g>

@@ -20,3 +20,7 @@ export const produceFullState = (stepDescription, stateProperties) => {
 
   return result;
 };
+
+export function promiseSetState(newState) {
+  return new Promise(resolve => this.setState(newState, () => resolve()));
+}

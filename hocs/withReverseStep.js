@@ -20,16 +20,17 @@ const withReverseStep = Component => {
       this.forceUpdate();
     };
 
-    reverseToStep = targetStep => {
+    reverseToStep = async targetStep => {
       while (this.reverseLogs.length) {
         const stepToReverse = this.getLastStepToReverse();
         if (!stepToReverse) return;
 
         const { step, name, params } = stepToReverse;
-        if (step === targetStep) return;
+        if (targetStep >= step) return;
 
         const handler = this.getRef()[name];
-        handler && handler(...params);
+        const promise = handler && handler(...params);
+        await promise;
         this.reverseLogs.pop();
       }
     };
