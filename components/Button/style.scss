@@ -22,4 +22,16 @@
       background-color: darken($primary-color, 8%);
     }
   }
+
+  &.disabled {
+    background-color: $disable-background-1;
+    color: $disable-text-color;
+    &:hover, &:focus, &:active {
+      background-color: $disable-background-1;
+    }
+
+    &:hover {
+      cursor: not-allowed;
+    }
+  }
 }

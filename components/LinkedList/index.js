@@ -79,7 +79,7 @@ export class LinkedList extends Component {
     }
   }
 
-  getActionAndParams(previousState, currentState) {
+  getActionAndParams(previousState, currentState, noAnimation = false) {
     const { data: newData, currentNode } = currentState;
     let actions = [];
 
@@ -108,10 +108,17 @@ export class LinkedList extends Component {
 
     // Detect changes in currentNode
     if (currentNode !== previousState.currentNode) {
-      actions.push({
-        name: 'visitNode',
-        params: [currentNode],
-      });
+      if (noAnimation) {
+        actions.push({
+          name: 'focusNode',
+          params: [currentNode],
+        });
+      } else {
+        actions.push({
+          name: 'visitNode',
+          params: [currentNode],
+        });
+      }
     }
 
     return actions;
@@ -173,7 +180,7 @@ export class LinkedList extends Component {
       }
 
       case 'visitNode': {
-        return {};
+        return blockInfo;
       }
 
       case 'focusNode': {
@@ -407,7 +414,7 @@ export class LinkedList extends Component {
     let actions = [];
     for (let i = 1; i < fullState.length; i++) {
       const currentState = fullState[i];
-      const action = this.getActionAndParams(prevState, currentState);
+      const action = this.getActionAndParams(prevState, currentState, true);
       actions.push(...action);
       prevState = currentState;
     }
@@ -417,7 +424,7 @@ export class LinkedList extends Component {
       finalBlockInfo = this.produceNewState(actions[i], finalBlockInfo);
     }
 
-    this.updateWithoutAnimation();
+    this.updateWithoutAnimation(finalBlockInfo);
   }
 
   handleFastBackward() {

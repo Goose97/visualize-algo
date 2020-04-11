@@ -5,17 +5,27 @@ import './style.scss';
 
 export class Button extends Component {
   produceClassName() {
-    const { type } = this.props;
+    const { type, disabled } = this.props;
     return classNameHelper({
       base: 'visual-algo-button__wrapper',
       [type]: !!type,
+      disabled: !!disabled,
     });
   }
+
+  handleClick = () => {
+    const { onClick, disabled } = this.props;
+    onClick && !disabled && onClick();
+  };
 
   render() {
     const { children } = this.props;
     return (
-      <button {...this.props} className={this.produceClassName()}>
+      <button
+        {...this.props}
+        className={this.produceClassName()}
+        onClick={this.handleClick}
+      >
         {children}
       </button>
     );

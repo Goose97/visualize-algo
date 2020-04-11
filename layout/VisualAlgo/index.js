@@ -56,13 +56,13 @@ export class VisualAlgo extends Component {
     if (newStep >= stepDescription.length) return;
     const { state: stateInNewStep, duration } = stepDescription[newStep];
     if (stateInNewStep) {
-      this.setState(
-        { ...stateInNewStep },
-        () =>
-          autoPlay &&
-          this.caculateProgress() !== 100 &&
-          this.scheduleNextStepConsumation(duration),
-      );
+      this.setState({ ...stateInNewStep }, () => {
+        if (autoPlay) {
+          this.caculateProgress() !== 100
+            ? this.scheduleNextStepConsumation(duration)
+            : this.handleTogglePlay(false);
+        }
+      });
 
       onStepChange && onStepChange(stateInNewStep, newStep);
     }
@@ -104,10 +104,12 @@ export class VisualAlgo extends Component {
     const { stepDescription } = this.props;
     const finalStep = stepDescription.length - 1;
     this.setState({ currentStep: finalStep });
+    this.handleTogglePlay(false);
   };
 
   goToFirstStep = () => {
     this.setState({ currentStep: 0 });
+    this.handleTogglePlay(false);
   };
 
   caculateProgress() {

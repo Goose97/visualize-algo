@@ -71,7 +71,10 @@ export class Test extends Component {
   }
 
   renderActionButton() {
-    const { currentApi } = this.state;
+    const {
+      currentApi,
+      parameters: { value },
+    } = this.state;
     switch (currentApi) {
       case 'init':
         return (
@@ -81,7 +84,11 @@ export class Test extends Component {
         );
       default:
         return (
-          <Button type='primary' onClick={() => this.handlePlayingChange(true)}>
+          <Button
+            type='primary'
+            onClick={() => this.handlePlayingChange(true)}
+            disabled={value === undefined}
+          >
             Bắt đầu
           </Button>
         );
@@ -116,8 +123,16 @@ export class Test extends Component {
     } = this.state;
     // Phải làm thế này để buộc component linked list unmount
     // Linked list chỉ khởi tạo state của nó 1 lần trong constructor
-    if (value.length)
-      this.setState({ data: undefined }, () => this.setState({ data: value }));
+    let linkedListData;
+    if (value && value.length) linkedListData = value;
+    else
+      linkedListData = Array(5)
+        .fill(0)
+        .map(() => Math.round(Math.random() * 10));
+
+    this.setState({ data: undefined }, () =>
+      this.setState({ data: linkedListData }),
+    );
   };
 
   render() {
