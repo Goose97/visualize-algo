@@ -3,6 +3,7 @@ import { pick } from 'lodash';
 
 import { LinkedList, CanvasContainer } from 'components';
 import { VisualAlgo } from 'layout';
+import { produceFullState } from 'utils';
 import 'styles/main.scss';
 
 const code = `search(value) {
@@ -28,38 +29,50 @@ const explanation = [
 
 const DEFAULT_DURATION = 1500;
 
+// const stepDescription = [
+//   {
+//     state: {
+//       data: [1, 2, 3, 4, 5],
+//       currentNode: 0,
+//       codeLine: '2-3',
+//       explanationStep: 1,
+//     },
+//   },
+//   {
+//     state: { codeLine: 6, explanationStep: 2 },
+//   },
+//   {
+//     state: { currentNode: 1, codeLine: '7-8', explanationStep: 4 },
+//   },
+//   {
+//     state: { explanationStep: 5 },
+//   },
+//   {
+//     state: { codeLine: 6, explanationStep: 2 },
+//   },
+//   {
+//     state: { currentNode: 2, codeLine: '7-8', explanationStep: 4 },
+//   },
+//   {
+//     state: { explanationStep: 5 },
+//   },
+//   {
+//     state: { codeLine: 6, explanationStep: 2 },
+//   },
+//   {
+//     state: { explanationStep: 3 },
+//   },
+// ];
+
 const stepDescription = [
   {
-    state: {
-      data: [1, 2, 3, 4, 5],
-      currentNode: 0,
-      codeLine: '2-3',
-      explanationStep: 1,
-    },
+    state: { currentNode: 1, data: [1, 2, 3, 4, 5, 7] },
   },
   {
-    state: { codeLine: 6, explanationStep: 2 },
+    state: { currentNode: 2 },
   },
   {
-    state: { currentNode: 1, codeLine: '7-8', explanationStep: 4 },
-  },
-  {
-    state: { explanationStep: 5 },
-  },
-  {
-    state: { codeLine: 6, explanationStep: 2 },
-  },
-  {
-    state: { currentNode: 2, codeLine: '7-8', explanationStep: 4 },
-  },
-  {
-    state: { explanationStep: 5 },
-  },
-  {
-    state: { codeLine: 6, explanationStep: 2 },
-  },
-  {
-    state: { explanationStep: 3 },
+    state: { data: [1, 2, 7, 3, 4, 5] },
   },
 ];
 
@@ -74,25 +87,30 @@ export class Test extends Component {
 
     this.state = {
       ...initialState,
+      currentStep: 0,
     };
     this.ref = React.createRef();
   }
 
-  handleStepChange = stateInNewStep => {
+  handleStepChange = (stateInNewStep, stepIndex) => {
     const { data, currentNode } = stateInNewStep;
     let changes = {};
     if (data) changes.data = data;
     if (currentNode) changes.currentNode = currentNode;
-    this.setState({ ...changes });
+    this.setState({ ...changes, currentStep: stepIndex });
   };
 
   render() {
-    const { data, currentNode } = this.state;
+    const { data, currentNode, currentStep } = this.state;
     const apiList = [
       { value: 'search', label: 'Search' },
       { value: 'insert', label: 'Insert' },
       { value: 'delete', label: 'Delete' },
     ];
+    const fullState = produceFullState(
+      stepDescription.map(({ state }) => state),
+      ['data', 'currentNode'],
+    );
 
     return (
       <VisualAlgo
@@ -103,7 +121,17 @@ export class Test extends Component {
         onStepChange={this.handleStepChange}
       >
         <CanvasContainer>
-          <LinkedList x={100} y={200} data={data} currentNode={currentNode} />
+          <LinkedList
+            x={100}
+            y={200}
+            currentStep={currentStep}
+            totalStep={stepDescription.length - 1}
+            currentState={{
+              data,
+              currentNode,
+            }}
+            fullState={fullState}
+          />
         </CanvasContainer>
       </VisualAlgo>
     );

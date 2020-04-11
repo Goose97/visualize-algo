@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import { classNameHelper } from "../../utils";
+import withSwap from "hocs/withSwap";
 import "./style.scss";
 
 let POINTER_HOLDER_WIDTH = 20;
@@ -110,11 +111,6 @@ export class MemoryBlock extends Component {
     } ${this.original.y} v${LINKED_LIST_BLOCK_HEIGHT}`;
   }
 
-  constructSwapPath(text_x, text_y) {
-    return `M ${text_x} ${text_y}
-    v -90 h -90 v -${ARRAY_BLOCK_HEIGHT}`;
-  }
-
   render() {
     const { value, structureType } = this.props;
     let block_width = 0;
@@ -138,8 +134,6 @@ export class MemoryBlock extends Component {
 
     const text_x = this.original.x + (block_width - POINTER_HOLDER_WIDTH) / 2;
     const text_y = this.original.y + block_height / 2;
-    console.log("text_x: ", text_x);
-    console.log("text_y: ", text_y);
     return (
       <g
         transform={this.produceTransformString()}
@@ -163,22 +157,11 @@ export class MemoryBlock extends Component {
           textAnchor="middle"
           className="memory-block__text"
         >
-          <animateMotion dur="3s" fill="freeze">
-            <mpath xlinkHref="#swap_path"></mpath>
-          </animateMotion>
           {value}
         </text>
-        <path
-          // d="M 2 2 V -90 H 90 V 2 "
-          d={this.constructSwapPath(text_x, text_y)}
-          // stroke="#529fd9"
-          // stroke-width="2"
-          id="swap_path"
-          fill="none"
-        ></path>
       </g>
     );
   }
 }
 
-export default MemoryBlock;
+export default withSwap(MemoryBlock);

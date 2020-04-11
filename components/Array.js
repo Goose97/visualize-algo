@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 
-import { MemoryBlock } from "components";
+import { MemoryBlockWithSwap } from "components";
 
 class Array extends Component {
   constructor(props) {
@@ -31,17 +31,17 @@ class Array extends Component {
   }
 
 
+
   render() {
     const { blockInfo } = this.state;
     const focusNode = this.props.focusNode;
-    console.log("arr", focusNode);
     const listMemoryBlock = blockInfo.map(blockInfo => (
-			<MemoryBlock
+			<MemoryBlockWithSwap
 				{...blockInfo}
 				name={blockInfo.key}
-        focus={blockInfo.key === 1}
         structureType={this.structureType}
         focus={focusNode.includes(blockInfo.key)}
+        isSwap={focusNode.includes(blockInfo.key)}
 			/>
 		))
     return (

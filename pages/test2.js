@@ -94,7 +94,7 @@ class Test2 extends Component {
     this.state = {
       data: [1, 2, 3, 4, 5],
       ...animationDescription[0].state,
-      focusNode: [0, 1, 2, 3],
+      focusNode: [1, 2],
     };
     this.ref = React.createRef();
   }
@@ -109,7 +109,6 @@ class Test2 extends Component {
 
   render() {
     const { data, explanationStep, focusNode } = this.state;
-    console.log(this.state.focusNode);
     return (
       <VisualAlgo
         code={code}

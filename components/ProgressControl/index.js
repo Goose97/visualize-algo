@@ -9,6 +9,7 @@ import {
   faFastForward,
 } from '@fortawesome/free-solid-svg-icons';
 
+import { classNameHelper } from '../../utils';
 import './style.scss';
 
 export class ProgressControl extends Component {
@@ -41,25 +42,62 @@ export class ProgressControl extends Component {
     }
   }
 
+  renderProgressIndicator() {
+    const { progress } = this.props;
+    const roundedProgress = `${progress.toFixed(2)}%`;
+    return (
+      <div className='progress-control__progress-indicator'>
+        <div
+          className='progress-control__progress-bar'
+          style={{ width: roundedProgress }}
+        ></div>
+      </div>
+    );
+  }
+
+  produceButtonClassName(buttonIndex) {
+    return classNameHelper({
+      base: 'progress-control__button',
+      disabled: this.isButtonDisabled(buttonIndex),
+    });
+  }
+
+  isButtonDisabled = buttonIndex => {
+    const { progress } = this.props;
+    switch (buttonIndex) {
+      case 0:
+      case 1:
+        return progress === 0;
+      case 3:
+      case 4:
+        return progress === 100;
+      default:
+        return false;
+    }
+  };
+
   render() {
     const { isPlaying } = this.props;
     return (
       <div className='progress-control__wrapper'>
-        {[
-          faFastBackward,
-          faStepBackward,
-          isPlaying ? faStop : faPlay,
-          faStepForward,
-          faFastForward,
-        ].map((icon, index) => (
-          <span
-            className='progress-control__button'
-            key={index}
-            onClick={this.handleControlProgress(index)}
-          >
-            <FontAwesomeIcon icon={icon} />
-          </span>
-        ))}
+        <div className='progress-control__button-wrapper'>
+          {[
+            faFastBackward,
+            faStepBackward,
+            isPlaying ? faStop : faPlay,
+            faStepForward,
+            faFastForward,
+          ].map((icon, index) => (
+            <span
+              className={this.produceButtonClassName(index)}
+              key={index}
+              onClick={this.handleControlProgress(index)}
+            >
+              <FontAwesomeIcon icon={icon} />
+            </span>
+          ))}
+        </div>
+        {this.renderProgressIndicator()}
       </div>
     );
   }
