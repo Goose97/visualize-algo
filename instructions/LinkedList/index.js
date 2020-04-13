@@ -1,9 +1,16 @@
-import { Instructions, initLinkedList } from './helper';
+import {
+  Instructions,
+  initLinkedList,
+  convertLinkedListToArray,
+} from './helper';
 
 export const linkedListInstruction = (data, operation, parameters) => {
   switch (operation) {
     case 'search':
       return searchInstruction(data, parameters);
+
+    case 'insert':
+      return insertInstruction(data, parameters);
 
     default:
       return [];
@@ -62,6 +69,56 @@ const searchInstruction = (data, { value }) => {
   return instructions.get();
 };
 
+const insertInstruction = (data, { value, index }) => {
+  const linkedList = initLinkedList(data);
+  const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
+    null,
+    'insert',
+  );
+  let instructions = new Instructions();
+  // Start make instruction
+  let previousNode;
+  let currentNode = linkedList;
+  let currentIndex = 0;
+  instructions.push({
+    data,
+    currentNode: currentIndex,
+    ..._getExplanationAndCodeLine('init'),
+  });
+
+  while (currentIndex !== index && currentNode !== null) {
+    previousNode = currentNode;
+    currentNode = currentNode.next;
+    currentIndex++;
+
+    if (currentNode) {
+      instructions.push({
+        currentNode: currentIndex,
+        ..._getExplanationAndCodeLine('findPosition'),
+      });
+    }
+  }
+
+  if (index === currentIndex) {
+    let newNode = {
+      val: value,
+    };
+    previousNode.next = newNode;
+    newNode.next = currentNode;
+  }
+  instructions.push({
+    data: convertLinkedListToArray(linkedList),
+    ..._getExplanationAndCodeLine('insert'),
+  });
+
+  instructions.push({
+    currentNode: null,
+    ..._getExplanationAndCodeLine('complete'),
+  });
+
+  return instructions.get();
+};
+
 const getExplanationAndCodeLine = (operation, subOperation) => {
   switch (operation) {
     case 'search':
@@ -82,12 +139,27 @@ const getExplanationAndCodeLine = (operation, subOperation) => {
           return {};
       }
 
+    case 'insert': {
+      switch (subOperation) {
+        case 'init':
+          return { codeLine: '2-4', explanationStep: 1 };
+        case 'findPosition':
+          return { codeLine: '5-9', explanationStep: 2 };
+        case 'insert':
+          return { codeLine: '11-17', explanationStep: 3 };
+        case 'complete':
+          return { codeLine: '19', explanationStep: 4 };
+        default:
+          return {};
+      }
+    }
+
     default:
       return [];
   }
 };
 
-const searchCode = `search(value) {
+const searchCode = `function search(value) {
   let current = this.list;
   let index = 0;
   do {
@@ -95,13 +167,35 @@ const searchCode = `search(value) {
     if (current.val === value) return index;
     current = current.next;
     index++;
-  } while (current)
+  } while (current);
 
   return null;
 }`;
 
+const insertCode = `function insert(value, index) {
+  let currentIndex = 0;
+  let currentNode = this.list;
+  let previousNode;
+  while (index !== currentIndex && currentNode !== null) {
+    previousNode = currentNode;
+    currentNode = currentNode.next;
+    currentIndex++;
+  }
+
+  if (currentIndex === index) {
+    let newNode = {
+      val: value,
+    };
+    previousNode.next = newNode;
+    newNode.next = currentNode;
+  };
+
+  return this.list;
+}`;
+
 export const code = {
   search: searchCode,
+  insert: insertCode,
 };
 
 export const explanation = {
@@ -112,5 +206,11 @@ export const explanation = {
     'Nếu không thì đặt node tiếp theo (node.next) là node hiện tại và tăng index lên 1',
     'Lặp lại bước 2',
     'Nếu kết thúc vòng loop mà vẫn chưa tìm thấy value thì trả về null',
+  ],
+  insert: [
+    'Khởi tạo giá trị index hiện tại, node hiện tại và node phía sau node hiện tại',
+    'Tìm vị trí để chèn node mới',
+    'Nếu đã đến index cần tìm thì thêm node mới vào vị trí hiện tại',
+    'Trả về giá trị head của linked list',
   ],
 };

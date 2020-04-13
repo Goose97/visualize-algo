@@ -9,7 +9,7 @@ import {
   InitLinkedListInput,
 } from 'components';
 import { VisualAlgo } from 'layout';
-import { produceFullState } from 'utils';
+import { produceFullState, promiseSetState } from 'utils';
 import {
   linkedListInstruction,
   code,
@@ -26,6 +26,7 @@ export class Test extends Component {
       stepDescription: [],
       autoPlay: false,
     };
+    this.originalLinkedListData = null;
     this.ref = React.createRef();
   }
 
@@ -43,6 +44,7 @@ export class Test extends Component {
 
   renderParameterInput() {
     const { currentApi } = this.state;
+    const convertToNumber = value => parseInt(value);
     switch (currentApi) {
       case 'init':
         return (
@@ -58,11 +60,29 @@ export class Test extends Component {
             Tìm kiếm giá trị{' '}
             <Input
               className='ml-2'
-              onChange={this.handleChangeInput('value', value =>
-                parseInt(value),
-              )}
+              onChange={this.handleChangeInput('value', convertToNumber)}
             />
           </span>
+        );
+
+      case 'insert':
+        return (
+          <div className='il-bl'>
+            <span>
+              Thêm giá trị{' '}
+              <Input
+                className='mx-2'
+                onChange={this.handleChangeInput('value', convertToNumber)}
+              />
+            </span>
+            <span>
+              tại index{' '}
+              <Input
+                className='ml-2'
+                onChange={this.handleChangeInput('index', convertToNumber)}
+              />
+            </span>
+          </div>
         );
 
       default:
@@ -78,7 +98,7 @@ export class Test extends Component {
     switch (currentApi) {
       case 'init':
         return (
-          <Button type='primary' onClick={this.initLinkedListData}>
+          <Button type='primary' onClick={() => this.initLinkedListData(false)}>
             Khởi tạo
           </Button>
         );
@@ -86,7 +106,7 @@ export class Test extends Component {
         return (
           <Button
             type='primary'
-            onClick={() => this.handlePlayingChange(true)}
+            onClick={this.handleStartAlgorithm}
             disabled={value === undefined}
           >
             Bắt đầu
@@ -94,6 +114,23 @@ export class Test extends Component {
         );
     }
   }
+
+  handleStartAlgorithm = async () => {
+    try {
+      const visualAlgo = this.ref.current;
+      // Effectively reset the state
+      await visualAlgo.resetState();
+      await promiseSetState.call(this, {
+        data: undefined,
+        currentNode: undefined,
+        currentStep: undefined,
+      });
+      await this.initLinkedListData(true);
+      await this.handlePlayingChange(true);
+    } catch (error) {
+      setTimeout(this.handleStartAlgorithm, 50);
+    }
+  };
 
   handlePlayingChange = newPlayingState => {
     if (newPlayingState) {
@@ -117,21 +154,29 @@ export class Test extends Component {
     this.setState({ stepDescription });
   }
 
-  initLinkedListData = () => {
+  initLinkedListData = useOldData => {
     const {
       parameters: { value },
     } = this.state;
+    let linkedListData;
+    if (useOldData && this.originalLinkedListData) {
+      linkedListData = this.originalLinkedListData;
+    } else {
+      if (value && value.length) linkedListData = value;
+      else
+        linkedListData = Array(5)
+          .fill(0)
+          .map(() => Math.round(Math.random() * 10));
+
+      this.originalLinkedListData = linkedListData;
+    }
+
     // Phải làm thế này để buộc component linked list unmount
     // Linked list chỉ khởi tạo state của nó 1 lần trong constructor
-    let linkedListData;
-    if (value && value.length) linkedListData = value;
-    else
-      linkedListData = Array(5)
-        .fill(0)
-        .map(() => Math.round(Math.random() * 10));
-
-    this.setState({ data: undefined }, () =>
-      this.setState({ data: linkedListData }),
+    return new Promise(resolve =>
+      this.setState({ data: undefined }, () => {
+        this.setState({ data: linkedListData }, () => resolve());
+      }),
     );
   };
 
@@ -167,6 +212,7 @@ export class Test extends Component {
         actionButton={this.renderActionButton()}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
+        ref={this.ref}
       >
         {data && (
           <CanvasContainer>

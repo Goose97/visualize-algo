@@ -42,3 +42,14 @@ export const initLinkedList = array => {
 
   return head;
 };
+
+export const convertLinkedListToArray = linkedList => {
+  let result = [];
+  let current = linkedList;
+  while (current) {
+    result.push(current.val);
+    current = current.next;
+  }
+
+  return result;
+};

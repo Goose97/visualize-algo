@@ -108,7 +108,8 @@ export class LinkedList extends Component {
 
     // Detect changes in currentNode
     if (currentNode !== previousState.currentNode) {
-      if (noAnimation) {
+      // Trường hợp currentNode === null nghĩa là đang unfocus tất cả các node
+      if (noAnimation || currentNode === null) {
         actions.push({
           name: 'focusNode',
           params: [currentNode],

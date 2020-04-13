@@ -7,6 +7,7 @@ import {
   ProgressControl,
   ApiController,
 } from '../../components';
+import { promiseSetState } from 'utils';
 import './style.scss';
 
 const DEFAULT_WAIT = 1500;
@@ -16,8 +17,6 @@ export class VisualAlgo extends Component {
     super(props);
 
     this.state = {
-      // data: [1, 2, 3],
-      // currentNode: 0,
       currentStep: -1,
       autoPlay: false,
     };
@@ -33,10 +32,17 @@ export class VisualAlgo extends Component {
     return null;
   }
 
+  resetState() {
+    return promiseSetState.call(this, {
+      currentStep: -1,
+      autoPlay: false,
+    });
+  }
+
   componentDidUpdate(prevProps, prevState) {
     const { currentStep, autoPlay } = this.state;
     // const { autoPlay } = this.props;
-    if (currentStep !== prevState.currentStep) {
+    if (currentStep !== prevState.currentStep && currentStep !== -1) {
       this.handleStepChange(currentStep);
     }
 

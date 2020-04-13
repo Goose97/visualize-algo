@@ -71,7 +71,8 @@ const transformLinkedListData = (currentData, operation, payload) => {
       const { index } = payload;
       return produce(currentData, draft => {
         draft.forEach(item => (item.focus = false));
-        draft[index].focus = true;
+        // Nếu index === null nghĩa là đang unfocus tất cả các node
+        if (index !== null) draft[index].focus = true;
       });
     }
 
