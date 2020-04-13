@@ -12,30 +12,55 @@ const withSwap = (Component) => {
       };
     }
 
-    constructSwapPath(text_x, text_y) {
-      console.log(text_x, text_y);
-      return `M ${text_x} ${text_y + ARRAY_BLOCK_HEIGHT}
-			v -90 h -90 v ${1.25 * ARRAY_BLOCK_HEIGHT}`;
+    componentDidUpdate() {
+      if (this.props.focus !== this.state.focus) {
+        this.setState({
+          focus: this.props.focus,
+        });
+      }
+
+      if (this.props.isSwap !== this.state.isSwap) {
+        this.setState({
+          isSwap: this.props.isSwap,
+        });
+      }
+    }
+
+    produceSwapClassId(id) {
+      return `swap_path__${id}`;
+    }
+
+    constructSwapPath(isSwap) {
+      if (isSwap == "1") {
+        return `m 0 ${ARRAY_BLOCK_HEIGHT / 8}
+      v -${ARRAY_BLOCK_HEIGHT} h ${ARRAY_BLOCK_WIDTH / 2} v ${
+          0.87 * ARRAY_BLOCK_HEIGHT
+        }`;
+      } else if (isSwap == "-1") {
+        console.log("hi");
+        return `m 0 -${ARRAY_BLOCK_HEIGHT / 8}
+      v ${ARRAY_BLOCK_HEIGHT} h ${ARRAY_BLOCK_WIDTH / 2} v -${
+          0.87 * ARRAY_BLOCK_HEIGHT
+        }`;
+      }
     }
 
     render() {
-      // console.log(this.props.isSwap);
       const { isSwap, x, y } = this.state;
+      console.log(this.props);
+      const swapPathId = this.produceSwapClassId(this.props.name);
+      console.log(swapPathId);
       return isSwap ? (
         <g>
           <Component {...this.props} />
-          <animateMotion dur="3s" fill="freeze">
-            <mpath xlinkHref="#swap_path"></mpath>
+          <animateMotion dur="3.5s" fill="freeze">
+            <mpath xlinkHref={"#" + swapPathId}></mpath>
           </animateMotion>
           <path
-            // d="M 2 2 V -90 H 90 V 2 "
-            d={this.constructSwapPath(x, y)}
-            // stroke="#529fd9"
-            // stroke-width="2"
-            id="swap_path"
+            d={this.constructSwapPath(isSwap)}
+            id={swapPathId}
             fill="none"
           ></path>
-          
         </g>
       ) : (
         <Component {...this.props} />

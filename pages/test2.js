@@ -95,6 +95,7 @@ class Test2 extends Component {
       data: [1, 2, 3, 4, 5],
       ...animationDescription[0].state,
       focusNode: [1, 2],
+      swapNode: [],
     };
     this.ref = React.createRef();
   }
@@ -103,12 +104,17 @@ class Test2 extends Component {
     this.setState({ focusNode: nodeIndexs });
   }
 
+  swapNode(nodeIndexs) {
+    this.setState({ swapNode: nodeIndexs });
+  }
+
   swap = (nodeIndexs) => () => {
     this.focusNode(nodeIndexs);
+    this.swapNode(nodeIndexs);
   };
 
   render() {
-    const { data, explanationStep, focusNode } = this.state;
+    const { data, explanationStep, focusNode, swapNode } = this.state;
     return (
       <VisualAlgo
         code={code}
@@ -117,20 +123,16 @@ class Test2 extends Component {
         stepDescription={stepDescription}
         explanationStep={explanationStep}
       >
-        {/* <button onClick={this.swap([1, 2])}>SWAP</button> */}
+        <button onClick={this.swap([3,4])}>SWAP</button>
         <CanvasContainer>
-          <Array x={100} y={100} data={data} focusNode={focusNode} />
+          <Array 
+            x={100} 
+            y={100} 
+            data={data} 
+            focusNode={focusNode}
+            swapNode={swapNode}
+          />
         </CanvasContainer>
-        {/* <svg
-          xmlns="http://www.w3.org/2000/svg"
-          version="1.1"
-          xmlnsXlink="http://www.w3.org/1999/xlink"
-          width="360"
-          height="120"
-          viewBox="-10 10 360 55"
-        > */}
-          
-        {/* </svg> */}
       </VisualAlgo>
     );
   }
