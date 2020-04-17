@@ -96,6 +96,7 @@ class Test2 extends Component {
       ...animationDescription[0].state,
       focusNode: [1, 2],
       swapNode: [],
+      swapDistance: 0,
     };
     this.ref = React.createRef();
   }
@@ -111,10 +112,14 @@ class Test2 extends Component {
   swap = (nodeIndexs) => () => {
     this.focusNode(nodeIndexs);
     this.swapNode(nodeIndexs);
+    const distance = Math.abs(nodeIndexs[1] - nodeIndexs[0]);
+    this.setState({
+      swapDistance: distance
+    })
   };
 
   render() {
-    const { data, explanationStep, focusNode, swapNode } = this.state;
+    const { data, explanationStep, focusNode, swapNode, swapDistance } = this.state;
     return (
       <VisualAlgo
         code={code}
@@ -123,7 +128,7 @@ class Test2 extends Component {
         stepDescription={stepDescription}
         explanationStep={explanationStep}
       >
-        <button onClick={this.swap([3,4])}>SWAP</button>
+        <button onClick={this.swap([1,4])}>SWAP</button>
         <CanvasContainer>
           <Array 
             x={100} 
@@ -131,6 +136,7 @@ class Test2 extends Component {
             data={data} 
             focusNode={focusNode}
             swapNode={swapNode}
+            swapDistance={swapDistance}
           />
         </CanvasContainer>
       </VisualAlgo>

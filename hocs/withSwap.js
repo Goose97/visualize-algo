@@ -7,6 +7,7 @@ const withSwap = (Component) => {
       this.state = {
         focus: props.focus,
         isSwap: props.isSwap,
+        swapDistance: props.swapDistance,
         x: props.x,
         y: props.y,
       };
@@ -22,42 +23,45 @@ const withSwap = (Component) => {
       if (this.props.isSwap !== this.state.isSwap) {
         this.setState({
           isSwap: this.props.isSwap,
+          swapDistance: this.props.swapDistance,
         });
       }
     }
 
-    produceSwapClassId(id) {
+    produceSwapTagId(id) {
       return `swap_path__${id}`;
     }
 
-    constructSwapPath(isSwap) {
+    getSwapTagId(id){
+      return `#swap_path__${id}`;
+    }
+
+    constructSwapPath(isSwap, swapDistance) {
       if (isSwap == "1") {
         return `m 0 ${ARRAY_BLOCK_HEIGHT / 8}
-      v -${ARRAY_BLOCK_HEIGHT} h ${ARRAY_BLOCK_WIDTH / 2} v ${
-          0.87 * ARRAY_BLOCK_HEIGHT
+      v -${ARRAY_BLOCK_HEIGHT} h ${swapDistance*ARRAY_BLOCK_WIDTH / 2} v ${
+          0.875 * ARRAY_BLOCK_HEIGHT
         }`;
       } else if (isSwap == "-1") {
         console.log("hi");
         return `m 0 -${ARRAY_BLOCK_HEIGHT / 8}
-      v ${ARRAY_BLOCK_HEIGHT} h ${ARRAY_BLOCK_WIDTH / 2} v -${
-          0.87 * ARRAY_BLOCK_HEIGHT
+      v ${ARRAY_BLOCK_HEIGHT} h -${swapDistance*ARRAY_BLOCK_WIDTH / 2} v -${
+          0.875 * ARRAY_BLOCK_HEIGHT
         }`;
       }
     }
 
     render() {
-      const { isSwap, x, y } = this.state;
-      console.log(this.props);
-      const swapPathId = this.produceSwapClassId(this.props.name);
-      console.log(swapPathId);
+      const { isSwap, swapDistance } = this.state;
+      const swapPathId = this.produceSwapTagId(this.props.name);
       return isSwap ? (
         <g>
           <Component {...this.props} />
           <animateMotion dur="3.5s" fill="freeze">
-            <mpath xlinkHref={"#" + swapPathId}></mpath>
+            <mpath xlinkHref={this.getSwapTagId(this.props.name)}></mpath>
           </animateMotion>
           <path
-            d={this.constructSwapPath(isSwap)}
+            d={this.constructSwapPath(isSwap, swapDistance)}
             id={swapPathId}
             fill="none"
           ></path>

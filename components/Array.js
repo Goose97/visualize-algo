@@ -14,6 +14,7 @@ class Array extends Component {
       blockInfo: this.initiateMemoryBlockInfo(),
       focusNode: this.props.focusNode,
       swapNode: this.props.swapNode,
+      swapDistance: this.props.swapDistance,
     };
   }
 
@@ -27,6 +28,7 @@ class Array extends Component {
     if (this.props.swapNode !== this.state.swapNode) {
       this.setState({
         swapNode: this.props.swapNode,
+        swapDistance: this.props.swapDistance,
       });
     }
   }
@@ -47,8 +49,7 @@ class Array extends Component {
   }
 
   render() {
-    const { blockInfo, focusNode, swapNode } = this.state;
-    console.log(swapNode);
+    const { blockInfo, focusNode, swapNode, swapDistance } = this.state;
     const listMemoryBlock = blockInfo.map((blockInfo) => {
       const isSwap = swapNode.includes(blockInfo.key) ? (swapNode[0] == blockInfo.key ? 1 : -1) : 0; 
       return (
@@ -58,6 +59,8 @@ class Array extends Component {
           structureType={this.structureType}
           focus={focusNode.includes(blockInfo.key)}
           isSwap={isSwap}
+          swapNode={swapNode}
+          swapDistance={swapDistance}
         />
       );
     });
