@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, cloneElement } from 'react';
 import produce from 'immer';
 
 import {
@@ -65,6 +65,17 @@ export class Test extends Component {
           </span>
         );
 
+      case 'delete':
+        return (
+          <span>
+            Xoá giá trị{' '}
+            <Input
+              className='ml-2'
+              onChange={this.handleChangeInput('index', convertToNumber)}
+            />
+          </span>
+        );
+
       case 'insert':
         return (
           <div className='il-bl'>
@@ -90,11 +101,32 @@ export class Test extends Component {
     }
   }
 
+  handleChangeInput = (parameterName, formatter) => value => {
+    const { parameters } = this.state;
+    const newParameters = produce(parameters, draft => {
+      draft[parameterName] = formatter ? formatter(value) : value;
+    });
+    this.setState({ parameters: newParameters });
+  };
+
   renderActionButton() {
     const {
       currentApi,
-      parameters: { value },
+      parameters: { value, index },
     } = this.state;
+    let isButtonDisabled;
+    switch (currentApi) {
+      case 'search':
+        isButtonDisabled = value === undefined;
+        break;
+      case 'add':
+        isButtonDisabled = value === undefined || index === undefined;
+        break;
+      case 'delete':
+        isButtonDisabled = index === undefined;
+        break;
+    }
+
     switch (currentApi) {
       case 'init':
         return (
@@ -107,7 +139,7 @@ export class Test extends Component {
           <Button
             type='primary'
             onClick={this.handleStartAlgorithm}
-            disabled={value === undefined}
+            disabled={isButtonDisabled}
           >
             Bắt đầu
           </Button>
@@ -128,29 +160,21 @@ export class Test extends Component {
       await this.initLinkedListData(true);
       await this.handlePlayingChange(true);
     } catch (error) {
+      console.log('error', error);
       setTimeout(this.handleStartAlgorithm, 50);
     }
   };
 
   handlePlayingChange = newPlayingState => {
-    if (newPlayingState) {
-      this.generateStepDescription();
-    }
+    if (newPlayingState) this.generateStepDescription();
     this.setState({ autoPlay: newPlayingState });
-  };
-
-  handleChangeInput = (parameterName, formatter) => value => {
-    const { parameters } = this.state;
-    const newParameters = produce(parameters, draft => {
-      draft[parameterName] = formatter ? formatter(value) : value;
-    });
-    this.setState({ parameters: newParameters });
   };
 
   generateStepDescription() {
     const { currentApi, parameters, data } = this.state;
     if (!currentApi) return [];
     const stepDescription = linkedListInstruction(data, currentApi, parameters);
+    console.log('stepDescription', stepDescription);
     this.setState({ stepDescription });
   }
 

@@ -12,6 +12,9 @@ export const linkedListInstruction = (data, operation, parameters) => {
     case 'insert':
       return insertInstruction(data, parameters);
 
+    case 'delete':
+      return deleteInstruction(data, parameters);
+
     default:
       return [];
   }
@@ -119,6 +122,47 @@ const insertInstruction = (data, { value, index }) => {
   return instructions.get();
 };
 
+const deleteInstruction = (data, { index }) => {
+  const linkedList = initLinkedList(data);
+  const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
+    null,
+    'delete',
+  );
+  let instructions = new Instructions();
+  // Start make instruction
+  let previousNode;
+  let currentNode = linkedList;
+  instructions.push({
+    data,
+    currentNode: 0,
+    ..._getExplanationAndCodeLine('init'),
+  });
+
+  for (let i = 0; i < index; i++) {
+    previousNode = currentNode;
+    currentNode = currentNode.next;
+
+    instructions.push({
+      currentNode: i + 1,
+      ..._getExplanationAndCodeLine('findPosition'),
+    });
+  }
+
+  previousNode.next = currentNode.next;
+
+  instructions.push({
+    data: convertLinkedListToArray(linkedList),
+    ..._getExplanationAndCodeLine('delete'),
+  });
+
+  instructions.push({
+    currentNode: null,
+    ..._getExplanationAndCodeLine('complete'),
+  });
+
+  return instructions.get();
+};
+
 const getExplanationAndCodeLine = (operation, subOperation) => {
   switch (operation) {
     case 'search':
@@ -153,6 +197,20 @@ const getExplanationAndCodeLine = (operation, subOperation) => {
           return {};
       }
     }
+
+    case 'delete':
+      switch (subOperation) {
+        case 'init':
+          return { codeLine: '2-3', explanationStep: 1 };
+        case 'findPosition':
+          return { codeLine: '4-7', explanationStep: 2 };
+        case 'delete':
+          return { codeLine: '9', explanationStep: 3 };
+        case 'complete':
+          return { codeLine: '10', explanationStep: 4 };
+        default:
+          return {};
+      }
 
     default:
       return [];
@@ -193,9 +251,22 @@ const insertCode = `function insert(value, index) {
   return this.list;
 }`;
 
+const deleteCode = `function delete(index) {
+  let currentNode = this.list;
+  let previousNode;
+  for (let i = 0; i < index; i++) {
+    previousNode = currentNode;
+    currentNode = currentNode.next;
+  }
+
+  previousNode.next = currentNode.next;
+  return this.list;
+}`;
+
 export const code = {
   search: searchCode,
   insert: insertCode,
+  delete: deleteCode,
 };
 
 export const explanation = {
@@ -211,6 +282,12 @@ export const explanation = {
     'Khởi tạo giá trị index hiện tại, node hiện tại và node phía sau node hiện tại',
     'Tìm vị trí để chèn node mới',
     'Nếu đã đến index cần tìm thì thêm node mới vào vị trí hiện tại',
+    'Trả về giá trị head của linked list',
+  ],
+  delete: [
+    'Khởi tạo giá trị index hiện tại, node hiện tại và node phía sau node hiện tại',
+    'Tìm node cần xoá',
+    'Kết nối node phía trước node cần xoá (previousNode) với node phía sau node cần xoá (currentNode.next)',
     'Trả về giá trị head của linked list',
   ],
 };
