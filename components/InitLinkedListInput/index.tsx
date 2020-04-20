@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 
 import { Input } from 'components';
+import { IProps, IState } from './index.d';
 
-export class InitLinkedListInput extends Component {
-  constructor(props) {
+export class InitLinkedListInput extends Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
 
     this.state = {
@@ -11,7 +12,7 @@ export class InitLinkedListInput extends Component {
     };
   }
 
-  handleChange = value => {
+  handleChange = (value: string) => {
     const { onChange } = this.props;
     const {
       value: arrayValue,
@@ -21,7 +22,9 @@ export class InitLinkedListInput extends Component {
     onChange && onChange(arrayValue);
   };
 
-  getArrayRepresentationFromInputText(inputText) {
+  getArrayRepresentationFromInputText(
+    inputText: string,
+  ): { value: number[]; error: string | null } {
     const regex = /^\[([\d,\s]+)\]$/;
     const match = inputText.match(regex);
     if (!match) return { value: [], error: 'Sai cú pháp' };

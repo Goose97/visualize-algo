@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 
-function withExtendClassName(classNameGetter) {
-  return (Page) => {
-    class WrapperComponent extends Component {
+export interface WithExtendClassName {
+  className?: string;
+}
+type MapPropsToClassName = (props: any) => string;
+
+export function withExtendClassName(
+  classNameGetter: string | MapPropsToClassName,
+) {
+  return <P extends {}>(Page: React.ComponentType<P>) => {
+    class WrapperComponent extends Component<P & WithExtendClassName> {
       getExtendedClassName() {
         const { className } = this.props;
         let baseClassName =
@@ -13,10 +20,11 @@ function withExtendClassName(classNameGetter) {
       }
 
       render() {
+        //@ts-ignore
         const { innerRef, ...rest } = this.props;
         return (
           <Page
-            {...rest}
+            {...(rest as P)}
             ref={innerRef}
             className={this.getExtendedClassName()}
           />
@@ -24,10 +32,11 @@ function withExtendClassName(classNameGetter) {
       }
     }
 
-    return React.forwardRef((props, ref) => (
+    // return WrapperComponent;
+
+    return React.forwardRef((props: P, ref) => (
+      //@ts-ignore
       <WrapperComponent innerRef={ref} {...props} />
     ));
   };
 }
-
-export default withExtendClassName;

@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { classNameHelper } from 'utils';
 
+import { IProps } from './index.d';
 import './style.scss';
 
-export class Button extends Component {
+export class Button extends Component<IProps> {
   produceClassName() {
     const { type, disabled } = this.props;
     return classNameHelper({
@@ -13,16 +14,16 @@ export class Button extends Component {
     });
   }
 
-  handleClick = () => {
+  handleClick = (e: React.MouseEvent) => {
     const { onClick, disabled } = this.props;
-    onClick && !disabled && onClick();
+    onClick && !disabled && onClick(e);
   };
 
   render() {
-    const { children } = this.props;
+    const { children, style } = this.props;
     return (
       <button
-        {...this.props}
+        style={style}
         className={this.produceClassName()}
         onClick={this.handleClick}
       >
