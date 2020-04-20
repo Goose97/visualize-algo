@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 
+import { IProps } from './index.d';
 import './style.scss';
 
 const arrowRightIcon = (
@@ -19,14 +20,9 @@ const arrowRightIcon = (
   </i>
 );
 
-export class ApiController extends Component {
+export class ApiController extends Component<IProps> {
   render() {
-    const {
-      apiList,
-      parameterInput,
-      onApiChange,
-      actionButton,
-    } = this.props;
+    const { apiList, parameterInput, onApiChange, actionButton } = this.props;
 
     return (
       <div className='api-control__wrapper fx-center fx-gap-5'>
@@ -35,7 +31,9 @@ export class ApiController extends Component {
           className='api-select'
           classNamePrefix='api-select'
           placeholder='Chọn API'
-          onChange={({ value }) => onApiChange(value)}
+          onChange={option => {
+            if (option && 'value' in option) onApiChange(option.value);
+          }}
         />
         {parameterInput && (
           <>

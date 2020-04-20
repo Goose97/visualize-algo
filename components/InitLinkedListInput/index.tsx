@@ -8,7 +8,8 @@ export class InitLinkedListInput extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-      input: '',
+      input: [],
+      error: null,
     };
   }
 

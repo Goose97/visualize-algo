@@ -5,9 +5,7 @@ export interface WithExtendClassName {
 }
 type MapPropsToClassName = (props: any) => string;
 
-export function withExtendClassName(
-  classNameGetter: string | MapPropsToClassName,
-) {
+function withExtendClassName(classNameGetter: string | MapPropsToClassName) {
   return <P extends {}>(Page: React.ComponentType<P>) => {
     class WrapperComponent extends Component<P & WithExtendClassName> {
       getExtendedClassName() {
@@ -40,3 +38,5 @@ export function withExtendClassName(
     ));
   };
 }
+
+export default withExtendClassName;

@@ -3,5 +3,6 @@ export interface IProps {
 }
 
 export interface IState {
-  input: string;
+  input: number[];
+  error: string | null;
 }

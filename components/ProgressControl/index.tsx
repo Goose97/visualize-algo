@@ -10,15 +10,16 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { classNameHelper } from 'utils';
+import { IProps } from './index.d';
 import './style.scss';
 
-export class ProgressControl extends Component {
-  handleControlProgress = (index) => () => {
+export class ProgressControl extends Component<IProps> {
+  handleControlProgress = (index: number) => () => {
     const handlerFunction = this.getHandlerFunction(index);
     handlerFunction && handlerFunction();
   };
 
-  getHandlerFunction(buttonIndex) {
+  getHandlerFunction(buttonIndex: number) {
     const {
       onFastBackward,
       onBackward,
@@ -55,14 +56,14 @@ export class ProgressControl extends Component {
     );
   }
 
-  produceButtonClassName(buttonIndex) {
+  produceButtonClassName(buttonIndex: number) {
     return classNameHelper({
       base: 'progress-control__button',
       disabled: this.isButtonDisabled(buttonIndex),
     });
   }
 
-  isButtonDisabled = (buttonIndex) => {
+  isButtonDisabled = (buttonIndex: number) => {
     const { progress } = this.props;
     switch (buttonIndex) {
       case 0:

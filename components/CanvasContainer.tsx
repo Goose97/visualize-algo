@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
 
-class CanvasContainer extends Component {
-  constructor(props) {
+interface IProps {}
+interface IState {
+  viewBox: { width: number; height: number } | null;
+}
+
+class CanvasContainer extends Component<IProps, IState> {
+  private ref: React.RefObject<SVGSVGElement>;
+  constructor(props: IProps) {
     super(props);
     this.ref = React.createRef();
     this.state = {
@@ -30,7 +36,7 @@ class CanvasContainer extends Component {
   caculateViewBox = () => {
     const svgElement = this.ref.current;
     if (svgElement) {
-      const container = svgElement.parentNode;
+      const container = svgElement.parentNode as HTMLElement;
       const { width, height } = container.getBoundingClientRect();
       this.setState({
         viewBox: {

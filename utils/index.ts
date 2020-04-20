@@ -1,6 +1,6 @@
 import { pick } from 'lodash';
 
-export const classNameHelper = object => {
+export const classNameHelper = (object: Record<string, boolean>) => {
   let baseClassName = object.base || '';
   Object.entries(object).forEach(([key, value]) => {
     if (key === 'base') return;
@@ -10,7 +10,10 @@ export const classNameHelper = object => {
   return baseClassName;
 };
 
-export const produceFullState = (stepDescription, stateProperties) => {
+export const produceFullState = (
+  stepDescription: Object[],
+  stateProperties: string[],
+) => {
   let result = [];
   for (let i = 0; i < stepDescription.length; i++) {
     let currentState = pick(stepDescription[i], stateProperties);
@@ -21,6 +24,7 @@ export const produceFullState = (stepDescription, stateProperties) => {
   return result;
 };
 
-export function promiseSetState(newState) {
+export function promiseSetState(newState: Record<string, any>) {
+  //@ts-ignore
   return new Promise(resolve => this.setState(newState, () => resolve()));
 }
