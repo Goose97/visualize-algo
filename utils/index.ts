@@ -1,10 +1,12 @@
 import { pick } from 'lodash';
 
-export const classNameHelper = (object: Record<string, boolean>) => {
-  let baseClassName = object.base || '';
+import { ObjectType } from 'types';
+
+export const classNameHelper = (object: ObjectType<string | boolean>) => {
+  let baseClassName = (object.base as string) || '';
   Object.entries(object).forEach(([key, value]) => {
     if (key === 'base') return;
-    if (value) baseClassName += ` ${key}`;
+    if (!!value) baseClassName += ` ${key}`;
   });
 
   return baseClassName;

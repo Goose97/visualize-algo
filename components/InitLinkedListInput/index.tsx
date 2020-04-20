@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, ReactText } from 'react';
 
 import { Input } from 'components';
 import { IProps, IState } from './index.d';
@@ -13,12 +13,12 @@ export class InitLinkedListInput extends Component<IProps, IState> {
     };
   }
 
-  handleChange = (value: string) => {
+  handleChange = (value: ReactText) => {
     const { onChange } = this.props;
     const {
       value: arrayValue,
       error,
-    } = this.getArrayRepresentationFromInputText(value);
+    } = this.getArrayRepresentationFromInputText(value.toString());
     this.setState({ input: arrayValue, error });
     onChange && onChange(arrayValue);
   };

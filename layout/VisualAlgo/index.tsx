@@ -8,12 +8,14 @@ import {
   ApiController,
 } from '../../components';
 import { promiseSetState } from 'utils';
+import { IProps, IState } from './index.d';
 import './style.scss';
 
 const DEFAULT_WAIT = 1500;
 
-export class VisualAlgo extends Component {
-  constructor(props) {
+export class VisualAlgo extends Component<IProps, IState> {
+  private nextStepTimeoutToken?: NodeJS.Timeout;
+  constructor(props: IProps) {
     super(props);
 
     this.state = {
@@ -22,7 +24,7 @@ export class VisualAlgo extends Component {
     };
   }
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(props: IProps, state: IState) {
     if ('autoPlay' in props && props.autoPlay !== state.autoPlay) {
       return {
         autoPlay: props.autoPlay,
@@ -39,9 +41,8 @@ export class VisualAlgo extends Component {
     });
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(_prevProps: IProps, prevState: IState) {
     const { currentStep, autoPlay } = this.state;
-    // const { autoPlay } = this.props;
     if (currentStep !== prevState.currentStep && currentStep !== -1) {
       this.handleStepChange(currentStep);
     }
@@ -51,12 +52,12 @@ export class VisualAlgo extends Component {
     }
   }
 
-  handleAutoPlayChange(newAutoPlayState) {
+  handleAutoPlayChange(newAutoPlayState: boolean) {
     if (newAutoPlayState) this.increaseCurrentStep();
     else this.cancelNextStepConsumation();
   }
 
-  handleStepChange(newStep) {
+  handleStepChange(newStep: number) {
     const { autoPlay } = this.state;
     const { stepDescription, onStepChange } = this.props;
     if (newStep >= stepDescription.length) return;
@@ -74,14 +75,14 @@ export class VisualAlgo extends Component {
     }
   }
 
-  scheduleNextStepConsumation(wait) {
+  scheduleNextStepConsumation(wait: number) {
     this.nextStepTimeoutToken = setTimeout(
       this.increaseCurrentStep,
       wait || DEFAULT_WAIT,
     );
   }
 
-  handleTogglePlay(isPlaying) {
+  handleTogglePlay(isPlaying: boolean) {
     const { onPlayingChange } = this.props;
     // Nếu được component cha kiểm soát thì không lưu vào state mà gọi lên
     // handler do cha truyền xuống

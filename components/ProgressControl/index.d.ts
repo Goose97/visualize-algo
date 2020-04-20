@@ -1,5 +1,5 @@
 export interface IProps {
-  className: string;
+  className?: string;
   autoPlay: boolean;
   onFastBackward: () => void;
   onBackward: () => void;
