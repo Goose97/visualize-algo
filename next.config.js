@@ -43,6 +43,9 @@ const configOption = {
 
     return config;
   },
+  typescript: {
+    ignoreDevErrors: true,
+  },
 };
 
 module.exports = compose([withSass, withCSS])(configOption);
