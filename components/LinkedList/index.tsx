@@ -6,9 +6,14 @@ import transformData from 'components/DataTransformer';
 import HeadPointer from './HeadPointer';
 import { promiseSetState } from 'utils';
 import { withReverseStep } from 'hocs';
+import { LinkedListModel, IProps, IState } from './index.d';
+import { Action } from 'types';
 
-export class LinkedList extends Component {
-  constructor(props) {
+export class LinkedList extends Component<IProps, IState> {
+  private initialBlockInfo: LinkedListModel;
+  private key: number;
+  private promiseSetState: (state: Record<string, any>) => Promise<undefined>;
+  constructor(props: IProps) {
     super(props);
 
     this.initialBlockInfo = this.initiateMemoryBlockInfo(props);
@@ -19,35 +24,36 @@ export class LinkedList extends Component {
     };
     this.key = this.state.blockInfo.length;
     this.promiseSetState = promiseSetState.bind(this);
-    this.actionLogs = [];
   }
 
-  initiateMemoryBlockInfo(props) {
-    const { data, currentNode } = props.currentState;
-    return data.map((value, index) => ({
+  initiateMemoryBlockInfo(props: IProps) {
+    const { initialData } = props;
+    return initialData.map((value, index) => ({
       ...this.caculateBlockCoordinate(index),
       value,
+      index,
       visible: true,
       visited: false,
       key: index,
-      focus: index === currentNode,
+      focus: false,
     }));
   }
 
-  pushReverseAction(actionName, params) {
+  pushReverseAction(actionName: string, params: any[]) {
     const { currentStep, saveReverseLogs } = this.props;
     saveReverseLogs(actionName, params, currentStep);
   }
 
-  componentDidUpdate(prevProps) {
-    const { currentStep, reverseToStep, currentState } = this.props;
+  componentDidUpdate(prevProps: IProps) {
+    const { currentStep, reverseToStep, instructions } = this.props;
 
     switch (this.getProgressDirection(prevProps.currentStep)) {
       case 'forward':
-        this.getActionAndParams(
-          prevProps.currentState,
-          currentState,
-        ).forEach(({ name, params }) => this[name](...params));
+        const actionsToMakeAtThisStep = instructions[currentStep] || [];
+        actionsToMakeAtThisStep.forEach(({ name, params }) =>
+          //@ts-ignore
+          this[name](...params),
+        );
         break;
 
       case 'backward':
@@ -66,7 +72,7 @@ export class LinkedList extends Component {
     }
   }
 
-  getProgressDirection(previousStep) {
+  getProgressDirection(previousStep: number) {
     const { totalStep, currentStep } = this.props;
     if (previousStep === undefined) return 'forward';
     if (currentStep === previousStep) return 'stay';
@@ -127,7 +133,10 @@ export class LinkedList extends Component {
 
   // blockInfo is the single source of truth - all the data structure state is hold
   // in this object
-  produceNewState(action, blockInfo = this.state.blockInfo) {
+  produceNewState(
+    action: Action,
+    blockInfo = this.state.blockInfo,
+  ): LinkedListModel {
     const { name, params } = action;
     switch (name) {
       case 'addNode': {
@@ -191,6 +200,9 @@ export class LinkedList extends Component {
         });
         return newBlockInfo;
       }
+
+      default:
+        return blockInfo;
     }
   }
 
@@ -199,12 +211,13 @@ export class LinkedList extends Component {
     return blockInfo.findIndex(({ focus }) => !!focus);
   }
 
-  caculateBlockCoordinate(blockIndex) {
+  caculateBlockCoordinate(blockIndex: number) {
     const { x: baseX, y: baseY } = this.props;
+    //@ts-ignore
     return { x: baseX + blockIndex * (2 * LINKED_LIST_BLOCK_WIDTH), y: baseY };
   }
 
-  focusNode(nodeIndex) {
+  focusNode(nodeIndex: number) {
     const currentFocusNode = this.getCurrentFocusNode();
     this.pushReverseAction('reverseFocusNode', [currentFocusNode]);
 
@@ -216,7 +229,7 @@ export class LinkedList extends Component {
     this.setState({ blockInfo: newBlockInfo });
   }
 
-  visitNode(nodeIndex) {
+  visitNode(nodeIndex: number) {
     // Nếu node không phải node đầu tiên thì ta sẽ thực thi hàm followLinkToNode
     // Hàm này chịu trách nhiệm thực hiện animation, sau khi animation hoàn thành
     // callbackk handleFinishFollowLink sẽ được thực hiện
@@ -230,7 +243,7 @@ export class LinkedList extends Component {
     }
   }
 
-  followLinkToNode(nodeIndex) {
+  followLinkToNode(nodeIndex: number) {
     const { blockInfo } = this.state;
     this.setState({ nodeAboutToVisit: blockInfo[nodeIndex].key });
   }
@@ -333,13 +346,15 @@ export class LinkedList extends Component {
       );
   }
 
-  caculateStartAndFinishOfPointer(blockIndex) {
+  caculateStartAndFinishOfPointer(blockIndex: number) {
     const { blockInfo, nodeAboutToAppear } = this.state;
     let { x, y, visible, key } = blockInfo[blockIndex];
     let nextVisibleBlock = this.findNextBlock(blockIndex);
 
     const start = {
+      //@ts-ignore
       x: x + LINKED_LIST_BLOCK_WIDTH - 10,
+      //@ts-ignore
       y: y + LINKED_LIST_BLOCK_HEIGHT / 2,
     };
     let finish;
@@ -349,6 +364,7 @@ export class LinkedList extends Component {
       if (nodeAboutToAppear.has(key)) {
         finish = { ...start };
       } else {
+        //@ts-ignore
         finish = { x: x1, y: y1 + LINKED_LIST_BLOCK_HEIGHT / 2 };
       }
       return { start, finish };
@@ -358,14 +374,16 @@ export class LinkedList extends Component {
   }
 
   // Start block is the block which hold the link and point to another block
-  isLinkNeedToBeFollowed(startBlockIndex) {
+  isLinkNeedToBeFollowed(startBlockIndex: number) {
     const { nodeAboutToVisit } = this.state;
-    const nextVisibleBlock = this.findNextBlock(startBlockIndex);
-    return nextVisibleBlock.key === nodeAboutToVisit;
+    const nextVisibleBlock = this.findNextBlock(startBlockIndex) as
+      | LinkedListModel
+      | undefined;
+    return nextVisibleBlock && nextVisibleBlock.key === nodeAboutToVisit;
   }
 
   // Find block which is still visible or in about to appear state
-  findNextBlock(index, getIndex = false) {
+  findNextBlock(index: number, getIndex = false) {
     const { blockInfo, nodeAboutToAppear } = this.state;
     for (let i = index + 1; i < blockInfo.length; i++) {
       const { visible, key } = blockInfo[i];
@@ -375,7 +393,7 @@ export class LinkedList extends Component {
     }
   }
 
-  reverseAddNode = (value, nodeIndex) => {
+  reverseAddNode = (value: number, nodeIndex: number) => {
     const action = {
       name: 'reverseAddNode',
       params: [value, nodeIndex],
@@ -384,7 +402,7 @@ export class LinkedList extends Component {
     this.promiseSetState({ blockInfo: newBlockInfo });
   };
 
-  reverseRemoveNode = nodeIndex => {
+  reverseRemoveNode = (nodeIndex: number) => {
     const action = {
       name: 'reverseRemoveNode',
       params: [nodeIndex],
@@ -394,14 +412,14 @@ export class LinkedList extends Component {
   };
 
   // TODO need change
-  reverseVisitNode = nodeIndex => {
+  reverseVisitNode = (nodeIndex: number) => {
     const newBlockInfo = this.produceNewBlockInfo('reverseVisit', {
       index: nodeIndex,
     });
     this.promiseSetState({ blockInfo: newBlockInfo });
   };
 
-  reverseFocusNode = previousFocusNode => {
+  reverseFocusNode = (previousFocusNode: number) => {
     const newBlockInfo = this.produceNewBlockInfo('reverseFocus', {
       index: previousFocusNode,
     });
@@ -432,7 +450,7 @@ export class LinkedList extends Component {
     this.updateWithoutAnimation(this.initialBlockInfo);
   }
 
-  updateWithoutAnimation(newBlockInfo) {
+  updateWithoutAnimation(newBlockInfo: LinkedListModel) {
     this.setState({ blockInfo: newBlockInfo, isVisible: false }, () =>
       this.setState({ isVisible: true }),
     );

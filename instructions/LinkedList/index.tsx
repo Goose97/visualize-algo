@@ -1,10 +1,18 @@
+import { Instructions, initLinkedList } from './helper';
 import {
-  Instructions,
-  initLinkedList,
-  convertLinkedListToArray,
-} from './helper';
+  LinkedListOperation,
+  SearchParams,
+  InsertParams,
+  DeleteParams,
+} from './index.d';
+import { StepInstruction } from 'types';
+import { LinkedListNode } from './helper';
 
-export const linkedListInstruction = (data, operation, parameters) => {
+export const linkedListInstruction = (
+  data: number[],
+  operation: LinkedListOperation,
+  parameters: any,
+) => {
   switch (operation) {
     case 'search':
       return searchInstruction(data, parameters);
@@ -20,7 +28,7 @@ export const linkedListInstruction = (data, operation, parameters) => {
   }
 };
 
-const searchInstruction = (data, { value }) => {
+const searchInstruction = (data: number[], { value }: SearchParams) => {
   const linkedList = initLinkedList(data);
   const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
     null,
@@ -29,12 +37,10 @@ const searchInstruction = (data, { value }) => {
   let instructions = new Instructions();
 
   // Start make instruction
-  let current = linkedList;
+  let current: LinkedListNode | null = linkedList;
   let index = 0;
   let found = false;
   instructions.push({
-    data,
-    currentNode: index,
     ..._getExplanationAndCodeLine('init'),
   });
 
@@ -52,7 +58,7 @@ const searchInstruction = (data, { value }) => {
       index++;
       if (current) {
         instructions.push({
-          currentNode: index,
+          actions: [{ name: 'visitNode', params: [index] }],
           ..._getExplanationAndCodeLine('moveNext'),
         });
 
@@ -72,7 +78,7 @@ const searchInstruction = (data, { value }) => {
   return instructions.get();
 };
 
-const insertInstruction = (data, { value, index }) => {
+const insertInstruction = (data: number[], { value, index }: InsertParams) => {
   const linkedList = initLinkedList(data);
   const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
     null,
@@ -80,12 +86,11 @@ const insertInstruction = (data, { value, index }) => {
   );
   let instructions = new Instructions();
   // Start make instruction
-  let previousNode;
-  let currentNode = linkedList;
+  let previousNode: LinkedListNode | undefined;
+  let currentNode: LinkedListNode | null = linkedList!;
   let currentIndex = 0;
   instructions.push({
-    data,
-    currentNode: currentIndex,
+    actions: [{ name: 'focusNode', params: [currentIndex] }],
     ..._getExplanationAndCodeLine('init'),
   });
 
@@ -96,33 +101,31 @@ const insertInstruction = (data, { value, index }) => {
 
     if (currentNode) {
       instructions.push({
-        currentNode: currentIndex,
+        actions: [{ name: 'visitNode', params: [currentIndex] }],
         ..._getExplanationAndCodeLine('findPosition'),
       });
     }
   }
 
   if (index === currentIndex) {
-    let newNode = {
-      val: value,
-    };
-    previousNode.next = newNode;
+    let newNode = new LinkedListNode(value);
+    previousNode!.next = newNode;
     newNode.next = currentNode;
   }
   instructions.push({
-    data: convertLinkedListToArray(linkedList),
+    actions: [{ name: 'addNode', params: [value, currentIndex] }],
     ..._getExplanationAndCodeLine('insert'),
   });
 
   instructions.push({
-    currentNode: null,
+    actions: [{ name: 'focusNode', params: [null] }],
     ..._getExplanationAndCodeLine('complete'),
   });
 
   return instructions.get();
 };
 
-const deleteInstruction = (data, { index }) => {
+const deleteInstruction = (data: number[], { index }: DeleteParams) => {
   const linkedList = initLinkedList(data);
   const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
     null,
@@ -130,40 +133,42 @@ const deleteInstruction = (data, { index }) => {
   );
   let instructions = new Instructions();
   // Start make instruction
-  let previousNode;
-  let currentNode = linkedList;
+  let previousNode: LinkedListNode | null = null;
+  let currentNode: LinkedListNode | null = linkedList;
   instructions.push({
-    data,
-    currentNode: 0,
+    actions: [{ name: 'focusNode', params: [0] }],
     ..._getExplanationAndCodeLine('init'),
   });
 
   for (let i = 0; i < index; i++) {
     previousNode = currentNode;
-    currentNode = currentNode.next;
+    currentNode = currentNode!.next;
 
     instructions.push({
-      currentNode: i + 1,
+      actions: [{ name: 'focusNode', params: [i + 1] }],
       ..._getExplanationAndCodeLine('findPosition'),
     });
   }
 
-  previousNode.next = currentNode.next;
+  previousNode!.next = currentNode!.next;
 
   instructions.push({
-    data: convertLinkedListToArray(linkedList),
+    actions: [{ name: 'removeNode', params: [index] }],
     ..._getExplanationAndCodeLine('delete'),
   });
 
   instructions.push({
-    currentNode: null,
+    actions: [{ name: 'focusNode', params: [null] }],
     ..._getExplanationAndCodeLine('complete'),
   });
 
   return instructions.get();
 };
 
-const getExplanationAndCodeLine = (operation, subOperation) => {
+const getExplanationAndCodeLine = (
+  operation: LinkedListOperation,
+  subOperation: string,
+): Pick<StepInstruction, 'codeLine' | 'explanationStep'> => {
   switch (operation) {
     case 'search':
       switch (subOperation) {
@@ -211,9 +216,6 @@ const getExplanationAndCodeLine = (operation, subOperation) => {
         default:
           return {};
       }
-
-    default:
-      return [];
   }
 };
 

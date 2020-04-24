@@ -30,12 +30,8 @@ export class Test extends Component {
     this.ref = React.createRef();
   }
 
-  handleStepChange = (stateInNewStep, stepIndex) => {
-    const { data, currentNode } = stateInNewStep;
-    let changes = {};
-    if (data) changes.data = data;
-    if (currentNode !== undefined) changes.currentNode = currentNode;
-    this.setState({ ...changes, currentStep: stepIndex });
+  handleStepChange = stepIndex => {
+    this.setState({ currentStep: stepIndex });
   };
 
   handleApiChange = newApi => {
@@ -174,7 +170,6 @@ export class Test extends Component {
     const { currentApi, parameters, data } = this.state;
     if (!currentApi) return [];
     const stepDescription = linkedListInstruction(data, currentApi, parameters);
-    console.log('stepDescription', stepDescription);
     this.setState({ stepDescription });
   }
 
@@ -224,6 +219,8 @@ export class Test extends Component {
       ['data', 'currentNode'],
     );
 
+    const instructions = stepDescription.map(({ actions }) => actions || []);
+
     return (
       <VisualAlgo
         code={code[currentApi]}
@@ -245,6 +242,8 @@ export class Test extends Component {
               y={200}
               currentStep={currentStep}
               totalStep={stepDescription.length - 1}
+              instructions={instructions}
+              initialData={data}
               currentState={{
                 data,
                 currentNode,

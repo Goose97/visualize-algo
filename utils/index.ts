@@ -26,7 +26,20 @@ export const produceFullState = (
   return result;
 };
 
-export function promiseSetState(newState: Record<string, any>) {
+export function promiseSetState(
+  newState: Record<string, any>,
+): Promise<undefined> {
   //@ts-ignore
   return new Promise(resolve => this.setState(newState, () => resolve()));
 }
+
+export const compactObject = (object: ObjectType) => {
+  for (let property in object) {
+    if (object.hasOwnProperty(property)) {
+      if (object[property] === undefined || object[property] === null)
+        delete object[property];
+    }
+  }
+
+  return object;
+};

@@ -7,7 +7,7 @@ import {
   ProgressControl,
   ApiController,
 } from '../../components';
-import { promiseSetState } from 'utils';
+import { promiseSetState, compactObject } from 'utils';
 import { IProps, IState } from './index.d';
 import './style.scss';
 
@@ -61,18 +61,18 @@ export class VisualAlgo extends Component<IProps, IState> {
     const { autoPlay } = this.state;
     const { stepDescription, onStepChange } = this.props;
     if (newStep >= stepDescription.length) return;
-    const { state: stateInNewStep, duration } = stepDescription[newStep];
-    if (stateInNewStep) {
-      this.setState({ ...stateInNewStep }, () => {
-        if (autoPlay) {
-          this.caculateProgress() !== 100
-            ? this.scheduleNextStepConsumation(duration)
-            : this.handleTogglePlay(false);
-        }
-      });
+    const { codeLine, explanationStep, duration } = stepDescription[newStep];
+    const newState = compactObject({ codeLine, explanationStep });
+    //@ts-ignore
+    this.setState(newState, () => {
+      if (autoPlay) {
+        this.caculateProgress() !== 100
+          ? this.scheduleNextStepConsumation(duration)
+          : this.handleTogglePlay(false);
+      }
+    });
 
-      onStepChange && onStepChange(stateInNewStep, newStep);
-    }
+    onStepChange && onStepChange(newStep);
   }
 
   scheduleNextStepConsumation(wait: number) {
