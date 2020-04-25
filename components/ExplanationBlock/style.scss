@@ -1,4 +1,4 @@
-@import '../../styles/base.scss';
+@use '../../styles/_base.scss' as *;
 
 .explanation-block__wrapper {
   padding: 15px 30px;

@@ -85,51 +85,51 @@ export class LinkedList extends Component<IProps, IState> {
     }
   }
 
-  getActionAndParams(previousState, currentState, noAnimation = false) {
-    const { data: newData, currentNode } = currentState;
-    let actions = [];
+  // getActionAndParams(previousState, currentState, noAnimation = false) {
+  //   const { data: newData, currentNode } = currentState;
+  //   let actions = [];
 
-    // Detect changes in data
-    const oldData = previousState.data;
-    for (let i = 0; i < Math.max(newData.length, oldData.length); i++) {
-      let action;
-      if (oldData[i] !== newData[i]) {
-        // there is some changes
-        if (oldData.length < newData.length) {
-          action = {
-            name: 'addNode',
-            params: [newData[i], i],
-          };
-        } else if (oldData.length > newData.length) {
-          action = {
-            name: 'removeNode',
-            params: [i],
-          };
-        }
+  //   // Detect changes in data
+  //   const oldData = previousState.data;
+  //   for (let i = 0; i < Math.max(newData.length, oldData.length); i++) {
+  //     let action;
+  //     if (oldData[i] !== newData[i]) {
+  //       // there is some changes
+  //       if (oldData.length < newData.length) {
+  //         action = {
+  //           name: 'addNode',
+  //           params: [newData[i], i],
+  //         };
+  //       } else if (oldData.length > newData.length) {
+  //         action = {
+  //           name: 'removeNode',
+  //           params: [i],
+  //         };
+  //       }
 
-        action && actions.push(action);
-        break;
-      }
-    }
+  //       action && actions.push(action);
+  //       break;
+  //     }
+  //   }
 
-    // Detect changes in currentNode
-    if (currentNode !== previousState.currentNode) {
-      // Trường hợp currentNode === null nghĩa là đang unfocus tất cả các node
-      if (noAnimation || currentNode === null) {
-        actions.push({
-          name: 'focusNode',
-          params: [currentNode],
-        });
-      } else {
-        actions.push({
-          name: 'visitNode',
-          params: [currentNode],
-        });
-      }
-    }
+  //   // Detect changes in currentNode
+  //   if (currentNode !== previousState.currentNode) {
+  //     // Trường hợp currentNode === null nghĩa là đang unfocus tất cả các node
+  //     if (noAnimation || currentNode === null) {
+  //       actions.push({
+  //         name: 'focusNode',
+  //         params: [currentNode],
+  //       });
+  //     } else {
+  //       actions.push({
+  //         name: 'visitNode',
+  //         params: [currentNode],
+  //       });
+  //     }
+  //   }
 
-    return actions;
-  }
+  //   return actions;
+  // }
 
   // blockInfo is the single source of truth - all the data structure state is hold
   // in this object

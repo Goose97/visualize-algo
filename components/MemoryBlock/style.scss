@@ -1,4 +1,4 @@
-@import '../../styles/base.scss';
+@use '../../styles/_base.scss' as *;
 
 .memory-block__wrapper {
   .memory-block__block {

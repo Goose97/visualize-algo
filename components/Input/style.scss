@@ -1,4 +1,4 @@
-@import '../../styles/base.scss';
+@use '../../styles/_base.scss' as *;
 
 .visual-algo-input__wrapper {
   @extend .has-transition;

@@ -1,4 +1,4 @@
-@import '../../styles/base.scss';
+@use '../../styles/_base.scss' as *;
 
 .progress-control__wrapper {
   padding: 10px;
@@ -7,7 +7,7 @@
   width: 40vw;
   max-width: 600px;
   align-items: center;
-  
+
   .progress-control__button-wrapper {
     @extend .il-fx;
     @extend .shadow;

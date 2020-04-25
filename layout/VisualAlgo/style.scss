@@ -1,4 +1,4 @@
-@import '../../styles/base.scss';
+@use '../../styles/_base.scss' as *;
 
 .visual-container {
   border: $border-style;
