@@ -6,7 +6,7 @@ import transformData from 'components/DataTransformer';
 import HeadPointer from './HeadPointer';
 import { promiseSetState } from 'utils';
 import { withReverseStep } from 'hocs';
-import { LinkedListModel, IProps, IState } from './index.d';
+import { LinkedListModel, LinkedListMethod, IProps, IState } from './index.d';
 import { Action } from 'types';
 
 export class LinkedList extends Component<IProps, IState> {
@@ -248,11 +248,14 @@ export class LinkedList extends Component<IProps, IState> {
     this.setState({ nodeAboutToVisit: blockInfo[nodeIndex].key });
   }
 
-  handleFinishFollowLink = startBlockIndex => () => {
+  handleFinishFollowLink = (startBlockIndex: number) => () => {
     // mark the node who hold the link as visited
-    const destinationNodeIndex = this.findNextBlock(startBlockIndex, true);
+    const destinationNodeIndex = this.findNextBlock(
+      startBlockIndex,
+      true,
+    ) as number;
     this.setState({
-      nodeAboutToVisit: null,
+      nodeAboutToVisit: undefined,
       blockInfo: this.produceNewBlockInfo('visit', {
         index: startBlockIndex,
       }),
@@ -262,7 +265,7 @@ export class LinkedList extends Component<IProps, IState> {
     this.focusNode(destinationNodeIndex);
   };
 
-  removeNode(nodeIndex) {
+  removeNode(nodeIndex: number) {
     const params = [nodeIndex];
     this.pushReverseAction('reverseRemoveNode', params);
 
@@ -274,7 +277,7 @@ export class LinkedList extends Component<IProps, IState> {
     this.setState({ blockInfo: newBlockInfo });
   }
 
-  addNode(value, nodeIndex) {
+  addNode(value: number, nodeIndex: number) {
     const params = [value, nodeIndex];
     this.pushReverseAction('reverseAddNode', params);
 
@@ -299,14 +302,14 @@ export class LinkedList extends Component<IProps, IState> {
     }, 800);
   }
 
-  produceNewBlockInfo(operation, payload) {
+  produceNewBlockInfo(operation: LinkedListMethod, payload: Object) {
     const { blockInfo } = this.state;
     return transformData('linkedList', blockInfo, operation, payload);
   }
 
   // nodeAboutToAppear is a list of node which already in the state
   // but about to get animated to appear
-  addOrRemoveNodeAboutToAppear(nodeKey) {
+  addOrRemoveNodeAboutToAppear(nodeKey: number) {
     const { nodeAboutToAppear } = this.state;
     if (nodeAboutToAppear.has(nodeKey)) {
       const cloneState = new Set(nodeAboutToAppear);
@@ -319,7 +322,7 @@ export class LinkedList extends Component<IProps, IState> {
     }
   }
 
-  toggleNodeVisibility(nodeIndex) {
+  toggleNodeVisibility(nodeIndex: number) {
     const { blockInfo } = this.state;
     const newPosition = produce(blockInfo, draft => {
       const oldVisibleState = draft[nodeIndex].visible;
@@ -328,7 +331,7 @@ export class LinkedList extends Component<IProps, IState> {
     this.setState({ blockInfo: newPosition });
   }
 
-  renderPointerLinkForMemoryBlock(blockIndex) {
+  renderPointerLinkForMemoryBlock(blockIndex: number) {
     const { blockInfo } = this.state;
     const startAndFinish = this.caculateStartAndFinishOfPointer(blockIndex);
     let { visible, visited, key } = blockInfo[blockIndex];
@@ -428,19 +431,19 @@ export class LinkedList extends Component<IProps, IState> {
 
   handleFastForward() {
     const { blockInfo } = this.state;
-    const { fullState } = this.props;
-    let prevState = fullState[0];
-    let actions = [];
-    for (let i = 1; i < fullState.length; i++) {
-      const currentState = fullState[i];
-      const action = this.getActionAndParams(prevState, currentState, true);
-      actions.push(...action);
-      prevState = currentState;
-    }
+    const { instructions } = this.props;
 
+    const allActions = instructions
+      .reduce((acc, instruction) => acc.concat(instruction), [])
+      .map(instruction => {
+        const { name, params } = instruction;
+        return name === 'visitNode'
+          ? { name: 'focusNode', params }
+          : instruction;
+      });
     let finalBlockInfo = blockInfo;
-    for (let i = 0; i < actions.length; i++) {
-      finalBlockInfo = this.produceNewState(actions[i], finalBlockInfo);
+    for (let i = 0; i < allActions.length; i++) {
+      finalBlockInfo = this.produceNewState(allActions[i], finalBlockInfo);
     }
 
     this.updateWithoutAnimation(finalBlockInfo);

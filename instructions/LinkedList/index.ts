@@ -41,6 +41,7 @@ const searchInstruction = (data: number[], { value }: SearchParams) => {
   let index = 0;
   let found = false;
   instructions.push({
+    actions: [{ name: 'focusNode', params: [0] }],
     ..._getExplanationAndCodeLine('init'),
   });
 

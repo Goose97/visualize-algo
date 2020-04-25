@@ -1,4 +1,5 @@
 import { Action } from 'types';
+import { LinkedListOperation } from 'instructions/LinkedList/index.d';
 
 export type LinkedListModel = LinkedListNodeModel[];
 export interface LinkedListNodeModel {
@@ -29,3 +30,11 @@ export interface IState {
   nodeAboutToVisit?: number;
   isVisible: boolean;
 }
+
+type LinkedListReverseMethod =
+  | 'reverseInsert'
+  | 'reverseDelete'
+  | 'reverseVisit'
+  | 'reverseFocus';
+
+export type LinkedListMethod = LinkedListOperation | LinkedListReverseMethod;
