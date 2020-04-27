@@ -1,5 +1,5 @@
 import { Action } from 'types';
-import { LinkedListOperation } from 'instructions/LinkedList/index.d';
+import { WithReverseStep } from '../../hocs/withReverseStep';
 
 export type LinkedListModel = LinkedListNodeModel[];
 export interface LinkedListNodeModel {
@@ -13,7 +13,7 @@ export interface LinkedListNodeModel {
   focus: boolean;
 }
 
-export interface IProps {
+export type IProps = {
   x: number;
   y: number;
   currentStep: number;
@@ -22,7 +22,7 @@ export interface IProps {
   currentState: any;
   fullState: any;
   initialData: number[];
-}
+} & WithReverseStep;
 
 export interface IState {
   blockInfo: LinkedListModel;
@@ -31,10 +31,10 @@ export interface IState {
   isVisible: boolean;
 }
 
+type LinkedListNormalMethod = 'add' | 'delete' | 'visit' | 'focus';
 type LinkedListReverseMethod =
-  | 'reverseInsert'
+  | 'reverseAdd'
   | 'reverseDelete'
   | 'reverseVisit'
   | 'reverseFocus';
-
-export type LinkedListMethod = LinkedListOperation | LinkedListReverseMethod;
+export type LinkedListMethod = LinkedListNormalMethod | LinkedListReverseMethod;

@@ -1,5 +1,4 @@
 import Head from "next/head";
-import "styles/base.scss";
 
 const Home = () => (
   <div className="container">

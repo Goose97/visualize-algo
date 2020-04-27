@@ -2,11 +2,17 @@ import React, { Component } from 'react';
 import produce from 'immer';
 
 import { MemoryBlock, PointerLink } from 'components';
-import transformData from 'components/DataTransformer';
+import transformModel from './ModelTransformer';
 import HeadPointer from './HeadPointer';
 import { promiseSetState } from 'utils';
 import { withReverseStep } from 'hocs';
-import { LinkedListModel, LinkedListMethod, IProps, IState } from './index.d';
+import {
+  LinkedListModel,
+  LinkedListMethod,
+  IProps,
+  IState,
+  LinkedListNodeModel,
+} from './index.d';
 import { Action } from 'types';
 
 export class LinkedList extends Component<IProps, IState> {
@@ -148,7 +154,7 @@ export class LinkedList extends Component<IProps, IState> {
           key: this.key++,
           visible: true,
         };
-        const newBlockInfo = transformData('linkedList', blockInfo, 'add', {
+        const newBlockInfo = transformModel(blockInfo, 'add', {
           nodeData: newNodeData,
         });
         return newBlockInfo;
@@ -156,21 +162,16 @@ export class LinkedList extends Component<IProps, IState> {
 
       case 'reverseAddNode': {
         const [value, index] = params;
-        const newBlockInfo = transformData(
-          'linkedList',
-          blockInfo,
-          'reverseAdd',
-          {
-            index,
-            value,
-          },
-        );
+        const newBlockInfo = transformModel(blockInfo, 'reverseAdd', {
+          index,
+          value,
+        });
         return newBlockInfo;
       }
 
       case 'removeNode': {
         const [index] = params;
-        const newBlockInfo = transformData('linkedList', blockInfo, 'remove', {
+        const newBlockInfo = transformModel(blockInfo, 'remove', {
           index,
         });
         return newBlockInfo;
@@ -178,14 +179,9 @@ export class LinkedList extends Component<IProps, IState> {
 
       case 'reverseRemoveNode': {
         const [index] = params;
-        const newBlockInfo = transformData(
-          'linkedList',
-          blockInfo,
-          'reverseRemove',
-          {
-            index,
-          },
-        );
+        const newBlockInfo = transformModel(blockInfo, 'reverseRemove', {
+          index,
+        });
         return newBlockInfo;
       }
 
@@ -195,7 +191,7 @@ export class LinkedList extends Component<IProps, IState> {
 
       case 'focusNode': {
         const [index] = params;
-        const newBlockInfo = transformData('linkedList', blockInfo, 'focus', {
+        const newBlockInfo = transformModel(blockInfo, 'focus', {
           index,
         });
         return newBlockInfo;
@@ -304,7 +300,7 @@ export class LinkedList extends Component<IProps, IState> {
 
   produceNewBlockInfo(operation: LinkedListMethod, payload: Object) {
     const { blockInfo } = this.state;
-    return transformData('linkedList', blockInfo, operation, payload);
+    return transformModel(blockInfo, operation, payload);
   }
 
   // nodeAboutToAppear is a list of node which already in the state
@@ -362,7 +358,7 @@ export class LinkedList extends Component<IProps, IState> {
     };
     let finish;
     if (nextVisibleBlock && visible) {
-      let { x: x1, y: y1 } = nextVisibleBlock;
+      let { x: x1, y: y1 } = nextVisibleBlock as LinkedListNodeModel;
 
       if (nodeAboutToAppear.has(key)) {
         finish = { ...start };
@@ -380,7 +376,7 @@ export class LinkedList extends Component<IProps, IState> {
   isLinkNeedToBeFollowed(startBlockIndex: number) {
     const { nodeAboutToVisit } = this.state;
     const nextVisibleBlock = this.findNextBlock(startBlockIndex) as
-      | LinkedListModel
+      | LinkedListNodeModel
       | undefined;
     return nextVisibleBlock && nextVisibleBlock.key === nodeAboutToVisit;
   }

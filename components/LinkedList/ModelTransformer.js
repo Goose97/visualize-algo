@@ -2,14 +2,7 @@ import produce from 'immer';
 
 // Nhận vào trạng thái hiện tại của data structure
 // và operation tương ứng. Trả về trạng thái mới
-const transformData = (type, ...args) => {
-  switch (type) {
-    case 'linkedList':
-      return transformLinkedListData(...args);
-  }
-};
-
-const transformLinkedListData = (currentData, operation, payload) => {
+const transformLinkedListModel = (currentData, operation, payload) => {
   switch (operation) {
     case 'remove': {
       const { index } = payload;
@@ -81,4 +74,4 @@ const transformLinkedListData = (currentData, operation, payload) => {
   }
 };
 
-export default transformData;
+export default transformLinkedListModel;
