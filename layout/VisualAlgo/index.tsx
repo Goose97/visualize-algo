@@ -9,7 +9,6 @@ import {
 } from '../../components';
 import { promiseSetState, compactObject } from 'utils';
 import { IProps, IState } from './index.d';
-import './style.scss';
 
 const DEFAULT_WAIT = 1500;
 

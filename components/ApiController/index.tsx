@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Select from 'react-select';
 
 import { IProps } from './index.d';
-import './style.scss';
+// import './style.scss';
 
 const arrowRightIcon = (
   <i aria-label='icon: right'>

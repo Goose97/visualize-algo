@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import { withExtendClassName } from 'hocs';
 import { IProps } from './index.d';
-import './style.scss';
 
 export class Input extends Component<IProps> {
   handleInputValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {

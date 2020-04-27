@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import { classNameHelper } from 'utils';
 import { IProps } from './index.d';
-import './style.scss';
 
 export class ExplanationBlock extends Component<IProps> {
   produceClassNameForStep(stepIndex: number) {

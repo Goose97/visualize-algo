@@ -11,7 +11,6 @@ import {
 
 import { classNameHelper } from 'utils';
 import { IProps } from './index.d';
-import './style.scss';
 
 export class ProgressControl extends Component<IProps> {
   handleControlProgress = (index: number) => () => {

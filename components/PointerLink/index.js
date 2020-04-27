@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import { classNameHelper } from 'utils';
-import './style.scss';
 
 const ANIMATION_STEP_COUNT = 20;
 

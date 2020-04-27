@@ -3,7 +3,6 @@ import Prism from 'prismjs';
 
 import LineHighlight from './LineHightlight';
 import './prism.css';
-import './style.scss';
 
 export class CodeBlock extends Component {
   constructor(props) {

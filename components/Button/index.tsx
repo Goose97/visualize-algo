@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { classNameHelper } from 'utils';
 
 import { IProps } from './index.d';
-import './style.scss';
+// import './style.scss';
 
 export class Button extends Component<IProps> {
   produceClassName() {
