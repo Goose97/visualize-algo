@@ -1,3 +1,8 @@
+import {
+  LINKED_LIST_BLOCK_WIDTH,
+  LINKED_LIST_BLOCK_HEIGHT,
+} from '../../constants';
+
 const HeadPointer = props => {
   const { headBlock } = props;
   if (headBlock) {

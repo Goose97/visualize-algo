@@ -11,3 +11,8 @@ export interface Action {
   name: string;
   params: Array<any>;
 }
+
+export interface PointCoordinate {
+  x: number;
+  y: number;
+}

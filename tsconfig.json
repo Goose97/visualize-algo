@@ -10,7 +10,6 @@
     "paths": {
       "utils/*": ["./utils/*"],
       "hocs/*": ["./hocs/*"],
-      "constants/*": ["./constants/*"]
     },
     "module": "esnext",
     "moduleResolution": "node",

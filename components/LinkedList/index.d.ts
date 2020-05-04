@@ -11,6 +11,7 @@ export interface LinkedListNodeModel {
   visible: boolean;
   visited: boolean;
   focus: boolean;
+  label?: string;
 }
 
 export type IProps = {
@@ -31,10 +32,11 @@ export interface IState {
   isVisible: boolean;
 }
 
-type LinkedListNormalMethod = 'add' | 'delete' | 'visit' | 'focus';
+type LinkedListNormalMethod = 'add' | 'delete' | 'visit' | 'focus' | 'label';
 type LinkedListReverseMethod =
   | 'reverseAdd'
   | 'reverseDelete'
   | 'reverseVisit'
-  | 'reverseFocus';
+  | 'reverseFocus'
+  | 'reverseLabel';
 export type LinkedListMethod = LinkedListNormalMethod | LinkedListReverseMethod;

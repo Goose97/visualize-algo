@@ -1,4 +1,1 @@
-module.exports = {
-  LINKED_LIST_BLOCK_WIDTH: 80,
-  LINKED_LIST_BLOCK_HEIGHT: 40
-};
+module.exports = {};

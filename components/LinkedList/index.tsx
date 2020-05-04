@@ -14,6 +14,10 @@ import {
   LinkedListNodeModel,
 } from './index.d';
 import { Action } from 'types';
+import {
+  LINKED_LIST_BLOCK_WIDTH,
+  LINKED_LIST_BLOCK_HEIGHT,
+} from '../../constants';
 
 export class LinkedList extends Component<IProps, IState> {
   private initialBlockInfo: LinkedListModel;
@@ -32,7 +36,7 @@ export class LinkedList extends Component<IProps, IState> {
     this.promiseSetState = promiseSetState.bind(this);
   }
 
-  initiateMemoryBlockInfo(props: IProps) {
+  initiateMemoryBlockInfo(props: IProps): LinkedListModel {
     const { initialData } = props;
     return initialData.map((value, index) => ({
       ...this.caculateBlockCoordinate(index),
@@ -91,53 +95,7 @@ export class LinkedList extends Component<IProps, IState> {
     }
   }
 
-  // getActionAndParams(previousState, currentState, noAnimation = false) {
-  //   const { data: newData, currentNode } = currentState;
-  //   let actions = [];
-
-  //   // Detect changes in data
-  //   const oldData = previousState.data;
-  //   for (let i = 0; i < Math.max(newData.length, oldData.length); i++) {
-  //     let action;
-  //     if (oldData[i] !== newData[i]) {
-  //       // there is some changes
-  //       if (oldData.length < newData.length) {
-  //         action = {
-  //           name: 'addNode',
-  //           params: [newData[i], i],
-  //         };
-  //       } else if (oldData.length > newData.length) {
-  //         action = {
-  //           name: 'removeNode',
-  //           params: [i],
-  //         };
-  //       }
-
-  //       action && actions.push(action);
-  //       break;
-  //     }
-  //   }
-
-  //   // Detect changes in currentNode
-  //   if (currentNode !== previousState.currentNode) {
-  //     // Trường hợp currentNode === null nghĩa là đang unfocus tất cả các node
-  //     if (noAnimation || currentNode === null) {
-  //       actions.push({
-  //         name: 'focusNode',
-  //         params: [currentNode],
-  //       });
-  //     } else {
-  //       actions.push({
-  //         name: 'visitNode',
-  //         params: [currentNode],
-  //       });
-  //     }
-  //   }
-
-  //   return actions;
-  // }
-
-  // blockInfo is the single source of truth - all the data structure state is hold
+  // blockInfo is the single source of truth - all the state of the data structure is hold
   // in this object
   produceNewState(
     action: Action,
@@ -146,33 +104,37 @@ export class LinkedList extends Component<IProps, IState> {
     const { name, params } = action;
     switch (name) {
       case 'addNode': {
-        const [value, nodeIndex] = params;
+        const [value, previousNodeKey, newNodeKey] = params;
+        const previousNodeIndex = blockInfo.findIndex(
+          ({ key }) => key === previousNodeKey,
+        );
         const newNodeData = {
-          ...this.caculateBlockCoordinate(nodeIndex),
+          ...this.caculateBlockCoordinate(previousNodeIndex + 1),
           value,
-          index: nodeIndex,
-          key: this.key++,
+          index: previousNodeIndex + 1,
+          key: newNodeKey,
           visible: true,
         };
         const newBlockInfo = transformModel(blockInfo, 'add', {
           nodeData: newNodeData,
+          previousNodeKey,
         });
         return newBlockInfo;
       }
 
       case 'reverseAddNode': {
-        const [value, index] = params;
+        const [value, nodeKey] = params;
         const newBlockInfo = transformModel(blockInfo, 'reverseAdd', {
-          index,
+          key: nodeKey,
           value,
         });
         return newBlockInfo;
       }
 
       case 'removeNode': {
-        const [index] = params;
+        const [key] = params;
         const newBlockInfo = transformModel(blockInfo, 'remove', {
-          index,
+          key,
         });
         return newBlockInfo;
       }
@@ -190,9 +152,18 @@ export class LinkedList extends Component<IProps, IState> {
       }
 
       case 'focusNode': {
-        const [index] = params;
+        const [key] = params;
         const newBlockInfo = transformModel(blockInfo, 'focus', {
-          index,
+          key,
+        });
+        return newBlockInfo;
+      }
+
+      case 'labelNode': {
+        const [label, key] = params;
+        const newBlockInfo = transformModel(blockInfo, 'label', {
+          label,
+          key,
         });
         return newBlockInfo;
       }
@@ -204,38 +175,51 @@ export class LinkedList extends Component<IProps, IState> {
 
   getCurrentFocusNode() {
     const { blockInfo } = this.state;
-    return blockInfo.findIndex(({ focus }) => !!focus);
+    const focusNode = blockInfo.find(({ focus }) => !!focus);
+    return focusNode ? focusNode.key : null;
   }
 
   caculateBlockCoordinate(blockIndex: number) {
     const { x: baseX, y: baseY } = this.props;
-    //@ts-ignore
     return { x: baseX + blockIndex * (2 * LINKED_LIST_BLOCK_WIDTH), y: baseY };
   }
 
-  focusNode(nodeIndex: number) {
+  focusNode(nodeKey: number) {
     const currentFocusNode = this.getCurrentFocusNode();
     this.pushReverseAction('reverseFocusNode', [currentFocusNode]);
 
     const action = {
       name: 'focusNode',
-      params: [nodeIndex],
+      params: [nodeKey],
     };
     const newBlockInfo = this.produceNewState(action);
     this.setState({ blockInfo: newBlockInfo });
   }
 
-  visitNode(nodeIndex: number) {
+  labelNode(label: string, nodeKey: number) {
+    const { blockInfo } = this.state;
+    const nodeToLabel = blockInfo.find(({ key }) => key === nodeKey);
+    this.pushReverseAction('reverseLabelNode', [nodeToLabel?.label, nodeKey]);
+
+    const action = {
+      name: 'labelNode',
+      params: [label, nodeKey],
+    };
+    const newBlockInfo = this.produceNewState(action);
+    this.setState({ blockInfo: newBlockInfo });
+  }
+
+  visitNode(nodeKey: number) {
     // Nếu node không phải node đầu tiên thì ta sẽ thực thi hàm followLinkToNode
     // Hàm này chịu trách nhiệm thực hiện animation, sau khi animation hoàn thành
     // callbackk handleFinishFollowLink sẽ được thực hiện
     // Nếu node là node đầu tiên thì ta không có animation để thực hiện, focus luôn vào node
     const currentFocusNode = this.getCurrentFocusNode();
     this.pushReverseAction('reverseVisitNode', [currentFocusNode]);
-    if (nodeIndex !== 0) {
-      this.followLinkToNode(nodeIndex);
+    if (nodeKey !== 0) {
+      this.followLinkToNode(nodeKey);
     } else {
-      this.focusNode(nodeIndex);
+      this.focusNode(nodeKey);
     }
   }
 
@@ -261,8 +245,8 @@ export class LinkedList extends Component<IProps, IState> {
     this.focusNode(destinationNodeIndex);
   };
 
-  removeNode(nodeIndex: number) {
-    const params = [nodeIndex];
+  removeNode(nodeKey: number) {
+    const params = [nodeKey];
     this.pushReverseAction('reverseRemoveNode', params);
 
     const action = {
@@ -273,9 +257,9 @@ export class LinkedList extends Component<IProps, IState> {
     this.setState({ blockInfo: newBlockInfo });
   }
 
-  addNode(value: number, nodeIndex: number) {
-    const params = [value, nodeIndex];
-    this.pushReverseAction('reverseAddNode', params);
+  addNode(value: number, previousNodeKey: number, newNodeKey: number) {
+    const params = [value, previousNodeKey, newNodeKey];
+    this.pushReverseAction('reverseAddNode', [value, newNodeKey]);
 
     const action = {
       name: 'addNode',
@@ -285,16 +269,15 @@ export class LinkedList extends Component<IProps, IState> {
     // We have to turn off visibility for the new node
     // For the purpose of doing animation
     newBlockInfo = produce(newBlockInfo, draft => {
-      const nodeTurnVisibleFalse = { ...draft[nodeIndex], visible: false };
-      draft[nodeIndex] = nodeTurnVisibleFalse;
+      let newBlock = draft.find(({ key }) => key === newNodeKey);
+      newBlock!.visible = false;
     });
     this.setState({ blockInfo: newBlockInfo });
 
-    const keyOfNewNode = this.key - 1;
-    this.addOrRemoveNodeAboutToAppear(keyOfNewNode);
+    this.addOrRemoveNodeAboutToAppear(newNodeKey);
     setTimeout(() => {
-      this.toggleNodeVisibility(nodeIndex);
-      this.addOrRemoveNodeAboutToAppear(keyOfNewNode);
+      this.toggleNodeVisibility(newNodeKey);
+      this.addOrRemoveNodeAboutToAppear(newNodeKey);
     }, 800);
   }
 
@@ -318,11 +301,12 @@ export class LinkedList extends Component<IProps, IState> {
     }
   }
 
-  toggleNodeVisibility(nodeIndex: number) {
+  toggleNodeVisibility(nodeKey: number) {
     const { blockInfo } = this.state;
     const newPosition = produce(blockInfo, draft => {
-      const oldVisibleState = draft[nodeIndex].visible;
-      draft[nodeIndex].visible = !oldVisibleState;
+      const targetBlock = draft.find(({ key }) => key === nodeKey);
+      const oldVisibleState = targetBlock!.visible;
+      targetBlock!.visible = !oldVisibleState;
     });
     this.setState({ blockInfo: newPosition });
   }
@@ -351,9 +335,7 @@ export class LinkedList extends Component<IProps, IState> {
     let nextVisibleBlock = this.findNextBlock(blockIndex);
 
     const start = {
-      //@ts-ignore
       x: x + LINKED_LIST_BLOCK_WIDTH - 10,
-      //@ts-ignore
       y: y + LINKED_LIST_BLOCK_HEIGHT / 2,
     };
     let finish;
@@ -363,7 +345,6 @@ export class LinkedList extends Component<IProps, IState> {
       if (nodeAboutToAppear.has(key)) {
         finish = { ...start };
       } else {
-        //@ts-ignore
         finish = { x: x1, y: y1 + LINKED_LIST_BLOCK_HEIGHT / 2 };
       }
       return { start, finish };
@@ -392,35 +373,43 @@ export class LinkedList extends Component<IProps, IState> {
     }
   }
 
-  reverseAddNode = (value: number, nodeIndex: number) => {
+  reverseAddNode = (value: number, nodeKey: number) => {
     const action = {
       name: 'reverseAddNode',
-      params: [value, nodeIndex],
+      params: [value, nodeKey],
     };
     const newBlockInfo = this.produceNewState(action);
     this.promiseSetState({ blockInfo: newBlockInfo });
   };
 
-  reverseRemoveNode = (nodeIndex: number) => {
+  reverseRemoveNode = (nodeKey: number) => {
     const action = {
       name: 'reverseRemoveNode',
-      params: [nodeIndex],
+      params: [nodeKey],
     };
     const newBlockInfo = this.produceNewState(action);
     this.promiseSetState({ blockInfo: newBlockInfo });
   };
 
   // TODO need change
-  reverseVisitNode = (nodeIndex: number) => {
+  reverseVisitNode = (nodeKey: number) => {
     const newBlockInfo = this.produceNewBlockInfo('reverseVisit', {
-      index: nodeIndex,
+      key: nodeKey,
     });
     this.promiseSetState({ blockInfo: newBlockInfo });
   };
 
-  reverseFocusNode = (previousFocusNode: number) => {
+  reverseFocusNode = (previousFocusNodeKey: number) => {
     const newBlockInfo = this.produceNewBlockInfo('reverseFocus', {
-      index: previousFocusNode,
+      key: previousFocusNodeKey,
+    });
+    return this.promiseSetState({ blockInfo: newBlockInfo });
+  };
+
+  reverseLabelNode = (oldLabel: string | undefined, nodeKey: number) => {
+    const newBlockInfo = this.produceNewBlockInfo('label', {
+      key: nodeKey,
+      label: oldLabel,
     });
     return this.promiseSetState({ blockInfo: newBlockInfo });
   };
@@ -458,11 +447,7 @@ export class LinkedList extends Component<IProps, IState> {
   render() {
     const { blockInfo, isVisible } = this.state;
     const listMemoryBlock = blockInfo.map(blockInfo => (
-      <MemoryBlock
-        {...blockInfo}
-        name={blockInfo.key}
-        focus={!!blockInfo.focus}
-      />
+      <MemoryBlock {...blockInfo} name={blockInfo.key} />
     ));
 
     const listPointerLink = blockInfo

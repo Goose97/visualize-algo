@@ -24,17 +24,19 @@ export class Instructions {
 export class LinkedListNode {
   val: number;
   next: LinkedListNode | null;
-  constructor(val: number) {
+  key: number;
+  constructor(val: number, key: number) {
     this.val = val;
     this.next = null;
+    this.key = key;
   }
 }
 
 export const initLinkedList = (array: number[]): LinkedListNode => {
   let head: LinkedListNode;
   let current;
-  for (let val of array) {
-    const newNode = new LinkedListNode(val);
+  for (let i = 0; i < array.length; i++) {
+    const newNode = new LinkedListNode(array[i], i);
     if (current) {
       current.next = newNode;
       current = current.next;

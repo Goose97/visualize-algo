@@ -38,7 +38,6 @@ const searchInstruction = (data: number[], { value }: SearchParams) => {
 
   // Start make instruction
   let current: LinkedListNode | null = linkedList;
-  let index = 0;
   let found = false;
   instructions.push({
     actions: [{ name: 'focusNode', params: [0] }],
@@ -56,10 +55,12 @@ const searchInstruction = (data: number[], { value }: SearchParams) => {
       });
     } else {
       current = current.next;
-      index++;
       if (current) {
         instructions.push({
-          actions: [{ name: 'visitNode', params: [index] }],
+          actions: [
+            { name: 'visitNode', params: [current.key] },
+            { name: 'labelNode', params: ['current', current.key] },
+          ],
           ..._getExplanationAndCodeLine('moveNext'),
         });
 
@@ -91,7 +92,7 @@ const insertInstruction = (data: number[], { value, index }: InsertParams) => {
   let currentNode: LinkedListNode | null = linkedList!;
   let currentIndex = 0;
   instructions.push({
-    actions: [{ name: 'focusNode', params: [currentIndex] }],
+    actions: [{ name: 'focusNode', params: [0] }],
     ..._getExplanationAndCodeLine('init'),
   });
 
@@ -102,21 +103,24 @@ const insertInstruction = (data: number[], { value, index }: InsertParams) => {
 
     if (currentNode) {
       instructions.push({
-        actions: [{ name: 'visitNode', params: [currentIndex] }],
+        actions: [{ name: 'visitNode', params: [currentNode.key] }],
         ..._getExplanationAndCodeLine('findPosition'),
       });
     }
   }
 
   if (index === currentIndex) {
-    let newNode = new LinkedListNode(value);
+    let newNode = new LinkedListNode(value, data.length);
     previousNode!.next = newNode;
     newNode.next = currentNode;
+
+    instructions.push({
+      actions: [
+        { name: 'addNode', params: [value, previousNode!.key, newNode.key] },
+      ],
+      ..._getExplanationAndCodeLine('insert'),
+    });
   }
-  instructions.push({
-    actions: [{ name: 'addNode', params: [value, currentIndex] }],
-    ..._getExplanationAndCodeLine('insert'),
-  });
 
   instructions.push({
     actions: [{ name: 'focusNode', params: [null] }],
@@ -146,7 +150,9 @@ const deleteInstruction = (data: number[], { index }: DeleteParams) => {
     currentNode = currentNode!.next;
 
     instructions.push({
-      actions: [{ name: 'focusNode', params: [i + 1] }],
+      actions: [
+        { name: 'visitNode', params: [currentNode ? currentNode.key : null] },
+      ],
       ..._getExplanationAndCodeLine('findPosition'),
     });
   }
@@ -154,7 +160,7 @@ const deleteInstruction = (data: number[], { index }: DeleteParams) => {
   previousNode!.next = currentNode!.next;
 
   instructions.push({
-    actions: [{ name: 'removeNode', params: [index] }],
+    actions: [{ name: 'removeNode', params: [currentNode!.key] }],
     ..._getExplanationAndCodeLine('delete'),
   });
 

@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
 
 import { classNameHelper } from 'utils';
+import { IProps, IState } from './index.d';
+import { PointCoordinate } from 'types';
+import {
+  LINKED_LIST_BLOCK_WIDTH,
+  LINKED_LIST_BLOCK_HEIGHT,
+} from '../../constants';
 
 const POINTER_HOLDER_WIDTH = 20;
 
-export class MemoryBlock extends Component {
-  constructor(props) {
+export class MemoryBlock extends Component<IProps, IState> {
+  private original: PointCoordinate;
+  constructor(props: IProps) {
     super(props);
     this.state = {
       transformList: [],
@@ -16,8 +23,8 @@ export class MemoryBlock extends Component {
     };
   }
 
-  componentDidUpdate(prevProps) {
-    ['x', 'y', 'visible'].forEach(attribute =>
+  componentDidUpdate(prevProps: IProps) {
+    (['x', 'y', 'visible'] as Array<keyof IProps>).forEach(attribute =>
       this.checkDiffAndReact(
         prevProps[attribute],
         this.props[attribute],
@@ -26,7 +33,7 @@ export class MemoryBlock extends Component {
     );
   }
 
-  checkDiffAndReact(prev, now, attribute) {
+  checkDiffAndReact(prev: any, now: any, attribute: keyof IProps) {
     switch (attribute) {
       case 'visible':
         return this.checkVisibleAndReact(prev, now);
@@ -37,7 +44,7 @@ export class MemoryBlock extends Component {
     }
   }
 
-  checkVisibleAndReact(prev, now) {
+  checkVisibleAndReact(prev: boolean, now: boolean) {
     if (prev !== now) {
       now ? this.show() : this.hide();
     }
@@ -57,15 +64,15 @@ export class MemoryBlock extends Component {
     }, 500);
   }
 
-  checkXAxisAndReact(prev, now) {
+  checkXAxisAndReact(prev: number, now: number) {
     if (prev !== now) this.move(now - prev, 'horizontal');
   }
 
-  checkYAxisAndReact(prev, now) {
+  checkYAxisAndReact(prev: number, now: number) {
     if (prev !== now) this.move(now - prev, 'vertical');
   }
 
-  move(amount, direction) {
+  move(amount: number, direction: 'horizontal' | 'vertical') {
     const { transformList } = this.state;
     let transformText;
     switch (direction) {
@@ -94,8 +101,8 @@ export class MemoryBlock extends Component {
     const { isHiding, isShowing } = this.state;
     return classNameHelper({
       base: 'memory-block__wrapper has-transition',
-      disappearing: isHiding,
-      appearing: isShowing,
+      disappearing: !!isHiding,
+      appearing: !!isShowing,
       invisible: !visible,
       visited,
       focus,
@@ -103,13 +110,39 @@ export class MemoryBlock extends Component {
   }
 
   constructSeparateLinePath() {
-    return `M ${this.original.x +
-      LINKED_LIST_BLOCK_WIDTH -
-      POINTER_HOLDER_WIDTH} ${this.original.y} v${LINKED_LIST_BLOCK_HEIGHT}`;
+    return `M ${
+      this.original.x + LINKED_LIST_BLOCK_WIDTH - POINTER_HOLDER_WIDTH
+    } ${this.original.y} v${LINKED_LIST_BLOCK_HEIGHT}`;
   }
 
   render() {
-    const { value } = this.props;
+    const { value, label } = this.props;
+
+    const valueText = (
+      <text
+        x={
+          this.original.x + (LINKED_LIST_BLOCK_WIDTH - POINTER_HOLDER_WIDTH) / 2
+        }
+        y={this.original.y + LINKED_LIST_BLOCK_HEIGHT / 2}
+        dominantBaseline='middle'
+        textAnchor='middle'
+        className='memory-block__text'
+      >
+        {value}
+      </text>
+    );
+
+    const labelText = label && (
+      <text
+        x={this.original.x + LINKED_LIST_BLOCK_WIDTH / 2}
+        y={this.original.y - LINKED_LIST_BLOCK_HEIGHT / 2}
+        dominantBaseline='middle'
+        textAnchor='middle'
+        className='memory-block__text italic'
+      >
+        {label}
+      </text>
+    );
 
     return (
       <g
@@ -127,18 +160,8 @@ export class MemoryBlock extends Component {
           d={this.constructSeparateLinePath()}
           className='memory-block__separate-line'
         />
-        <text
-          x={
-            this.original.x +
-            (LINKED_LIST_BLOCK_WIDTH - POINTER_HOLDER_WIDTH) / 2
-          }
-          y={this.original.y + LINKED_LIST_BLOCK_HEIGHT / 2}
-          dominantBaseline='middle'
-          textAnchor='middle'
-          className='memory-block__text'
-        >
-          {value}
-        </text>
+        {valueText}
+        {labelText}
       </g>
     );
   }
