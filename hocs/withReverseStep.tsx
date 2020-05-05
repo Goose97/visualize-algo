@@ -47,8 +47,8 @@ const withReverseStep = <P extends {}>(Page: React.ComponentType<P>) => {
         if (targetStep >= step) return;
 
         //@ts-ignore
-        const handler = this.getRef()[name];
-        const promise = handler && handler(...params);
+        const handler = this.getRef().handleReverse;
+        const promise = handler && handler(name, params);
         await promise;
         this.reverseLogs.pop();
       }

@@ -32,10 +32,10 @@ export interface IState {
   isVisible: boolean;
 }
 
-type LinkedListNormalMethod = 'add' | 'delete' | 'visit' | 'focus' | 'label';
-type LinkedListReverseMethod =
+export type LinkedListNormalMethod = 'add' | 'remove' | 'visit' | 'focus' | 'label';
+export type LinkedListReverseMethod =
   | 'reverseAdd'
-  | 'reverseDelete'
+  | 'reverseRemove'
   | 'reverseVisit'
   | 'reverseFocus'
   | 'reverseLabel';

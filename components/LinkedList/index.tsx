@@ -12,6 +12,7 @@ import {
   IProps,
   IState,
   LinkedListNodeModel,
+  LinkedListReverseMethod,
 } from './index.d';
 import { Action } from 'types';
 import {
@@ -21,7 +22,6 @@ import {
 
 export class LinkedList extends Component<IProps, IState> {
   private initialBlockInfo: LinkedListModel;
-  private key: number;
   private promiseSetState: (state: Record<string, any>) => Promise<undefined>;
   constructor(props: IProps) {
     super(props);
@@ -32,7 +32,6 @@ export class LinkedList extends Component<IProps, IState> {
       nodeAboutToAppear: new Set([]),
       isVisible: true,
     };
-    this.key = this.state.blockInfo.length;
     this.promiseSetState = promiseSetState.bind(this);
   }
 
@@ -103,7 +102,7 @@ export class LinkedList extends Component<IProps, IState> {
   ): LinkedListModel {
     const { name, params } = action;
     switch (name) {
-      case 'addNode': {
+      case 'add': {
         const [value, previousNodeKey, newNodeKey] = params;
         const previousNodeIndex = blockInfo.findIndex(
           ({ key }) => key === previousNodeKey,
@@ -115,58 +114,23 @@ export class LinkedList extends Component<IProps, IState> {
           key: newNodeKey,
           visible: true,
         };
-        const newBlockInfo = transformModel(blockInfo, 'add', {
-          nodeData: newNodeData,
+        const newBlockInfo = transformModel(blockInfo, 'add', [
+          newNodeData,
           previousNodeKey,
-        });
+        ]);
         return newBlockInfo;
       }
 
-      case 'reverseAddNode': {
-        const [value, nodeKey] = params;
-        const newBlockInfo = transformModel(blockInfo, 'reverseAdd', {
-          key: nodeKey,
-          value,
-        });
-        return newBlockInfo;
-      }
-
-      case 'removeNode': {
-        const [key] = params;
-        const newBlockInfo = transformModel(blockInfo, 'remove', {
-          key,
-        });
-        return newBlockInfo;
-      }
-
-      case 'reverseRemoveNode': {
-        const [index] = params;
-        const newBlockInfo = transformModel(blockInfo, 'reverseRemove', {
-          index,
-        });
-        return newBlockInfo;
-      }
-
-      case 'visitNode': {
-        return blockInfo;
-      }
-
-      case 'focusNode': {
-        const [key] = params;
-        const newBlockInfo = transformModel(blockInfo, 'focus', {
-          key,
-        });
-        return newBlockInfo;
-      }
-
-      case 'labelNode': {
-        const [label, key] = params;
-        const newBlockInfo = transformModel(blockInfo, 'label', {
-          label,
-          key,
-        });
-        return newBlockInfo;
-      }
+      case 'reverseAdd':
+      case 'remove':
+      case 'reverseRemove':
+      case 'visit':
+      case 'reverseVisit':
+      case 'focus':
+      case 'reverseFocus':
+      case 'label':
+      case 'reverseLabel':
+        return transformModel(blockInfo, name, params);
 
       default:
         return blockInfo;
@@ -184,42 +148,42 @@ export class LinkedList extends Component<IProps, IState> {
     return { x: baseX + blockIndex * (2 * LINKED_LIST_BLOCK_WIDTH), y: baseY };
   }
 
-  focusNode(nodeKey: number) {
+  focus(nodeKey: number) {
     const currentFocusNode = this.getCurrentFocusNode();
-    this.pushReverseAction('reverseFocusNode', [currentFocusNode]);
+    this.pushReverseAction('reverseFocus', [currentFocusNode]);
 
     const action = {
-      name: 'focusNode',
+      name: 'focus',
       params: [nodeKey],
     };
     const newBlockInfo = this.produceNewState(action);
     this.setState({ blockInfo: newBlockInfo });
   }
 
-  labelNode(label: string, nodeKey: number) {
+  label(label: string, nodeKey: number) {
     const { blockInfo } = this.state;
     const nodeToLabel = blockInfo.find(({ key }) => key === nodeKey);
-    this.pushReverseAction('reverseLabelNode', [nodeToLabel?.label, nodeKey]);
+    this.pushReverseAction('reverseLabel', [nodeToLabel?.label, nodeKey]);
 
     const action = {
-      name: 'labelNode',
+      name: 'label',
       params: [label, nodeKey],
     };
     const newBlockInfo = this.produceNewState(action);
     this.setState({ blockInfo: newBlockInfo });
   }
 
-  visitNode(nodeKey: number) {
+  visit(nodeKey: number) {
     // Nếu node không phải node đầu tiên thì ta sẽ thực thi hàm followLinkToNode
     // Hàm này chịu trách nhiệm thực hiện animation, sau khi animation hoàn thành
     // callbackk handleFinishFollowLink sẽ được thực hiện
     // Nếu node là node đầu tiên thì ta không có animation để thực hiện, focus luôn vào node
     const currentFocusNode = this.getCurrentFocusNode();
-    this.pushReverseAction('reverseVisitNode', [currentFocusNode]);
+    this.pushReverseAction('reverseVisit', [currentFocusNode]);
     if (nodeKey !== 0) {
       this.followLinkToNode(nodeKey);
     } else {
-      this.focusNode(nodeKey);
+      this.focus(nodeKey);
     }
   }
 
@@ -234,35 +198,37 @@ export class LinkedList extends Component<IProps, IState> {
       startBlockIndex,
       true,
     ) as number;
+    const action = {
+      name: 'visit',
+      params: [startBlockIndex],
+    };
     this.setState({
       nodeAboutToVisit: undefined,
-      blockInfo: this.produceNewBlockInfo('visit', {
-        index: startBlockIndex,
-      }),
+      blockInfo: this.produceNewState(action),
     });
 
     // mark the node on the other end as current focus
-    this.focusNode(destinationNodeIndex);
+    this.focus(destinationNodeIndex);
   };
 
-  removeNode(nodeKey: number) {
+  remove(nodeKey: number) {
     const params = [nodeKey];
-    this.pushReverseAction('reverseRemoveNode', params);
+    this.pushReverseAction('reverseRemove', params);
 
     const action = {
-      name: 'removeNode',
+      name: 'remove',
       params,
     };
     const newBlockInfo = this.produceNewState(action);
     this.setState({ blockInfo: newBlockInfo });
   }
 
-  addNode(value: number, previousNodeKey: number, newNodeKey: number) {
+  add(value: number, previousNodeKey: number, newNodeKey: number) {
     const params = [value, previousNodeKey, newNodeKey];
-    this.pushReverseAction('reverseAddNode', [value, newNodeKey]);
+    this.pushReverseAction('reverseAdd', [value, newNodeKey]);
 
     const action = {
-      name: 'addNode',
+      name: 'add',
       params,
     };
     let newBlockInfo = this.produceNewState(action);
@@ -281,7 +247,7 @@ export class LinkedList extends Component<IProps, IState> {
     }, 800);
   }
 
-  produceNewBlockInfo(operation: LinkedListMethod, payload: Object) {
+  produceNewBlockInfo(operation: LinkedListMethod, payload: any[]) {
     const { blockInfo } = this.state;
     return transformModel(blockInfo, operation, payload);
   }
@@ -373,45 +339,12 @@ export class LinkedList extends Component<IProps, IState> {
     }
   }
 
-  reverseAddNode = (value: number, nodeKey: number) => {
+  handleReverse = (actionName: LinkedListReverseMethod, params: any[]) => {
     const action = {
-      name: 'reverseAddNode',
-      params: [value, nodeKey],
+      name: actionName,
+      params,
     };
-    const newBlockInfo = this.produceNewState(action);
-    this.promiseSetState({ blockInfo: newBlockInfo });
-  };
-
-  reverseRemoveNode = (nodeKey: number) => {
-    const action = {
-      name: 'reverseRemoveNode',
-      params: [nodeKey],
-    };
-    const newBlockInfo = this.produceNewState(action);
-    this.promiseSetState({ blockInfo: newBlockInfo });
-  };
-
-  // TODO need change
-  reverseVisitNode = (nodeKey: number) => {
-    const newBlockInfo = this.produceNewBlockInfo('reverseVisit', {
-      key: nodeKey,
-    });
-    this.promiseSetState({ blockInfo: newBlockInfo });
-  };
-
-  reverseFocusNode = (previousFocusNodeKey: number) => {
-    const newBlockInfo = this.produceNewBlockInfo('reverseFocus', {
-      key: previousFocusNodeKey,
-    });
-    return this.promiseSetState({ blockInfo: newBlockInfo });
-  };
-
-  reverseLabelNode = (oldLabel: string | undefined, nodeKey: number) => {
-    const newBlockInfo = this.produceNewBlockInfo('label', {
-      key: nodeKey,
-      label: oldLabel,
-    });
-    return this.promiseSetState({ blockInfo: newBlockInfo });
+    this.promiseSetState({ blockInfo: this.produceNewState(action) });
   };
 
   handleFastForward() {
@@ -422,9 +355,7 @@ export class LinkedList extends Component<IProps, IState> {
       .reduce((acc, instruction) => acc.concat(instruction), [])
       .map(instruction => {
         const { name, params } = instruction;
-        return name === 'visitNode'
-          ? { name: 'focusNode', params }
-          : instruction;
+        return name === 'visit' ? { name: 'focus', params } : instruction;
       });
     let finalBlockInfo = blockInfo;
     for (let i = 0; i < allActions.length; i++) {

@@ -1,11 +1,17 @@
 import produce from 'immer';
 
+import { LinkedListModel, LinkedListMethod } from './index.d';
+
 // Nhận vào trạng thái hiện tại của data structure
 // và operation tương ứng. Trả về trạng thái mới
-const transformLinkedListModel = (currentData, operation, payload) => {
+const transformLinkedListModel = (
+  currentData: LinkedListModel,
+  operation: LinkedListMethod,
+  payload: any[],
+): LinkedListModel => {
   switch (operation) {
     case 'remove': {
-      const { key: nodeKey } = payload;
+      const [nodeKey] = payload;
       return produce(currentData, draft => {
         const nodeToRemove = draft.find(({ key }) => key === nodeKey);
         if (nodeToRemove) nodeToRemove.visible = false;
@@ -13,7 +19,7 @@ const transformLinkedListModel = (currentData, operation, payload) => {
     }
 
     case 'reverseRemove': {
-      const { key: nodeKey } = payload;
+      const [nodeKey] = payload;
       return produce(currentData, draft => {
         const nodeToRemove = draft.find(({ key }) => key === nodeKey);
         if (nodeToRemove) nodeToRemove.visible = true;
@@ -21,7 +27,7 @@ const transformLinkedListModel = (currentData, operation, payload) => {
     }
 
     case 'add': {
-      const { nodeData, previousNodeKey } = payload;
+      const [nodeData, previousNodeKey] = payload;
       return produce(currentData, draft => {
         const newNodeIndex =
           draft.findIndex(({ key }) => key === previousNodeKey) + 1;
@@ -35,7 +41,7 @@ const transformLinkedListModel = (currentData, operation, payload) => {
     }
 
     case 'reverseAdd': {
-      const { key: nodeKey, value } = payload;
+      const [nodeKey, value] = payload;
       return produce(currentData, draft => {
         const index = draft.findIndex(({ key }) => key === nodeKey);
         // shift left every node in the right of the removed node
@@ -48,14 +54,14 @@ const transformLinkedListModel = (currentData, operation, payload) => {
     }
 
     case 'visit': {
-      const { index } = payload;
+      const [index] = payload;
       return produce(currentData, draft => {
         draft[index].visited = true;
       });
     }
 
     case 'reverseVisit': {
-      const { key } = payload;
+      const [key] = payload;
       return produce(currentData, draft => {
         const index = draft.findIndex(({ key: nodeKey }) => key === nodeKey);
         draft[index].visited = false;
@@ -64,22 +70,22 @@ const transformLinkedListModel = (currentData, operation, payload) => {
 
     case 'focus':
     case 'reverseFocus': {
-      const { key } = payload;
+      const [key] = payload;
       return produce(currentData, draft => {
         draft.forEach(item => (item.focus = false));
         // Nếu index === null nghĩa là đang unfocus tất cả các node
         if (key !== null) {
           const nodeToFocus = draft.find(({ key: nodeKey }) => nodeKey === key);
-          nodeToFocus.focus = true;
+          if (nodeToFocus) nodeToFocus.focus = true;
         }
       });
     }
 
     case 'label': {
-      const { key, label } = payload;
+      const [key, label] = payload;
       return produce(currentData, draft => {
         const nodeToLabel = draft.find(({ key: nodeKey }) => key === nodeKey);
-        nodeToLabel.label = label;
+        if (nodeToLabel) nodeToLabel.label = label;
       });
     }
 
