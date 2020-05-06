@@ -16,3 +16,5 @@ export interface PointCoordinate {
   x: number;
   y: number;
 }
+
+export type DataStructureMethod<T> = (model: T, params: any) => T;

@@ -82,9 +82,16 @@ const transformLinkedListModel = (
     }
 
     case 'label': {
-      const [key, label] = payload;
+      const [label, nodeKeyToLabel, removeThisLabelInOtherNode] = payload;
+      console.log('payload', payload)
       return produce(currentData, draft => {
-        const nodeToLabel = draft.find(({ key: nodeKey }) => key === nodeKey);
+        if (removeThisLabelInOtherNode) {
+          draft.forEach(node => {
+            if (node.label === label) node.label = undefined;
+          });
+        }
+
+        const nodeToLabel = draft.find(({ key }) => key === nodeKeyToLabel);
         if (nodeToLabel) nodeToLabel.label = label;
       });
     }

@@ -59,7 +59,7 @@ const searchInstruction = (data: number[], { value }: SearchParams) => {
         instructions.push({
           actions: [
             { name: 'visit', params: [current.key] },
-            { name: 'label', params: ['current', current.key] },
+            { name: 'label', params: ['current', current.key, true] },
           ],
           ..._getExplanationAndCodeLine('moveNext'),
         });
@@ -92,7 +92,10 @@ const insertInstruction = (data: number[], { value, index }: InsertParams) => {
   let currentNode: LinkedListNode | null = linkedList!;
   let currentIndex = 0;
   instructions.push({
-    actions: [{ name: 'focus', params: [0] }],
+    actions: [
+      { name: 'focus', params: [0] },
+      { name: 'label', params: ['current', currentNode.key, true] },
+    ],
     ..._getExplanationAndCodeLine('init'),
   });
 
@@ -101,9 +104,15 @@ const insertInstruction = (data: number[], { value, index }: InsertParams) => {
     currentNode = currentNode.next;
     currentIndex++;
 
+    console.log('previousNode.key', previousNode.key);
+
     if (currentNode) {
       instructions.push({
-        actions: [{ name: 'visit', params: [currentNode.key] }],
+        actions: [
+          { name: 'visit', params: [currentNode.key, true] },
+          { name: 'label', params: ['previous', previousNode.key, true] },
+          // { name: 'label', params: ['current', currentNode.key] },
+        ],
         ..._getExplanationAndCodeLine('findPosition'),
       });
     }
@@ -241,11 +250,11 @@ const searchCode = `function search(value) {
 
 const insertCode = `function insert(value, index) {
   let currentIndex = 0;
-  let currentNode = this.list;
-  let previousNode;
+  let current = this.list;
+  let previous;
   while (index !== currentIndex && currentNode !== null) {
-    previousNode = currentNode;
-    currentNode = currentNode.next;
+    previous = current;
+    current = current.next;
     currentIndex++;
   }
 
@@ -253,8 +262,8 @@ const insertCode = `function insert(value, index) {
     let newNode = {
       val: value,
     };
-    previousNode.next = newNode;
-    newNode.next = currentNode;
+    previous.next = newNode;
+    newNode.next = current;
   };
 
   return this.list;

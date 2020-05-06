@@ -1,4 +1,4 @@
-import { Action } from 'types';
+import { Action, DataStructureMethod } from 'types';
 import { WithReverseStep } from '../../hocs/withReverseStep';
 
 export type LinkedListModel = LinkedListNodeModel[];
@@ -26,13 +26,18 @@ export type IProps = {
 } & WithReverseStep;
 
 export interface IState {
-  blockInfo: LinkedListModel;
+  linkedListModel: LinkedListModel;
   nodeAboutToAppear: Set<number>;
   nodeAboutToVisit?: number;
   isVisible: boolean;
 }
 
-export type LinkedListNormalMethod = 'add' | 'remove' | 'visit' | 'focus' | 'label';
+export type LinkedListNormalMethod =
+  | 'add'
+  | 'remove'
+  | 'visit'
+  | 'focus'
+  | 'label';
 export type LinkedListReverseMethod =
   | 'reverseAdd'
   | 'reverseRemove'
@@ -40,3 +45,8 @@ export type LinkedListReverseMethod =
   | 'reverseFocus'
   | 'reverseLabel';
 export type LinkedListMethod = LinkedListNormalMethod | LinkedListReverseMethod;
+
+export type LinkedListDataStructure = Record<
+  LinkedListNormalMethod,
+  DataStructureMethod<LinkedListModel>
+>;
