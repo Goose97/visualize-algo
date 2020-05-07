@@ -47,6 +47,7 @@ export class LinkedList extends Component<IProps, IState>
       visited: false,
       key: index,
       focus: false,
+      pointer: index === initialData.length - 1 ? null : index + 1,
     }));
   }
 
@@ -173,7 +174,7 @@ export class LinkedList extends Component<IProps, IState>
       case 'focus':
       case 'reverseFocus':
       case 'label':
-      case 'reverseLabel':
+      case 'changePointer':
         return transformModel(oldLinkedListModel, name, params);
 
       default:
@@ -208,10 +209,27 @@ export class LinkedList extends Component<IProps, IState>
     const { linkedListModel } = this.state;
     const [_, nodeKey, __] = params;
     const nodeToLabel = linkedListModel.find(({ key }) => key === nodeKey);
-    this.pushReverseAction('reverseLabel', [nodeToLabel?.label, nodeKey]);
+    this.pushReverseAction('label', [nodeToLabel?.label, nodeKey]);
 
     const action = {
       name: 'label',
+      params,
+    };
+    return this.produceNewState(currentModel, action);
+  }
+
+  // params: pointFrom, pointTo
+  changePointer(
+    currentModel: LinkedListModel,
+    params: [number, number | null],
+  ) {
+    const [pointFrom] = params;
+    const nodeHolderPointer = currentModel.find(({ key }) => key === pointFrom);
+    const oldPointTo = nodeHolderPointer && nodeHolderPointer.pointer;
+    this.pushReverseAction('changePointer', [pointFrom, oldPointTo]);
+
+    const action = {
+      name: 'changePointer',
       params,
     };
     return this.produceNewState(currentModel, action);
@@ -341,8 +359,8 @@ export class LinkedList extends Component<IProps, IState>
 
   caculateStartAndFinishOfPointer(nodeIndex: number) {
     const { linkedListModel, nodeAboutToAppear } = this.state;
-    let { x, y, visible, key } = linkedListModel[nodeIndex];
-    let nextVisibleBlock = this.findNextBlock(nodeIndex);
+    let { x, y, visible, key, pointer } = linkedListModel[nodeIndex];
+    let nextVisibleBlock = pointer ? this.findNodeByKey(pointer) : null;
 
     const start = {
       x: x + LINKED_LIST_BLOCK_WIDTH - 10,
@@ -361,6 +379,14 @@ export class LinkedList extends Component<IProps, IState>
     } else {
       return null;
     }
+  }
+
+  findNodeByKey(key: number) {
+    const { linkedListModel } = this.state;
+    const nodeWithKey = linkedListModel.find(
+      ({ key: nodeKey }) => key === nodeKey,
+    );
+    return nodeWithKey || null;
   }
 
   // Start block is the block which hold the link and point to another block
@@ -384,11 +410,14 @@ export class LinkedList extends Component<IProps, IState>
   }
 
   handleReverse = (actionName: LinkedListReverseMethod, params: any[]) => {
+    const { linkedListModel } = this.state;
     const action = {
       name: actionName,
       params,
     };
-    this.promiseSetState({ linkedListModel: this.produceNewState(action) });
+    this.promiseSetState({
+      linkedListModel: this.produceNewState(linkedListModel, action),
+    });
   };
 
   handleFastForward() {
@@ -404,8 +433,8 @@ export class LinkedList extends Component<IProps, IState>
     let finalLinkedListModel = linkedListModel;
     for (let i = 0; i < allActions.length; i++) {
       finalLinkedListModel = this.produceNewState(
-        allActions[i],
         finalLinkedListModel,
+        allActions[i],
       );
     }
 

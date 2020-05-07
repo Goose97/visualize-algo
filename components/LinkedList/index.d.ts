@@ -12,6 +12,7 @@ export interface LinkedListNodeModel {
   visited: boolean;
   focus: boolean;
   label?: string;
+  pointer: number | null; // pointer to the next node
 }
 
 export type IProps = {
@@ -37,13 +38,13 @@ export type LinkedListNormalMethod =
   | 'remove'
   | 'visit'
   | 'focus'
-  | 'label';
+  | 'label'
+  | 'changePointer';
 export type LinkedListReverseMethod =
   | 'reverseAdd'
   | 'reverseRemove'
   | 'reverseVisit'
-  | 'reverseFocus'
-  | 'reverseLabel';
+  | 'reverseFocus';
 export type LinkedListMethod = LinkedListNormalMethod | LinkedListReverseMethod;
 
 export type LinkedListDataStructure = Record<

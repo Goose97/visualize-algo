@@ -41,7 +41,7 @@ const transformLinkedListModel = (
     }
 
     case 'reverseAdd': {
-      const [nodeKey, value] = payload;
+      const [_, nodeKey] = payload;
       return produce(currentData, draft => {
         const index = draft.findIndex(({ key }) => key === nodeKey);
         // shift left every node in the right of the removed node
@@ -83,7 +83,6 @@ const transformLinkedListModel = (
 
     case 'label': {
       const [label, nodeKeyToLabel, removeThisLabelInOtherNode] = payload;
-      console.log('payload', payload)
       return produce(currentData, draft => {
         if (removeThisLabelInOtherNode) {
           draft.forEach(node => {
@@ -93,6 +92,16 @@ const transformLinkedListModel = (
 
         const nodeToLabel = draft.find(({ key }) => key === nodeKeyToLabel);
         if (nodeToLabel) nodeToLabel.label = label;
+      });
+    }
+
+    case 'changePointer': {
+      const [pointFrom, pointTo] = payload;
+      return produce(currentData, draft => {
+        const nodeHolderPointer = draft.find(({ key }) => key === pointFrom);
+        if (nodeHolderPointer) {
+          nodeHolderPointer.pointer = pointTo;
+        }
       });
     }
 

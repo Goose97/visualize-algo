@@ -104,14 +104,12 @@ const insertInstruction = (data: number[], { value, index }: InsertParams) => {
     currentNode = currentNode.next;
     currentIndex++;
 
-    console.log('previousNode.key', previousNode.key);
-
     if (currentNode) {
       instructions.push({
         actions: [
           { name: 'visit', params: [currentNode.key, true] },
           { name: 'label', params: ['previous', previousNode.key, true] },
-          // { name: 'label', params: ['current', currentNode.key] },
+          { name: 'label', params: ['current', currentNode.key, true] },
         ],
         ..._getExplanationAndCodeLine('findPosition'),
       });
@@ -126,6 +124,11 @@ const insertInstruction = (data: number[], { value, index }: InsertParams) => {
     instructions.push({
       actions: [
         { name: 'add', params: [value, previousNode!.key, newNode.key] },
+        { name: 'changePointer', params: [previousNode!.key, newNode.key] },
+        {
+          name: 'changePointer',
+          params: [newNode.key, currentNode?.key],
+        },
       ],
       ..._getExplanationAndCodeLine('insert'),
     });
@@ -159,9 +162,7 @@ const deleteInstruction = (data: number[], { index }: DeleteParams) => {
     currentNode = currentNode!.next;
 
     instructions.push({
-      actions: [
-        { name: 'visit', params: [currentNode ? currentNode.key : null] },
-      ],
+      actions: [{ name: 'visit', params: [currentNode?.key] }],
       ..._getExplanationAndCodeLine('findPosition'),
     });
   }
@@ -169,7 +170,13 @@ const deleteInstruction = (data: number[], { index }: DeleteParams) => {
   previousNode!.next = currentNode!.next;
 
   instructions.push({
-    actions: [{ name: 'remove', params: [currentNode!.key] }],
+    actions: [
+      { name: 'remove', params: [currentNode!.key] },
+      {
+        name: 'changePointer',
+        params: [previousNode!.key, currentNode!.next && currentNode!.next.key],
+      },
+    ],
     ..._getExplanationAndCodeLine('delete'),
   });
 
