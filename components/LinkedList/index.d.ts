@@ -1,5 +1,6 @@
 import { Action, DataStructureMethod } from 'types';
 import { WithReverseStep } from '../../hocs/withReverseStep';
+import { IProps as PointerLinkProps } from 'components/PointerLink/index.d';
 
 export type LinkedListModel = LinkedListNodeModel[];
 export interface LinkedListNodeModel {
@@ -51,3 +52,10 @@ export type LinkedListDataStructure = Record<
   LinkedListNormalMethod,
   DataStructureMethod<LinkedListModel>
 >;
+
+export type LinkedListPointerProps = {
+  linkedListModel: LinkedListModel;
+  nodeAboutToAppear: Set<number>;
+  from: number;
+  to: number | null;
+} & Omit<PointerLinkProps, 'start' | 'finish'>;

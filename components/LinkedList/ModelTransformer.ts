@@ -71,6 +71,7 @@ const transformLinkedListModel = (
     case 'focus':
     case 'reverseFocus': {
       const [key] = payload;
+      console.log('payload', payload)
       return produce(currentData, draft => {
         draft.forEach(item => (item.focus = false));
         // Nếu index === null nghĩa là đang unfocus tất cả các node

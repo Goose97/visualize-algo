@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import produce from 'immer';
 
-import { MemoryBlock, PointerLink } from 'components';
+import { MemoryBlock } from 'components';
 import transformModel from './ModelTransformer';
 import HeadPointer from './HeadPointer';
+import LinkedListPointer from './LinkedListPointer';
 import { promiseSetState } from 'utils';
 import { withReverseStep } from 'hocs';
 import {
@@ -48,6 +49,7 @@ export class LinkedList extends Component<IProps, IState>
       key: index,
       focus: false,
       pointer: index === initialData.length - 1 ? null : index + 1,
+      // pointer: index === 0 ? null : index - 1,
     }));
   }
 
@@ -258,6 +260,7 @@ export class LinkedList extends Component<IProps, IState>
   }
 
   handleFinishFollowLink = (startBlockIndex: number) => () => {
+    console.log('startBlockIndex', startBlockIndex)
     // mark the node who hold the link as visited
     const { linkedListModel } = this.state;
     const destinationNodeIndex = this.findNextBlock(
@@ -340,21 +343,26 @@ export class LinkedList extends Component<IProps, IState>
   }
 
   renderPointerLinkForMemoryBlock(nodeIndex: number) {
-    const { linkedListModel } = this.state;
-    const startAndFinish = this.caculateStartAndFinishOfPointer(nodeIndex);
-    let { visible, visited, key } = linkedListModel[nodeIndex];
-    if (startAndFinish)
-      return (
-        <PointerLink
-          {...startAndFinish}
-          following={this.isLinkNeedToBeFollowed(nodeIndex)}
-          visited={visited}
-          visible={visible}
-          key={key}
-          name={linkedListModel[nodeIndex].key}
-          onFinishFollow={this.handleFinishFollowLink(key)}
-        />
-      );
+    const { linkedListModel, nodeAboutToAppear } = this.state;
+    const { key, pointer, visible, visited } = linkedListModel[nodeIndex];
+    // const startAndFinish = this.caculateStartAndFinishOfPointer(nodeIndex);
+    // let { visible, visited, key } = linkedListModel[nodeIndex];
+    // if (startAndFinish)
+    return (
+      <LinkedListPointer
+        // {...startAndFinish}
+        nodeAboutToAppear={nodeAboutToAppear}
+        from={key}
+        to={pointer}
+        linkedListModel={linkedListModel}
+        following={this.isLinkNeedToBeFollowed(nodeIndex)}
+        visited={visited}
+        visible={visible}
+        key={key}
+        name={linkedListModel[nodeIndex].key}
+        onFinishFollow={this.handleFinishFollowLink(key)}
+      />
+    );
   }
 
   caculateStartAndFinishOfPointer(nodeIndex: number) {
