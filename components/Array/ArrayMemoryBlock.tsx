@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 
-import { MemoryBlock } from 'components';
+import { MemoryBlock, AutoTransformGroup } from 'components';
 import { ARRAY_BLOCK_WIDTH, ARRAY_BLOCK_HEIGHT } from '../../constants';
 import { ArrayMemoryBlockProps } from './index.d';
 
 export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
+  constructor(props: ArrayMemoryBlockProps) {
+    super(props);
+  }
+
   caculatePosition() {
     const { index, origin } = this.props;
     return {
@@ -14,15 +18,17 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   }
 
   render() {
-    const { value, visible } = this.props;
+    const { value, visible, index } = this.props;
     return (
-      <MemoryBlock
-        {...this.caculatePosition()}
-        width={ARRAY_BLOCK_WIDTH}
-        height={ARRAY_BLOCK_HEIGHT}
-        value={value}
-        visible={visible}
-      ></MemoryBlock>
+      <AutoTransformGroup origin={this.caculatePosition()}>
+        <MemoryBlock
+          {...this.caculatePosition()}
+          width={ARRAY_BLOCK_WIDTH}
+          height={ARRAY_BLOCK_HEIGHT}
+          value={value}
+          visible={visible}
+        />
+      </AutoTransformGroup>
     );
   }
 }

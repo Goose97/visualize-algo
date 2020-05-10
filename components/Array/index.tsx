@@ -15,6 +15,7 @@ import {
   LINKED_LIST_BLOCK_HEIGHT,
 } from '../../constants';
 import ArrayMemoryBlock from './ArrayMemoryBlock';
+import transformArrayModel from './ModelTransformer';
 
 export class Array extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -31,35 +32,53 @@ export class Array extends Component<IProps, IState> {
         value: 1,
         key: 0,
         visible: true,
+        index: 0,
       },
       {
         value: 2,
         key: 1,
         visible: true,
+        index: 1,
       },
       {
         value: 3,
         key: 2,
         visible: true,
+        index: 2,
       },
     ];
   }
 
+  componentDidMount() {
+    setTimeout(() => {
+      this.swap(0, 2);
+    }, 2000);
+    setTimeout(() => {
+      this.swap(0, 2);
+    }, 3000);
+    setTimeout(() => {
+      this.swap(0, 2);
+    }, 4000);
+  }
+
+  swap(from: number, to: number) {
+    const { arrayModel } = this.state;
+    const newModel = transformArrayModel(arrayModel, 'swap', [from, to]);
+    this.setState({
+      arrayModel: newModel,
+    });
+  }
+
   render() {
     const { arrayModel } = this.state;
-    const arrayMemoryBlock = arrayModel.map((arrayNode, index) => (
+    console.log('arrayModel', arrayModel);
+    const arrayMemoryBlock = arrayModel.map(arrayNode => (
       <ArrayMemoryBlock
         {...arrayNode}
-        index={index}
         origin={{
           x: 100,
           y: 100,
         }}
-        // structureType={this.structureType}
-        // focus={focusNode.includes(blockInfo.key)}
-        // isSwap={isSwap}
-        // swapNode={swapNode}
-        // swapDistance={swapDistance}
       />
     ));
 

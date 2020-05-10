@@ -4,6 +4,7 @@ import { PointCoordinate } from '../../types';
 export interface ArrayNode {
   value: number;
   key: number;
+  index: number;
   focus?: boolean;
   visited?: boolean;
 }

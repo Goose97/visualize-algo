@@ -11,7 +11,16 @@ const transformArrayModel = (
 ): ArrayModel => {
   switch (operation) {
     case 'swap': {
-      return currentModel;
+      const [from, to] = payload;
+      return produce(currentModel, draft => {
+        const fromNode = draft.find(({ key }) => key === from);
+        const toNode = draft.find(({ key }) => key === to);
+        if (fromNode && toNode) {
+          const temp = fromNode.index;
+          fromNode.index = toNode.index;
+          toNode.index = temp;
+        }
+      });
     }
 
     default:

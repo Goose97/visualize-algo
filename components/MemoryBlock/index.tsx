@@ -38,7 +38,6 @@ export class MemoryBlock extends Component<IProps, IState> {
 
   produceClassName() {
     const { visible, visited, focus } = this.props;
-    console.log('visible', visible);
     const { isHiding, isShowing } = this.state;
     return classNameHelper({
       base: 'memory-block__wrapper has-transition',
