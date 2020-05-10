@@ -10,3 +10,4 @@ export { default as Input } from './Input';
 export { default as Button } from './Button';
 export { default as InitLinkedListInput } from './InitLinkedListInput';
 export { default as AutoTransformGroup } from './AutoTransformGroup';
+export { default as Array } from './Array';

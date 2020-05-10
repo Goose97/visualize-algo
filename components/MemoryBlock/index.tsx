@@ -62,7 +62,7 @@ export class MemoryBlock extends Component<IProps, IState> {
   }
 
   render() {
-    const { value, label } = this.props;
+    const { value, label, width, height } = this.props;
 
     const valueText = (
       <text
@@ -95,8 +95,8 @@ export class MemoryBlock extends Component<IProps, IState> {
         <rect
           x={this.original.x}
           y={this.original.y}
-          width={LINKED_LIST_BLOCK_WIDTH}
-          height={LINKED_LIST_BLOCK_HEIGHT}
+          width={width || LINKED_LIST_BLOCK_WIDTH}
+          height={height || LINKED_LIST_BLOCK_HEIGHT}
           className='memory-block__block'
         ></rect>
         <path
