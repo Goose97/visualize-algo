@@ -12,26 +12,29 @@ class Array extends Component {
 
     this.state = {
       blockInfo: this.initiateMemoryBlockInfo(),
-      focusNode: this.props.focusNode,
-      swapNode: this.props.swapNode,
-      swapDistance: this.props.swapDistance,
+      focusNode: [],
+      swapNode: [],
+      swapDistance: 0,
     };
   }
 
-  componentDidUpdate() {
-    if (this.props.focusNode !== this.state.focusNode) {
-      this.setState({
-        focusNode: this.props.focusNode,
-      });
-    }
 
-    if (this.props.swapNode !== this.state.swapNode) {
-      this.setState({
-        swapNode: this.props.swapNode,
-        swapDistance: this.props.swapDistance,
-      });
-    }
+  focusNode(nodeIndexs) {
+    this.setState({ focusNode: nodeIndexs });
   }
+
+  swapNode(nodeIndexs) {
+    this.setState({ swapNode: nodeIndexs });
+  }
+
+  swap = (nodeIndexs) => () => {
+    this.focusNode(nodeIndexs);
+    this.swapNode(nodeIndexs);
+    const distance = Math.abs(nodeIndexs[1] - nodeIndexs[0]);
+    this.setState({
+      swapDistance: distance
+    })
+  };
 
   caculateblockInfo(blockIndex) {
     const { x: baseX, y: baseY } = this.props;

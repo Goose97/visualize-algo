@@ -25,66 +25,13 @@ const explanation = [
 
 const stepDescription = [
   {
-    state: {
-      data: [1, 2, 3, 4, 5],
-      currentNode: 0,
-      codeLine: "2-3",
-      explanationStep: 1,
-    },
+    state: { currentNode: 1, data: [1, 2, 3, 4, 5, 7] },
   },
   {
-    state: { codeLine: 6, explanationStep: 2 },
+    state: { currentNode: 2 },
   },
   {
-    state: { currentNode: 1, codeLine: "7-8", explanationStep: 4 },
-  },
-  {
-    state: { explanationStep: 5 },
-  },
-  {
-    state: { codeLine: 6, explanationStep: 2 },
-  },
-  {
-    state: { currentNode: 2, codeLine: "7-8", explanationStep: 4 },
-  },
-  {
-    state: { explanationStep: 5 },
-  },
-  {
-    state: { codeLine: 6, explanationStep: 2 },
-  },
-  {
-    state: { explanationStep: 3 },
-  },
-];
-
-const animationDescription = [
-  {
-    state: { currentNode: 0, codeLine: "2-3", explanationStep: 1 },
-  },
-  {
-    state: { codeLine: 6, explanationStep: 2 },
-  },
-  {
-    state: { currentNode: 1, codeLine: "7-8", explanationStep: 4 },
-  },
-  {
-    state: { explanationStep: 5 },
-  },
-  {
-    state: { codeLine: 6, explanationStep: 2 },
-  },
-  {
-    state: { currentNode: 2, codeLine: "7-8", explanationStep: 4 },
-  },
-  {
-    state: { explanationStep: 5 },
-  },
-  {
-    state: { codeLine: 6, explanationStep: 2 },
-  },
-  {
-    state: { explanationStep: 3 },
+    state: { data: [1, 2, 7, 3, 4, 5] },
   },
 ];
 
@@ -93,50 +40,25 @@ class Test2 extends Component {
     super(props);
     this.state = {
       data: [1, 2, 3, 4, 5],
-      ...animationDescription[0].state,
-      focusNode: [1, 2],
-      swapNode: [],
-      swapDistance: 0,
     };
     this.ref = React.createRef();
   }
 
-  focusNode(nodeIndexs) {
-    this.setState({ focusNode: nodeIndexs });
-  }
-
-  swapNode(nodeIndexs) {
-    this.setState({ swapNode: nodeIndexs });
-  }
-
-  swap = (nodeIndexs) => () => {
-    this.focusNode(nodeIndexs);
-    this.swapNode(nodeIndexs);
-    const distance = Math.abs(nodeIndexs[1] - nodeIndexs[0]);
-    this.setState({
-      swapDistance: distance
-    })
-  };
 
   render() {
-    const { data, explanationStep, focusNode, swapNode, swapDistance } = this.state;
+    const { data } = this.state;
     return (
       <VisualAlgo
         code={code}
         highlightline={codeline}
         explanation={explanation}
         stepDescription={stepDescription}
-        explanationStep={explanationStep}
       >
-        <button onClick={this.swap([1,4])}>SWAP</button>
         <CanvasContainer>
           <Array 
             x={100} 
             y={100} 
             data={data} 
-            focusNode={focusNode}
-            swapNode={swapNode}
-            swapDistance={swapDistance}
           />
         </CanvasContainer>
       </VisualAlgo>
