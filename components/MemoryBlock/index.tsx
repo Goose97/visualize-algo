@@ -14,9 +14,7 @@ export class MemoryBlock extends Component<IProps, IState> {
   private original: PointCoordinate;
   constructor(props: IProps) {
     super(props);
-    this.state = {
-      transformList: [],
-    };
+    this.state = {};
     this.original = {
       x: props.x,
       y: props.y,
@@ -24,29 +22,9 @@ export class MemoryBlock extends Component<IProps, IState> {
   }
 
   componentDidUpdate(prevProps: IProps) {
-    (['x', 'y', 'visible'] as Array<keyof IProps>).forEach(attribute =>
-      this.checkDiffAndReact(
-        prevProps[attribute],
-        this.props[attribute],
-        attribute,
-      ),
-    );
-  }
-
-  checkDiffAndReact(prev: any, now: any, attribute: keyof IProps) {
-    switch (attribute) {
-      case 'visible':
-        return this.checkVisibleAndReact(prev, now);
-      case 'x':
-        return this.checkXAxisAndReact(prev, now);
-      case 'y':
-        return this.checkYAxisAndReact(prev, now);
-    }
-  }
-
-  checkVisibleAndReact(prev: boolean, now: boolean) {
-    if (prev !== now) {
-      now ? this.show() : this.hide();
+    const { visible } = this.props;
+    if (visible !== prevProps.visible) {
+      visible ? this.show() : this.hide();
     }
   }
 
@@ -62,38 +40,6 @@ export class MemoryBlock extends Component<IProps, IState> {
     setTimeout(() => {
       this.setState({ isShowing: false });
     }, 500);
-  }
-
-  checkXAxisAndReact(prev: number, now: number) {
-    if (prev !== now) this.move(now - prev, 'horizontal');
-  }
-
-  checkYAxisAndReact(prev: number, now: number) {
-    if (prev !== now) this.move(now - prev, 'vertical');
-  }
-
-  move(amount: number, direction: 'horizontal' | 'vertical') {
-    const { transformList } = this.state;
-    let transformText;
-    switch (direction) {
-      case 'vertical':
-        transformText = `translate(0 ${amount})`;
-        break;
-
-      case 'horizontal':
-        transformText = `translate(${amount} 0)`;
-        break;
-    }
-    this.setState({ transformList: [...transformList, transformText] });
-  }
-
-  produceTransformString() {
-    const { transformList } = this.state;
-    return transformList.join(' ');
-  }
-
-  resetTransform() {
-    this.setState({ transformList: [] });
   }
 
   produceClassName() {
@@ -145,10 +91,7 @@ export class MemoryBlock extends Component<IProps, IState> {
     );
 
     return (
-      <g
-        transform={this.produceTransformString()}
-        className={this.produceClassName()}
-      >
+      <g className={this.produceClassName()}>
         <rect
           x={this.original.x}
           y={this.original.y}

@@ -58,4 +58,4 @@ export type LinkedListPointerProps = {
   nodeAboutToAppear: Set<number>;
   from: number;
   to: number | null;
-} & Omit<PointerLinkProps, 'start' | 'finish'>;
+} & Omit<PointerLinkProps, 'path'>;

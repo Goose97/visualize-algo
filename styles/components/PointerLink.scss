@@ -1,11 +1,13 @@
 .pointer-link {
   .pointer-link__line {
     @extend .default-stroke-lighter;
+    @extend .default-fill;
     stroke-width: 2px;
 
     &.follow {
       stroke: $primary-color;
-      stroke-width: 4px;
+      fill: $primary-color !important;
+      stroke-width: 3px;
     }
   }
 

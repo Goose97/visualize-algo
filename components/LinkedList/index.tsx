@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import produce from 'immer';
+import { pick, omit } from 'lodash';
 
-import { MemoryBlock } from 'components';
+import { MemoryBlock, AutoTransformGroup } from 'components';
 import transformModel from './ModelTransformer';
 import HeadPointer from './HeadPointer';
 import LinkedListPointer from './LinkedListPointer';
@@ -247,6 +248,9 @@ export class LinkedList extends Component<IProps, IState>
     this.pushReverseAction('reverseVisit', [currentFocusNode]);
     if (nodeKey !== 0) {
       this.followLinkToNode(nodeKey);
+      setTimeout(() => {
+        this.handleFinishFollowLink(currentFocusNode, nodeKey);
+      }, 400);
     } else {
       this.focus(currentModel, [nodeKey]);
     }
@@ -259,22 +263,26 @@ export class LinkedList extends Component<IProps, IState>
     this.setState({ nodeAboutToVisit: linkedListModel[nodeIndex].key });
   }
 
-  handleFinishFollowLink = (startBlockIndex: number) => () => {
-    console.log('startBlockIndex', startBlockIndex)
+  handleFinishFollowLink = (
+    startNodeKey: number | null,
+    destinationNodeKey: number,
+  ) => {
+    console.log('destinationNodeKey', destinationNodeKey);
+    console.log('startNodeKey', startNodeKey);
     // mark the node who hold the link as visited
     const { linkedListModel } = this.state;
-    const destinationNodeIndex = this.findNextBlock(
-      startBlockIndex,
-      true,
-    ) as number;
-    const action = {
-      name: 'visit',
-      params: [startBlockIndex],
-    };
-    let newLinkedListModel = this.produceNewState(linkedListModel, action);
+    let newLinkedListModel = linkedListModel;
+    if (typeof startNodeKey === 'number') {
+      const action = {
+        name: 'visit',
+        params: [startNodeKey],
+      };
+      console.log('startNodeKey', startNodeKey);
+      newLinkedListModel = this.produceNewState(newLinkedListModel, action);
+    }
 
     // mark the node on the other end as current focus
-    newLinkedListModel = this.focus(newLinkedListModel, [destinationNodeIndex]);
+    newLinkedListModel = this.focus(newLinkedListModel, [destinationNodeKey]);
 
     this.setState({
       nodeAboutToVisit: undefined,
@@ -345,12 +353,8 @@ export class LinkedList extends Component<IProps, IState>
   renderPointerLinkForMemoryBlock(nodeIndex: number) {
     const { linkedListModel, nodeAboutToAppear } = this.state;
     const { key, pointer, visible, visited } = linkedListModel[nodeIndex];
-    // const startAndFinish = this.caculateStartAndFinishOfPointer(nodeIndex);
-    // let { visible, visited, key } = linkedListModel[nodeIndex];
-    // if (startAndFinish)
     return (
       <LinkedListPointer
-        // {...startAndFinish}
         nodeAboutToAppear={nodeAboutToAppear}
         from={key}
         to={pointer}
@@ -358,9 +362,7 @@ export class LinkedList extends Component<IProps, IState>
         following={this.isLinkNeedToBeFollowed(nodeIndex)}
         visited={visited}
         visible={visible}
-        key={key}
         name={linkedListModel[nodeIndex].key}
-        onFinishFollow={this.handleFinishFollowLink(key)}
       />
     );
   }
@@ -462,20 +464,24 @@ export class LinkedList extends Component<IProps, IState>
 
   render() {
     const { linkedListModel, isVisible } = this.state;
-    const listMemoryBlock = linkedListModel.map(linkedListModel => (
-      <MemoryBlock {...linkedListModel} name={linkedListModel.key} />
+    const listMemoryBlock = linkedListModel.map((linkedListNode, nodeIndex) => (
+      <AutoTransformGroup
+        origin={pick(linkedListNode, ['x', 'y'])}
+        key={linkedListNode.key}
+      >
+        <MemoryBlock
+          {...omit(linkedListNode, ['key'])}
+          name={linkedListNode.key}
+        />
+        {this.renderPointerLinkForMemoryBlock(nodeIndex)}
+      </AutoTransformGroup>
     ));
-
-    const listPointerLink = linkedListModel
-      .slice(0, -1)
-      .map((_, index) => this.renderPointerLinkForMemoryBlock(index));
 
     return (
       isVisible && (
         <g>
           <HeadPointer headBlock={this.findNextBlock(-1)} />
           {listMemoryBlock}
-          {listPointerLink}
         </g>
       )
     );

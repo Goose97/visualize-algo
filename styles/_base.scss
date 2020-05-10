@@ -204,6 +204,10 @@ $border-style: 1px solid #cfcfcf;
   stroke: lighten($primary-text-color, 15%);
 }
 
+.default-fill {
+  fill: lighten($primary-text-color, 15%);
+}
+
 .has-transition {
   transition: $transition-style;
 }
@@ -234,4 +238,16 @@ $border-style: 1px solid #cfcfcf;
 
 .italic {
   font-size: italic;
+}
+
+.animated-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: fill 6s linear forwards;
+}
+
+@keyframes fill {
+  to {
+    stroke-dashoffset: 0;
+  }
 }

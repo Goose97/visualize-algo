@@ -1,12 +1,11 @@
 import { LinkedListNodeModel } from '../LinkedList/index.d';
 
-export interface IProps extends LinkedListNodeModel {
+export interface IProps extends Omit<LinkedListNodeModel, 'key'> {
   value: number;
   name: string | number;
 }
 
 export interface IState {
-  transformList: string[];
   isHiding?: boolean;
   isShowing?: boolean;
 }

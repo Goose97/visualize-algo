@@ -1,13 +1,11 @@
 import { PointCoordinate } from '../../types';
 
 interface IProps {
-  start: PointCoordinate;
-  finish: PointCoordinate;
+  path: string;
   following?: boolean;
   visited?: boolean;
   visible?: boolean;
-  name?: number;
-  onFinishFollow?: () => void;
+  arrowDirection?: 'left' | 'right' | 'up' | 'down'; // SHOULD REMOVE IN FUTURE
 }
 
 interface IState {

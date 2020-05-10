@@ -8,31 +8,41 @@ import {
 import { LinkedListPointerProps } from './index.d';
 
 class LinkedListPointer extends Component<LinkedListPointerProps> {
-  caculateStartAndFinishOfPointer() {
+  caculatePathOfPointer() {
     const { linkedListModel, nodeAboutToAppear, from, to } = this.props;
     let { x, y, visible } = linkedListModel.find(({ key }) => key === from)!;
+    if (!to || !visible) return null;
+
+    let { x: x1, y: y1 } = linkedListModel.find(({ key }) => key === to)!;
     if (this.isFromBehindTo()) {
       const start = {
         x: x + LINKED_LIST_BLOCK_WIDTH - 10,
         y: y + LINKED_LIST_BLOCK_HEIGHT / 2,
       };
       let finish;
-      if (to && visible) {
-        let { x: x1, y: y1 } = linkedListModel.find(({ key }) => key === to)!;
-
-        if (nodeAboutToAppear.has(from)) {
-          finish = { ...start };
-        } else {
-          finish = { x: x1, y: y1 + LINKED_LIST_BLOCK_HEIGHT / 2 };
-        }
-        console.log('start', start);
-        console.log('finish', finish);
-        return { start, finish };
-        // return `M ${start.x} ${start.y} L ${finish.x - 10} ${finish.y}`;
+      if (nodeAboutToAppear.has(from)) {
+        finish = { ...start };
       } else {
-        return null;
+        finish = { x: x1, y: y1 + LINKED_LIST_BLOCK_HEIGHT / 2 };
       }
+
+      return `M ${start.x} ${start.y} L ${finish.x - 12} ${finish.y}`;
     } else {
+      const start = {
+        x: x,
+        y: y + LINKED_LIST_BLOCK_HEIGHT / 2,
+      };
+      let finish;
+      if (nodeAboutToAppear.has(from)) {
+        finish = { ...start };
+      } else {
+        finish = {
+          x: x1 + LINKED_LIST_BLOCK_WIDTH,
+          y: y1 + LINKED_LIST_BLOCK_HEIGHT / 2,
+        };
+      }
+
+      return `M ${start.x} ${start.y} L ${finish.x - 12} ${finish.y}`;
     }
   }
 
@@ -44,9 +54,9 @@ class LinkedListPointer extends Component<LinkedListPointerProps> {
   }
 
   render() {
-    const startAndFinish = this.caculateStartAndFinishOfPointer();
+    const path = this.caculatePathOfPointer();
     return (
-      startAndFinish && <PointerLink {...startAndFinish} {...this.props} />
+      path && <PointerLink {...this.props} path={path} arrowDirection='right' />
     );
   }
 }
