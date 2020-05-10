@@ -59,3 +59,13 @@ export type LinkedListPointerProps = {
   from: number;
   to: number | null;
 } & Omit<PointerLinkProps, 'path'>;
+
+export interface LinkedListMemoryBlockProps {
+  value: number;
+  x: number;
+  y: number;
+  visible?: boolean;
+  visited?: boolean;
+  focus?: boolean;
+  label?: string;
+}

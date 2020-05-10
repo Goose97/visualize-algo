@@ -18,8 +18,9 @@ export interface IState {
 
 export interface IProps {}
 
-export interface ArrayMemoryBlockProps extends Partial<MemoryBlockProps> {
+export interface ArrayMemoryBlockProps {
   value: number;
   index: number;
   origin: PointCoordinate;
+  visible?: boolean;
 }

@@ -14,14 +14,15 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   }
 
   render() {
+    const { value, visible } = this.props;
     return (
-      <rect
+      <MemoryBlock
         {...this.caculatePosition()}
         width={ARRAY_BLOCK_WIDTH}
         height={ARRAY_BLOCK_HEIGHT}
-        className='memory-block__block'
-        style={{ fill: 'none', stroke: 'black' }}
-      ></rect>
+        value={value}
+        visible={visible}
+      ></MemoryBlock>
     );
   }
 }

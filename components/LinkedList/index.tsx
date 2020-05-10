@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import produce from 'immer';
 import { pick, omit } from 'lodash';
 
-import { MemoryBlock, AutoTransformGroup } from 'components';
+import { AutoTransformGroup } from 'components';
 import transformModel from './ModelTransformer';
 import HeadPointer from './HeadPointer';
+import LinkedListMemoryBlock from './LinkedListMemoryBlock';
 import LinkedListPointer from './LinkedListPointer';
 import { promiseSetState } from 'utils';
 import { withReverseStep } from 'hocs';
@@ -267,8 +268,6 @@ export class LinkedList extends Component<IProps, IState>
     startNodeKey: number | null,
     destinationNodeKey: number,
   ) => {
-    console.log('destinationNodeKey', destinationNodeKey);
-    console.log('startNodeKey', startNodeKey);
     // mark the node who hold the link as visited
     const { linkedListModel } = this.state;
     let newLinkedListModel = linkedListModel;
@@ -277,7 +276,6 @@ export class LinkedList extends Component<IProps, IState>
         name: 'visit',
         params: [startNodeKey],
       };
-      console.log('startNodeKey', startNodeKey);
       newLinkedListModel = this.produceNewState(newLinkedListModel, action);
     }
 
@@ -362,7 +360,6 @@ export class LinkedList extends Component<IProps, IState>
         following={this.isLinkNeedToBeFollowed(nodeIndex)}
         visited={visited}
         visible={visible}
-        name={linkedListModel[nodeIndex].key}
       />
     );
   }
@@ -469,10 +466,7 @@ export class LinkedList extends Component<IProps, IState>
         origin={pick(linkedListNode, ['x', 'y'])}
         key={linkedListNode.key}
       >
-        <MemoryBlock
-          {...omit(linkedListNode, ['key'])}
-          name={linkedListNode.key}
-        />
+        <LinkedListMemoryBlock {...omit(linkedListNode, ['key'])} />
         {this.renderPointerLinkForMemoryBlock(nodeIndex)}
       </AutoTransformGroup>
     ));
