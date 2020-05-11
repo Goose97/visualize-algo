@@ -1,4 +1,4 @@
-// import { IProps as MemoryBlockProps } from '../MemoryBlock';
+import { IProps as MemoryBlockProps } from '../MemoryBlock';
 import { PointCoordinate } from '../../types';
 
 export interface ArrayNode {

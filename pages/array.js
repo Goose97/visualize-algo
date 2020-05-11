@@ -7,18 +7,14 @@ import {
   Input,
   Button,
   InitLinkedListInput,
-  Array,
+  Array as ArrayDataStructure,
 } from 'components';
 import { VisualAlgo } from 'layout';
 import { produceFullState, promiseSetState } from 'utils';
-import {
-  linkedListInstruction,
-  code,
-  explanation,
-} from 'instructions/LinkedList';
+import { arrayInstruction, code, explanation } from 'instructions/Array';
 import 'styles/main.scss';
 
-export class Test extends Component {
+export class ArrayPage extends Component {
   constructor(props) {
     super(props);
 
@@ -27,7 +23,7 @@ export class Test extends Component {
       stepDescription: [],
       autoPlay: false,
     };
-    this.originalLinkedListData = null;
+    this.originalArrayData = null;
     this.ref = React.createRef();
   }
 
@@ -47,51 +43,43 @@ export class Test extends Component {
         return (
           <span>
             Nhập giá trị của linked list{' '}
-            <InitLinkedListInput onChange={this.handleChangeInput('value')} />
+            <Input onChange={this.handleChangeInput('value')} />
           </span>
         );
 
-      case 'search':
-        return (
-          <span>
-            Tìm kiếm giá trị{' '}
-            <Input
-              className='ml-2'
-              onChange={this.handleChangeInput('value', convertToNumber)}
-            />
-          </span>
-        );
+      case 'bubbleSort':
+        return <input />;
 
-      case 'delete':
-        return (
-          <span>
-            Xoá giá trị{' '}
-            <Input
-              className='ml-2'
-              onChange={this.handleChangeInput('index', convertToNumber)}
-            />
-          </span>
-        );
+      // case 'delete':
+      //   return (
+      //     <span>
+      //       Xoá giá trị{' '}
+      //       <Input
+      //         className='ml-2'
+      //         onChange={this.handleChangeInput('index', convertToNumber)}
+      //       />
+      //     </span>
+      //   );
 
-      case 'insert':
-        return (
-          <div className='il-bl'>
-            <span>
-              Thêm giá trị{' '}
-              <Input
-                className='mx-2'
-                onChange={this.handleChangeInput('value', convertToNumber)}
-              />
-            </span>
-            <span>
-              tại index{' '}
-              <Input
-                className='ml-2'
-                onChange={this.handleChangeInput('index', convertToNumber)}
-              />
-            </span>
-          </div>
-        );
+      // case 'insert':
+      //   return (
+      //     <div className='il-bl'>
+      //       <span>
+      //         Thêm giá trị{' '}
+      //         <Input
+      //           className='mx-2'
+      //           onChange={this.handleChangeInput('value', convertToNumber)}
+      //         />
+      //       </span>
+      //       <span>
+      //         tại index{' '}
+      //         <Input
+      //           className='ml-2'
+      //           onChange={this.handleChangeInput('index', convertToNumber)}
+      //         />
+      //       </span>
+      //     </div>
+      //   );
 
       default:
         return null;
@@ -127,14 +115,14 @@ export class Test extends Component {
     switch (currentApi) {
       case 'init':
         return (
-          <Button type='primary' onClick={() => this.initLinkedListData(false)}>
+          <Button type="primary" onClick={() => this.initArrayData(false)}>
             Khởi tạo
           </Button>
         );
       default:
         return (
           <Button
-            type='primary'
+            type="primary"
             onClick={this.handleStartAlgorithm}
             disabled={isButtonDisabled}
           >
@@ -154,7 +142,7 @@ export class Test extends Component {
         currentNode: undefined,
         currentStep: undefined,
       });
-      await this.initLinkedListData(true);
+      await this.initArrayData(true);
       await this.handlePlayingChange(true);
     } catch (error) {
       console.log('error', error);
@@ -170,33 +158,35 @@ export class Test extends Component {
   generateStepDescription() {
     const { currentApi, parameters, data } = this.state;
     if (!currentApi) return [];
-    const stepDescription = linkedListInstruction(data, currentApi, parameters);
+    const stepDescription = arrayInstruction(data, currentApi, parameters);
+    console.log('step description', stepDescription);
     this.setState({ stepDescription });
   }
 
-  initLinkedListData = useOldData => {
+  initArrayData = useOldData => {
+    console.log('useOldData', useOldData);
     const {
       parameters: { value },
     } = this.state;
-    let linkedListData;
-    if (useOldData && this.originalLinkedListData) {
-      linkedListData = this.originalLinkedListData;
+    let arrayData;
+    if (useOldData && this.originalArrayData) {
+      arrayData = this.originalArrayData;
     } else {
-      if (value && value.length) linkedListData = value;
+      if (value && value.length) arrayData = value;
       else
-        linkedListData = Array(5)
+        arrayData = Array(10)
           .fill(0)
           .map(() => Math.round(Math.random() * 10));
 
-      this.originalLinkedListData = linkedListData;
+      this.originalArrayData = arrayData;
     }
 
     // Phải làm thế này để buộc component linked list unmount
     // Linked list chỉ khởi tạo state của nó 1 lần trong constructor
     return new Promise(resolve =>
       this.setState({ data: undefined }, () => {
-        this.setState({ data: linkedListData }, () => resolve());
-      }),
+        this.setState({ data: arrayData }, () => resolve());
+      })
     );
   };
 
@@ -211,13 +201,13 @@ export class Test extends Component {
     } = this.state;
     const apiList = [
       { value: 'init', label: 'Init' },
-      { value: 'search', label: 'Search' },
-      { value: 'insert', label: 'Insert' },
-      { value: 'delete', label: 'Delete' },
+      { value: 'bubbleSort', label: 'Bubble sort' },
+      // { value: 'insert', label: 'Insert' },
+      // { value: 'delete', label: 'Delete' },
     ];
     const fullState = produceFullState(
       stepDescription.map(({ state }) => state),
-      ['data', 'currentNode'],
+      ['data', 'currentNode']
     );
 
     const instructions = stepDescription.map(({ actions }) => actions || []);
@@ -238,7 +228,14 @@ export class Test extends Component {
       >
         {
           <CanvasContainer>
-            <Array />
+            {data && (
+              <ArrayDataStructure
+                initialData={data}
+                currentStep={currentStep}
+                instructions={instructions}
+                totalStep={stepDescription.length - 1}
+              />
+            )}
           </CanvasContainer>
         }
       </VisualAlgo>
@@ -246,4 +243,4 @@ export class Test extends Component {
   }
 }
 
-export default Test;
+export default ArrayPage;

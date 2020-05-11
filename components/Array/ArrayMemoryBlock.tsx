@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { MemoryBlock, AutoTransformGroup } from 'components';
 import { ARRAY_BLOCK_WIDTH, ARRAY_BLOCK_HEIGHT } from '../../constants';
-import { ArrayMemoryBlockProps } from './index.d';
+import { ArrayMemoryBlockProps } from '.';
 
 export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   constructor(props: ArrayMemoryBlockProps) {
