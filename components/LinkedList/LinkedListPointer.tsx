@@ -11,6 +11,10 @@ import { LinkedListPointerProps } from './index.d';
 const OFFSET_FOR_ARROW = 7;
 
 class LinkedListPointer extends Component<LinkedListPointerProps> {
+  constructor(props: LinkedListPointerProps) {
+    super(props);
+  }
+
   caculatePathOfPointer() {
     const { linkedListModel, nodeAboutToAppear, from, to } = this.props;
     let { x, y, visible } = linkedListModel.find(({ key }) => key === from)!;
@@ -101,11 +105,20 @@ class LinkedListPointer extends Component<LinkedListPointerProps> {
     }
   }
 
+  // We ignore the node which is not visible anymore
   fromAndToIndexDistance() {
     const { from, to, linkedListModel } = this.props;
     const fromNode = linkedListModel.findIndex(({ key }) => key === from);
     const toNode = linkedListModel.findIndex(({ key }) => key === to);
-    return toNode - fromNode;
+
+    let nodeInBetween;
+    if (fromNode < toNode)
+      nodeInBetween = linkedListModel.slice(fromNode + 1, toNode);
+    else nodeInBetween = linkedListModel.slice(toNode + 1, fromNode);
+    return (
+      (nodeInBetween.filter(({ visible }) => visible).length + 1) *
+      (fromNode < toNode ? 1 : -1)
+    );
   }
 
   getArrowDirection() {
@@ -118,15 +131,13 @@ class LinkedListPointer extends Component<LinkedListPointerProps> {
 
   render() {
     const path = this.caculatePathOfPointer();
-    return (
-      path && (
-        <PointerLink
-          {...this.props}
-          path={path}
-          arrowDirection={this.getArrowDirection()}
-        />
-      )
-    );
+    return path ? (
+      <PointerLink
+        {...this.props}
+        path={path}
+        arrowDirection={this.getArrowDirection()}
+      />
+    ) : null;
   }
 }
 

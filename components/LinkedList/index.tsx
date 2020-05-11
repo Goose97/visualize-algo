@@ -65,16 +65,6 @@ export class LinkedList extends Component<IProps, IState>
     switch (this.getProgressDirection(prevProps.currentStep)) {
       case 'forward':
         this.handleForward();
-        // // Treat each action as a transformation function which take a linkedListModel
-        // // and return a new one. Consuming multiple actions is merely chaining those
-        // // transformations together
-        // // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
-        // const actionsToMakeAtThisStep = instructions[currentStep] || [];
-        // let finalLinkedListModel = linkedListModel;
-        // actionsToMakeAtThisStep.forEach(({ name, params }) => {
-        //   //@ts-ignore
-        //   finalLinkedListModel = this[name](finalLinkedListModel, params);
-        // });
         break;
 
       case 'backward':
@@ -460,21 +450,24 @@ export class LinkedList extends Component<IProps, IState>
 
   render() {
     const { linkedListModel, isVisible } = this.state;
-    const listMemoryBlock = linkedListModel.map((linkedListNode, nodeIndex) => (
+    const listMemoryBlock = linkedListModel.map(linkedListNode => (
       <AutoTransformGroup
         origin={pick(linkedListNode, ['x', 'y'])}
         key={linkedListNode.key}
       >
         <LinkedListMemoryBlock {...omit(linkedListNode, ['key'])} />
-        {this.renderPointerLinkForMemoryBlock(nodeIndex)}
       </AutoTransformGroup>
     ));
+    const listPointerLink = linkedListModel.map((_, index) =>
+      this.renderPointerLinkForMemoryBlock(index),
+    );
 
     return (
       isVisible && (
         <g>
           <HeadPointer headBlock={this.findNextBlock(-1)} />
           {listMemoryBlock}
+          {listPointerLink}
         </g>
       )
     );
