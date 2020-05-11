@@ -23,6 +23,9 @@ export const linkedListInstruction = (
     case 'delete':
       return deleteInstruction(data, parameters);
 
+    case 'reverse':
+      return reverseInstruction(data);
+
     default:
       return [];
   }
@@ -188,6 +191,64 @@ const deleteInstruction = (data: number[], { index }: DeleteParams) => {
   return instructions.get();
 };
 
+const reverseInstruction = (data: number[]) => {
+  const linkedList = initLinkedList(data);
+  const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
+    null,
+    'reverse',
+  );
+  let instructions = new Instructions();
+  // Start make instruction
+  let previousNode: LinkedListNode | null = null;
+  let currentNode: LinkedListNode | null = linkedList;
+  let tmp;
+  instructions.push({
+    actions: [
+      { name: 'focus', params: [0] },
+      { name: 'label', params: ['current', 0, true] },
+    ],
+    ..._getExplanationAndCodeLine('init'),
+  });
+
+  while (currentNode) {
+    tmp = currentNode.next;
+    instructions.push({
+      actions: [
+        {
+          name: 'label',
+          params: ['temp', tmp && tmp.key, true],
+        },
+        {
+          name: 'changePointer',
+          params: [currentNode.key, previousNode && previousNode.key],
+        },
+      ],
+      ..._getExplanationAndCodeLine('reversePointer'),
+    });
+
+    currentNode.next;
+    previousNode = currentNode;
+    currentNode = tmp;
+
+    const currentNodeKey = currentNode && currentNode.key;
+    instructions.push({
+      actions: [
+        { name: 'focus', params: [currentNodeKey] },
+        { name: 'label', params: ['current', currentNodeKey, true] },
+        { name: 'label', params: ['previous', previousNode.key, true] },
+      ],
+      ..._getExplanationAndCodeLine('moveNext'),
+    });
+  }
+
+  instructions.push({
+    actions: [],
+    ..._getExplanationAndCodeLine('complete'),
+  });
+
+  return instructions.get();
+};
+
 const getExplanationAndCodeLine = (
   operation: LinkedListOperation,
   subOperation: string,
@@ -239,6 +300,20 @@ const getExplanationAndCodeLine = (
         default:
           return {};
       }
+
+    case 'reverse':
+      switch (subOperation) {
+        case 'init':
+          return { codeLine: '2-4', explanationStep: 1 };
+        case 'reversePointer':
+          return { codeLine: '7-11', explanationStep: 2 };
+        case 'moveNext':
+          return { codeLine: '13-15', explanationStep: 3 };
+        case 'complete':
+          return { codeLine: '18', explanationStep: 4 };
+        default:
+          return {};
+      }
   }
 };
 
@@ -277,26 +352,47 @@ const insertCode = `function insert(value, index) {
 }`;
 
 const deleteCode = `function delete(index) {
-  let currentNode = this.list;
-  let previousNode;
+  let current = this.list;
+  let previous;
   for (let i = 0; i < index; i++) {
-    previousNode = currentNode;
-    currentNode = currentNode.next;
+    previous = current;
+    current = current.next;
   }
 
-  previousNode.next = currentNode.next;
+  previous.next = current.next;
   return this.list;
+}`;
+
+const reverseCode = `function reverse(head) {
+  let current = head;
+  let previous = null;
+  let temp;
+
+  while (current) {
+    // save next before we overwrite current.next!
+    temp = current.next;
+
+    // reverse pointer
+    current.next = previous;
+
+    // step forward in the list
+    previous = current;
+    current = temp;
+  }
+
+  return previous;
 }`;
 
 export const code = {
   search: searchCode,
   insert: insertCode,
   delete: deleteCode,
+  reverse: reverseCode,
 };
 
 export const explanation = {
   search: [
-    'Khởi tạo giá trị node hiện tại là head của linked list và giá trị index bằng 0',
+    'Khởi tạo biến lưu giá trị node hiện tại là head của linked list và giá trị index bằng 0',
     'So sánh giá trị của node hiện tại với giá trị đang tìm kiếm',
     'Nếu khớp thì trả về giá trị index',
     'Nếu không thì đặt node tiếp theo (node.next) là node hiện tại và tăng index lên 1',
@@ -304,15 +400,21 @@ export const explanation = {
     'Nếu kết thúc vòng loop mà vẫn chưa tìm thấy value thì trả về null',
   ],
   insert: [
-    'Khởi tạo giá trị index hiện tại, node hiện tại và node phía sau node hiện tại',
+    'Khởi tạo biến lưu giá trị index hiện tại, node hiện tại và node phía sau node hiện tại',
     'Tìm vị trí để chèn node mới',
     'Nếu đã đến index cần tìm thì thêm node mới vào vị trí hiện tại',
     'Trả về giá trị head của linked list',
   ],
   delete: [
-    'Khởi tạo giá trị index hiện tại, node hiện tại và node phía sau node hiện tại',
+    'Khởi tạo biến lưu giá trị index hiện tại, node hiện tại và node phía sau node hiện tại',
     'Tìm node cần xoá',
     'Kết nối node phía trước node cần xoá (previousNode) với node phía sau node cần xoá (currentNode.next)',
     'Trả về giá trị head của linked list',
+  ],
+  reverse: [
+    'Khởi tạo biến lưu giá trị node hiện tại, node phía sau node hiện tại và biến tạm tmp',
+    'Lưu node tiếp theo (current.next) vào biến tạm và đảo ngược pointer: node hiện tại trỏ đến node phía sau (previous)',
+    'Di chuyển đến node tiếp theo',
+    'Trả về giá trị head mới',
   ],
 };
