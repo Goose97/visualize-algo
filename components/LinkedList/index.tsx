@@ -51,7 +51,6 @@ export class LinkedList extends Component<IProps, IState>
       key: index,
       focus: false,
       pointer: index === initialData.length - 1 ? null : index + 1,
-      // pointer: index === 0 ? null : index - 1,
     }));
   }
 

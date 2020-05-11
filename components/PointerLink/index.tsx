@@ -61,6 +61,8 @@ export class PointerLink extends Component<IProps, IState> {
         return 'l -2 2 l 8 -2 l -8 -2 l 2 2';
       case 'left':
         return 'l 2 2 l -8 -2 l 8 -2 l -2 2';
+      case 'up':
+        return 'l 2 2 l -2 -8 l -2 8 l 2 -2';
       default:
         return '';
     }

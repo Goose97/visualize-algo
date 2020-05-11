@@ -1,8 +1,8 @@
 .pointer-link {
   .pointer-link__line {
     @extend .default-stroke-lighter;
-    @extend .default-fill;
     stroke-width: 2px;
+    fill: none;
 
     &.follow {
       stroke: $primary-color;
