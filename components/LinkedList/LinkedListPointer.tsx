@@ -11,7 +11,7 @@ class LinkedListPointer extends Component<LinkedListPointerProps> {
   caculatePathOfPointer() {
     const { linkedListModel, nodeAboutToAppear, from, to } = this.props;
     let { x, y, visible } = linkedListModel.find(({ key }) => key === from)!;
-    if (!to || !visible) return null;
+    if (typeof to !== 'number' || !visible) return null;
 
     let { x: x1, y: y1 } = linkedListModel.find(({ key }) => key === to)!;
     if (this.isFromBehindTo()) {
@@ -26,7 +26,7 @@ class LinkedListPointer extends Component<LinkedListPointerProps> {
         finish = { x: x1, y: y1 + LINKED_LIST_BLOCK_HEIGHT / 2 };
       }
 
-      return `M ${start.x} ${start.y} L ${finish.x - 12} ${finish.y}`;
+      return `M ${start.x} ${start.y} L ${finish.x - 7} ${finish.y}`;
     } else {
       const start = {
         x: x,
@@ -42,7 +42,7 @@ class LinkedListPointer extends Component<LinkedListPointerProps> {
         };
       }
 
-      return `M ${start.x} ${start.y} L ${finish.x - 12} ${finish.y}`;
+      return `M ${start.x} ${start.y} L ${finish.x + 7} ${finish.y}`;
     }
   }
 
@@ -56,7 +56,13 @@ class LinkedListPointer extends Component<LinkedListPointerProps> {
   render() {
     const path = this.caculatePathOfPointer();
     return (
-      path && <PointerLink {...this.props} path={path} arrowDirection='right' />
+      path && (
+        <PointerLink
+          {...this.props}
+          path={path}
+          arrowDirection={this.isFromBehindTo() ? 'right' : 'left'}
+        />
+      )
     );
   }
 }

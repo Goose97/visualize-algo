@@ -33,4 +33,14 @@
       opacity: 0.3;
     }
   }
+
+  .pointer-link__start-dot {
+    &.follow {
+      fill: $primary-color;
+    }
+
+    &.visited {
+      opacity: 0.3;
+    }
+  }
 }
