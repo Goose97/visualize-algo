@@ -50,7 +50,7 @@ export class LinkedList extends Component<IProps, IState>
       visited: false,
       key: index,
       focus: false,
-      pointer: index === initialData.length - 1 ? null : index + 1,
+      pointer: index === initialData.length - 1 ? 1 : index + 1,
     }));
   }
 
@@ -186,9 +186,14 @@ export class LinkedList extends Component<IProps, IState>
     return { x: baseX + nodeIndex * (2 * LINKED_LIST_BLOCK_WIDTH), y: baseY };
   }
 
-  focus(currentModel: LinkedListModel, params: [number]) {
+  // params: nodeKeyToFocus, keepOtherNodeFocus
+  focus(currentModel: LinkedListModel, params: [number, boolean]) {
     const currentFocusNode = this.getCurrentFocusNode();
-    this.pushReverseAction('reverseFocus', [currentFocusNode]);
+    if (params[1]) {
+      this.pushReverseAction('reverseFocus', [params[0]]);
+    } else {
+      this.pushReverseAction('focus', [currentFocusNode]);
+    }
 
     const action = {
       name: 'focus',
@@ -448,6 +453,13 @@ export class LinkedList extends Component<IProps, IState>
     );
   }
 
+  produceMemoryBlockLabel(linkedListNode: LinkedListNodeModel) {
+    const { label } = linkedListNode;
+    if (label) {
+      return label.join(' / ');
+    }
+  }
+
   render() {
     const { linkedListModel, isVisible } = this.state;
     const listMemoryBlock = linkedListModel.map(linkedListNode => (
@@ -455,7 +467,10 @@ export class LinkedList extends Component<IProps, IState>
         origin={pick(linkedListNode, ['x', 'y'])}
         key={linkedListNode.key}
       >
-        <LinkedListMemoryBlock {...omit(linkedListNode, ['key'])} />
+        <LinkedListMemoryBlock
+          {...omit(linkedListNode, ['key'])}
+          label={this.produceMemoryBlockLabel(linkedListNode)}
+        />
       </AutoTransformGroup>
     ));
     const listPointerLink = linkedListModel.map((_, index) =>

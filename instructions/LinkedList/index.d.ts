@@ -1,4 +1,9 @@
-export type LinkedListOperation = 'search' | 'insert' | 'delete' | 'reverse';
+export type LinkedListOperation =
+  | 'search'
+  | 'insert'
+  | 'delete'
+  | 'reverse'
+  | 'detectCycle';
 
 export interface ILinkedListNode {
   val: number;

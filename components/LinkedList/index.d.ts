@@ -12,7 +12,7 @@ export interface LinkedListNodeModel {
   visible: boolean;
   visited: boolean;
   focus: boolean;
-  label?: string;
+  label?: string[];
   pointer: number | null; // pointer to the next node
 }
 

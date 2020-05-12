@@ -219,6 +219,7 @@ export class Test extends Component {
       { value: 'insert', label: 'Insert' },
       { value: 'delete', label: 'Delete' },
       { value: 'reverse', label: 'Reverse' },
+      { value: 'detectCycle', label: 'Detect Cycle' },
     ];
     const fullState = produceFullState(
       stepDescription.map(({ state }) => state),
