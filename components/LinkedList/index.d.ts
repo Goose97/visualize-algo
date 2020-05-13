@@ -25,7 +25,7 @@ export type IProps = {
   currentState: any;
   fullState: any;
   initialData: number[];
-} & WithReverseStep;
+};
 
 export interface IState {
   linkedListModel: LinkedListModel;

@@ -8,13 +8,12 @@ import HeadPointer from './HeadPointer';
 import LinkedListMemoryBlock from './LinkedListMemoryBlock';
 import LinkedListPointer from './LinkedListPointer';
 import { promiseSetState } from 'utils';
-import { withReverseStep } from 'hocs';
+import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import {
   LinkedListModel,
   IProps,
   IState,
   LinkedListNodeModel,
-  LinkedListReverseMethod,
   LinkedListDataStructure,
 } from './index.d';
 import { Action } from 'types';
@@ -23,12 +22,13 @@ import {
   LINKED_LIST_BLOCK_HEIGHT,
 } from '../../constants';
 
-export class LinkedList extends Component<IProps, IState>
+type PropsWithHoc = IProps & WithReverseStep<LinkedListModel>;
+
+export class LinkedList extends Component<PropsWithHoc, IState>
   implements LinkedListDataStructure {
   private initialLinkedListModel: LinkedListModel;
-  private promiseSetState: (state: Record<string, any>) => Promise<undefined>;
 
-  constructor(props: IProps) {
+  constructor(props: PropsWithHoc) {
     super(props);
 
     this.initialLinkedListModel = this.initiateMemoryLinkedListModel(props);
@@ -37,7 +37,6 @@ export class LinkedList extends Component<IProps, IState>
       nodeAboutToAppear: new Set([]),
       isVisible: true,
     };
-    this.promiseSetState = promiseSetState.bind(this);
   }
 
   initiateMemoryLinkedListModel(props: IProps): LinkedListModel {
@@ -50,13 +49,15 @@ export class LinkedList extends Component<IProps, IState>
       visited: false,
       key: index,
       focus: false,
-      pointer: index === initialData.length - 1 ? 1 : index + 1,
+      pointer: index === initialData.length - 1 ? null : index + 1,
     }));
   }
 
-  pushReverseAction(actionName: string, params: any[]) {
-    const { currentStep, saveReverseLogs } = this.props;
-    saveReverseLogs(actionName, params, currentStep);
+  saveModelSnapshotAtCurrentStep() {
+    const { currentStep, saveStepSnapshots } = this.props;
+    const { linkedListModel } = this.state;
+    if (typeof currentStep === 'number')
+      saveStepSnapshots(linkedListModel, currentStep);
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -64,6 +65,7 @@ export class LinkedList extends Component<IProps, IState>
 
     switch (this.getProgressDirection(prevProps.currentStep)) {
       case 'forward':
+        this.saveModelSnapshotAtCurrentStep();
         this.handleForward();
         break;
 
@@ -188,13 +190,6 @@ export class LinkedList extends Component<IProps, IState>
 
   // params: nodeKeyToFocus, keepOtherNodeFocus
   focus(currentModel: LinkedListModel, params: [number, boolean]) {
-    const currentFocusNode = this.getCurrentFocusNode();
-    if (params[1]) {
-      this.pushReverseAction('reverseFocus', [params[0]]);
-    } else {
-      this.pushReverseAction('focus', [currentFocusNode]);
-    }
-
     const action = {
       name: 'focus',
       params,
@@ -204,11 +199,6 @@ export class LinkedList extends Component<IProps, IState>
 
   // params: label, nodeKey, removeThisLabelInOtherNode
   label(currentModel: LinkedListModel, params: [string, number, boolean]) {
-    const { linkedListModel } = this.state;
-    const [_, nodeKey, __] = params;
-    const nodeToLabel = linkedListModel.find(({ key }) => key === nodeKey);
-    this.pushReverseAction('label', [nodeToLabel?.label, nodeKey]);
-
     const action = {
       name: 'label',
       params,
@@ -221,11 +211,6 @@ export class LinkedList extends Component<IProps, IState>
     currentModel: LinkedListModel,
     params: [number, number | null],
   ) {
-    const [pointFrom] = params;
-    const nodeHolderPointer = currentModel.find(({ key }) => key === pointFrom);
-    const oldPointTo = nodeHolderPointer && nodeHolderPointer.pointer;
-    this.pushReverseAction('changePointer', [pointFrom, oldPointTo]);
-
     const action = {
       name: 'changePointer',
       params,
@@ -240,14 +225,13 @@ export class LinkedList extends Component<IProps, IState>
     // Nếu node là node đầu tiên thì ta không có animation để thực hiện, focus luôn vào node
     const [nodeKey] = params;
     const currentFocusNode = this.getCurrentFocusNode();
-    this.pushReverseAction('reverseVisit', [currentFocusNode]);
     if (nodeKey !== 0) {
       this.followLinkToNode(nodeKey);
       setTimeout(() => {
         this.handleFinishFollowLink(currentFocusNode, nodeKey);
       }, 400);
     } else {
-      this.focus(currentModel, [nodeKey]);
+      this.focus(currentModel, [nodeKey, false]);
     }
 
     return currentModel;
@@ -274,7 +258,10 @@ export class LinkedList extends Component<IProps, IState>
     }
 
     // mark the node on the other end as current focus
-    newLinkedListModel = this.focus(newLinkedListModel, [destinationNodeKey]);
+    newLinkedListModel = this.focus(newLinkedListModel, [
+      destinationNodeKey,
+      false,
+    ]);
 
     this.setState({
       nodeAboutToVisit: undefined,
@@ -283,7 +270,6 @@ export class LinkedList extends Component<IProps, IState>
   };
 
   remove(currentModel: LinkedListModel, params: [number]) {
-    this.pushReverseAction('reverseRemove', params);
     const action = {
       name: 'remove',
       params,
@@ -292,9 +278,7 @@ export class LinkedList extends Component<IProps, IState>
   }
 
   add(currentModel: LinkedListModel, params: [number, number, number]) {
-    const [value, _, newNodeKey] = params;
-    this.pushReverseAction('reverseAdd', [value, newNodeKey]);
-
+    const [_value, _, newNodeKey] = params;
     const action = {
       name: 'add',
       params,
@@ -348,6 +332,7 @@ export class LinkedList extends Component<IProps, IState>
     return (
       <LinkedListPointer
         nodeAboutToAppear={nodeAboutToAppear}
+        key={key}
         from={key}
         to={pointer}
         linkedListModel={linkedListModel}
@@ -410,15 +395,8 @@ export class LinkedList extends Component<IProps, IState>
     }
   }
 
-  handleReverse = (actionName: LinkedListReverseMethod, params: any[]) => {
-    const { linkedListModel } = this.state;
-    const action = {
-      name: actionName,
-      params,
-    };
-    this.promiseSetState({
-      linkedListModel: this.produceNewState(linkedListModel, action),
-    });
+  handleReverse = (stateOfPreviousStep: LinkedListModel) => {
+    this.setState({ linkedListModel: stateOfPreviousStep });
   };
 
   handleFastForward() {
@@ -489,4 +467,4 @@ export class LinkedList extends Component<IProps, IState>
   }
 }
 
-export default withReverseStep(LinkedList);
+export default withReverseStep<LinkedListModel, PropsWithHoc>(LinkedList);
