@@ -7,8 +7,8 @@ import transformModel from './ModelTransformer';
 import HeadPointer from './HeadPointer';
 import LinkedListMemoryBlock from './LinkedListMemoryBlock';
 import LinkedListPointer from './LinkedListPointer';
-import { promiseSetState } from 'utils';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
+import { getProgressDirection } from 'utils';
 import {
   LinkedListModel,
   IProps,
@@ -61,9 +61,11 @@ export class LinkedList extends Component<PropsWithHoc, IState>
   }
 
   componentDidUpdate(prevProps: IProps) {
-    const { currentStep, reverseToStep } = this.props;
+    const { currentStep, reverseToStep, totalStep } = this.props;
 
-    switch (this.getProgressDirection(prevProps.currentStep)) {
+    switch (
+      getProgressDirection(currentStep, prevProps.currentStep, totalStep)
+    ) {
       case 'forward':
         this.saveModelSnapshotAtCurrentStep();
         this.handleForward();

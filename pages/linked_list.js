@@ -17,7 +17,7 @@ import {
 } from 'instructions/LinkedList';
 import 'styles/main.scss';
 
-export class Test extends Component {
+export class LinkedListPage extends Component {
   constructor(props) {
     super(props);
 
@@ -207,7 +207,6 @@ export class Test extends Component {
   render() {
     const {
       data,
-      currentNode,
       currentStep,
       currentApi,
       stepDescription,
@@ -221,10 +220,6 @@ export class Test extends Component {
       { value: 'reverse', label: 'Reverse' },
       { value: 'detectCycle', label: 'Detect Cycle' },
     ];
-    const fullState = produceFullState(
-      stepDescription.map(({ state }) => state),
-      ['data', 'currentNode'],
-    );
 
     const instructions = stepDescription.map(({ actions }) => actions || []);
 
@@ -251,11 +246,6 @@ export class Test extends Component {
               totalStep={stepDescription.length - 1}
               instructions={instructions}
               initialData={data}
-              currentState={{
-                data,
-                currentNode,
-              }}
-              fullState={fullState}
             />
           </CanvasContainer>
         )}
@@ -264,4 +254,4 @@ export class Test extends Component {
   }
 }
 
-export default Test;
+export default LinkedListPage;
