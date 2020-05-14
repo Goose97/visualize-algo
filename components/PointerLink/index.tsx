@@ -95,16 +95,16 @@ export class PointerLink extends Component<IProps, IState> {
 
     return (
       <g className={this.produceClassName()}>
-        <path
-          d={this.produceFullPathWithArrow()}
-          className='pointer-link__line'
-        />
         {isFollowing && (
           <path
             d={this.produceFullPathWithArrow()}
             className='pointer-link__line follow animated-path'
           />
         )}
+        <path
+          d={this.produceFullPathWithArrow()}
+          className='pointer-link__line'
+        />
         {this.produceStartPointMark()}
       </g>
     );

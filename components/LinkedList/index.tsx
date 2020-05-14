@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import produce from 'immer';
-import { pick, omit } from 'lodash';
+import { pick, omit, flatMap } from 'lodash';
 
 import { AutoTransformGroup } from 'components';
 import transformModel from './ModelTransformer';
 import HeadPointer from './HeadPointer';
 import LinkedListMemoryBlock from './LinkedListMemoryBlock';
 import LinkedListPointer from './LinkedListPointer';
-import { promiseSetState } from 'utils';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import {
   LinkedListModel,
@@ -218,20 +217,19 @@ export class LinkedList extends Component<PropsWithHoc, IState>
     return this.produceNewState(currentModel, action);
   }
 
-  visit(currentModel: LinkedListModel, params: [number]) {
+  visit(currentModel: LinkedListModel, params: [number, number]) {
     // Nếu node không phải node đầu tiên thì ta sẽ thực thi hàm followLinkToNode
     // Hàm này chịu trách nhiệm thực hiện animation, sau khi animation hoàn thành
     // callbackk handleFinishFollowLink sẽ được thực hiện
     // Nếu node là node đầu tiên thì ta không có animation để thực hiện, focus luôn vào node
-    const [nodeKey] = params;
-    const currentFocusNode = this.getCurrentFocusNode();
-    if (nodeKey !== 0) {
-      this.followLinkToNode(nodeKey);
+    const [nodeKeyToStart, nodeKeyToVisit] = params;
+    if (nodeKeyToVisit !== 0) {
+      this.followLinkToNode(nodeKeyToVisit);
       setTimeout(() => {
-        this.handleFinishFollowLink(currentFocusNode, nodeKey);
+        this.handleFinishFollowLink(nodeKeyToStart, nodeKeyToVisit);
       }, 400);
     } else {
-      this.focus(currentModel, [nodeKey, false]);
+      this.focus(currentModel, [nodeKeyToVisit, false]);
     }
 
     return currentModel;
@@ -403,12 +401,20 @@ export class LinkedList extends Component<PropsWithHoc, IState>
     const { linkedListModel } = this.state;
     const { instructions } = this.props;
 
-    const allActions = instructions
-      .reduce((acc, instruction) => acc.concat(instruction), [])
-      .map(instruction => {
-        const { name, params } = instruction;
-        return name === 'visit' ? { name: 'focus', params } : instruction;
-      });
+    let allActions = instructions.reduce(
+      (acc, instruction) => acc.concat(instruction),
+      [],
+    );
+    allActions = flatMap(allActions, instruction => {
+      const { name, params } = instruction;
+      return name === 'visit'
+        ? [
+            { name: 'visit', params: params.slice(0, 1) },
+            { name: 'focus', params: params.slice(1) },
+          ]
+        : instruction;
+    });
+
     let finalLinkedListModel = linkedListModel;
     for (let i = 0; i < allActions.length; i++) {
       finalLinkedListModel = this.produceNewState(

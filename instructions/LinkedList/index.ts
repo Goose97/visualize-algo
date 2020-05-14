@@ -60,11 +60,12 @@ const searchInstruction = (data: number[], { value }: SearchParams) => {
         ..._getExplanationAndCodeLine('compareSuccess'),
       });
     } else {
+      let previousKey = current.key;
       current = current.next;
       if (current) {
         instructions.push({
           actions: [
-            { name: 'visit', params: [current.key] },
+            { name: 'visit', params: [previousKey, current.key] },
             { name: 'label', params: ['current', current.key, true] },
           ],
           ..._getExplanationAndCodeLine('moveNext'),
@@ -113,7 +114,7 @@ const insertInstruction = (data: number[], { value, index }: InsertParams) => {
     if (currentNode) {
       instructions.push({
         actions: [
-          { name: 'visit', params: [currentNode.key, true] },
+          { name: 'visit', params: [previousNode.key, currentNode.key, true] },
           { name: 'label', params: ['previous', previousNode.key, true] },
           { name: 'label', params: ['current', currentNode.key, true] },
         ],
@@ -168,7 +169,9 @@ const deleteInstruction = (data: number[], { index }: DeleteParams) => {
     currentNode = currentNode!.next;
 
     instructions.push({
-      actions: [{ name: 'visit', params: [currentNode?.key] }],
+      actions: [
+        { name: 'visit', params: [previousNode?.key, currentNode?.key] },
+      ],
       ..._getExplanationAndCodeLine('findPosition'),
     });
   }
