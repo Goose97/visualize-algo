@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { pick } from 'lodash';
 
+import { PointerLink } from 'components';
 import QueueItem from './QueueItem';
 import {
   QUEUE_BLOCK_WIDTH,
@@ -110,7 +111,9 @@ export class Queue extends Component<PropsWithHoc, IState> {
     const upperBound = (
       <path
         className='default-stroke has-transition'
-        d={`M ${x + QUEUE_BLOCK_WIDTH} ${y - 20} h ${-queueWidth}`}
+        d={`M ${x + QUEUE_BLOCK_WIDTH} ${
+          y - 20
+        } l -2 2 l 8 -2 l -8 -2 l 2 2 h ${-queueWidth}`}
       ></path>
     );
     const lowerBound = (
@@ -118,7 +121,7 @@ export class Queue extends Component<PropsWithHoc, IState> {
         className='default-stroke has-transition'
         d={`M ${x + QUEUE_BLOCK_WIDTH} ${
           y + QUEUE_BLOCK_HEIGHT + 20
-        } h ${-queueWidth}`}
+        } l -2 2 l 8 -2 l -8 -2 l 2 2 h ${-queueWidth}`}
       ></path>
     );
     return (
