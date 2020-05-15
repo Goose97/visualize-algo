@@ -68,12 +68,10 @@ const transformLinkedListModel = (
       });
     }
 
-    case 'focus':
-    case 'reverseFocus': {
-      const [key] = payload;
-      console.log('payload', payload)
+    case 'focus': {
+      const [key, keepOtherNodeFocus] = payload;
       return produce(currentData, draft => {
-        draft.forEach(item => (item.focus = false));
+        if (!keepOtherNodeFocus) draft.forEach(item => (item.focus = false));
         // Nếu index === null nghĩa là đang unfocus tất cả các node
         if (key !== null) {
           const nodeToFocus = draft.find(({ key: nodeKey }) => nodeKey === key);
@@ -82,17 +80,31 @@ const transformLinkedListModel = (
       });
     }
 
+    case 'reverseFocus': {
+      const [key] = payload;
+      return produce(currentData, draft => {
+        const nodeToFocus = draft.find(({ key: nodeKey }) => nodeKey === key);
+        if (nodeToFocus) nodeToFocus.focus = false;
+      });
+    }
+
     case 'label': {
       const [label, nodeKeyToLabel, removeThisLabelInOtherNode] = payload;
       return produce(currentData, draft => {
         if (removeThisLabelInOtherNode) {
           draft.forEach(node => {
-            if (node.label === label) node.label = undefined;
+            const oldLabel = node.label;
+            const newLabel =
+              oldLabel && oldLabel.filter(item => item !== label);
+            node.label = newLabel;
           });
         }
 
         const nodeToLabel = draft.find(({ key }) => key === nodeKeyToLabel);
-        if (nodeToLabel) nodeToLabel.label = label;
+        if (nodeToLabel) {
+          const oldLabel = nodeToLabel.label || [];
+          nodeToLabel.label = oldLabel.concat(label);
+        }
       });
     }
 

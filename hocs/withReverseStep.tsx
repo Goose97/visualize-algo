@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
-export interface WithReverseStep {
-  saveReverseLogs: (actionName: string, params: any[], step: number) => void;
+export interface WithReverseStep<T> {
+  saveReverseLog: (actionName: string, params: any[], step: number) => void;
+  saveStepSnapshots: (snapshot: T, step: number) => void;
   reverseToStep: (targetStep: number) => void;
 }
 
@@ -11,20 +12,29 @@ interface ActionLog {
   step: number;
 }
 
-const withReverseStep = <P extends {}>(Page: React.ComponentType<P>) => {
-  class WrapperComponent extends Component<P & WithReverseStep> {
+interface SnapshotLog<T> {
+  snapshot: T;
+  step: number;
+}
+
+const withReverseStep = <T extends {}, P extends {}>(
+  Page: React.ComponentType<P>,
+) => {
+  class WrapperComponent extends Component<P & WithReverseStep<T>> {
     private reverseLogs: ActionLog[];
+    private stepSnapshots: SnapshotLog<T>[];
     private ref: React.RefObject<React.ReactElement>;
 
-    constructor(props: P & WithReverseStep) {
+    constructor(props: P & WithReverseStep<T>) {
       super(props);
 
       this.state = {};
       this.reverseLogs = [];
+      this.stepSnapshots = [];
       this.ref = React.createRef();
     }
 
-    saveReverseLogs = (
+    saveReverseLog = (
       reverseActionName: string,
       params: any[],
       step: number,
@@ -38,19 +48,21 @@ const withReverseStep = <P extends {}>(Page: React.ComponentType<P>) => {
       this.forceUpdate();
     };
 
+    saveStepSnapshots = (snapshot: T, step: number) => {
+      this.stepSnapshots.push({
+        snapshot,
+        step,
+      });
+    };
+
     reverseToStep = async (targetStep: number) => {
-      while (this.reverseLogs.length) {
-        const stepToReverse = this.getLastStepToReverse();
-        if (!stepToReverse) return;
-
-        const { step, name, params } = stepToReverse;
-        if (targetStep >= step) return;
-
+      const snapshotOfTargetStep = this.stepSnapshots.find(
+        ({ step }) => step === targetStep,
+      );
+      if (snapshotOfTargetStep) {
         //@ts-ignore
         const handler = this.getRef().handleReverse;
-        const promise = handler && handler(name, params);
-        await promise;
-        this.reverseLogs.pop();
+        handler(snapshotOfTargetStep.snapshot);
       }
     };
 
@@ -69,8 +81,9 @@ const withReverseStep = <P extends {}>(Page: React.ComponentType<P>) => {
         <Page
           {...(this.props as P)}
           ref={this.ref}
-          saveReverseLogs={this.saveReverseLogs}
+          saveReverseLog={this.saveReverseLog}
           reverseToStep={this.reverseToStep}
+          saveStepSnapshots={this.saveStepSnapshots}
         />
       );
     }

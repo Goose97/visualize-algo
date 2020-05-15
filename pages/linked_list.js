@@ -72,6 +72,9 @@ export class Test extends Component {
           </span>
         );
 
+      case 'reverse':
+        return null;
+
       case 'insert':
         return (
           <div className='il-bl'>
@@ -130,6 +133,8 @@ export class Test extends Component {
             Khởi tạo
           </Button>
         );
+      case undefined:
+        return null;
       default:
         return (
           <Button
@@ -213,6 +218,8 @@ export class Test extends Component {
       { value: 'search', label: 'Search' },
       { value: 'insert', label: 'Insert' },
       { value: 'delete', label: 'Delete' },
+      { value: 'reverse', label: 'Reverse' },
+      { value: 'detectCycle', label: 'Detect Cycle' },
     ];
     const fullState = produceFullState(
       stepDescription.map(({ state }) => state),

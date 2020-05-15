@@ -2,23 +2,11 @@ import React, { Component } from 'react';
 
 import { classNameHelper } from 'utils';
 import { IProps, IState } from './index.d';
-import { PointCoordinate } from 'types';
-import {
-  LINKED_LIST_BLOCK_WIDTH,
-  LINKED_LIST_BLOCK_HEIGHT,
-} from '../../constants';
-
-const POINTER_HOLDER_WIDTH = 20;
 
 export class MemoryBlock extends Component<IProps, IState> {
-  private original: PointCoordinate;
   constructor(props: IProps) {
     super(props);
     this.state = {};
-    this.original = {
-      x: props.x,
-      y: props.y,
-    };
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -50,26 +38,28 @@ export class MemoryBlock extends Component<IProps, IState> {
       disappearing: !!isHiding,
       appearing: !!isShowing,
       invisible: !visible,
-      visited,
-      focus,
+      visited: !!visited,
+      focus: !!focus,
     });
   }
 
-  constructSeparateLinePath() {
-    return `M ${
-      this.original.x + LINKED_LIST_BLOCK_WIDTH - POINTER_HOLDER_WIDTH
-    } ${this.original.y} v${LINKED_LIST_BLOCK_HEIGHT}`;
-  }
-
   render() {
-    const { value, label } = this.props;
+    const {
+      value,
+      label,
+      width,
+      height,
+      children,
+      textOffset,
+      x,
+      y,
+    } = this.props;
 
+    const xOffsetText = textOffset ? textOffset.x : 0;
     const valueText = (
       <text
-        x={
-          this.original.x + (LINKED_LIST_BLOCK_WIDTH - POINTER_HOLDER_WIDTH) / 2
-        }
-        y={this.original.y + LINKED_LIST_BLOCK_HEIGHT / 2}
+        x={x + (width - xOffsetText) / 2}
+        y={y + height / 2}
         dominantBaseline='middle'
         textAnchor='middle'
         className='memory-block__text'
@@ -80,8 +70,8 @@ export class MemoryBlock extends Component<IProps, IState> {
 
     const labelText = label && (
       <text
-        x={this.original.x + LINKED_LIST_BLOCK_WIDTH / 2}
-        y={this.original.y - LINKED_LIST_BLOCK_HEIGHT / 2}
+        x={x + width / 2}
+        y={y - height / 2}
         dominantBaseline='middle'
         textAnchor='middle'
         className='memory-block__text italic'
@@ -93,18 +83,15 @@ export class MemoryBlock extends Component<IProps, IState> {
     return (
       <g className={this.produceClassName()}>
         <rect
-          x={this.original.x}
-          y={this.original.y}
-          width={LINKED_LIST_BLOCK_WIDTH}
-          height={LINKED_LIST_BLOCK_HEIGHT}
+          x={x}
+          y={y}
+          width={width}
+          height={height}
           className='memory-block__block'
         ></rect>
-        <path
-          d={this.constructSeparateLinePath()}
-          className='memory-block__separate-line'
-        />
         {valueText}
         {labelText}
+        {children}
       </g>
     );
   }

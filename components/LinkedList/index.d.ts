@@ -12,7 +12,7 @@ export interface LinkedListNodeModel {
   visible: boolean;
   visited: boolean;
   focus: boolean;
-  label?: string;
+  label?: string[];
   pointer: number | null; // pointer to the next node
 }
 
@@ -25,7 +25,7 @@ export type IProps = {
   currentState: any;
   fullState: any;
   initialData: number[];
-} & WithReverseStep;
+};
 
 export interface IState {
   linkedListModel: LinkedListModel;
@@ -59,3 +59,13 @@ export type LinkedListPointerProps = {
   from: number;
   to: number | null;
 } & Omit<PointerLinkProps, 'path'>;
+
+export interface LinkedListMemoryBlockProps {
+  value: number;
+  x: number;
+  y: number;
+  visible?: boolean;
+  visited?: boolean;
+  focus?: boolean;
+  label?: string;
+}

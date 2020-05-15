@@ -23,6 +23,12 @@ export const linkedListInstruction = (
     case 'delete':
       return deleteInstruction(data, parameters);
 
+    case 'reverse':
+      return reverseInstruction(data);
+
+    case 'detectCycle':
+      return detectCycleInstruction(data);
+
     default:
       return [];
   }
@@ -54,11 +60,12 @@ const searchInstruction = (data: number[], { value }: SearchParams) => {
         ..._getExplanationAndCodeLine('compareSuccess'),
       });
     } else {
+      let previousKey = current.key;
       current = current.next;
       if (current) {
         instructions.push({
           actions: [
-            { name: 'visit', params: [current.key] },
+            { name: 'visit', params: [previousKey, current.key] },
             { name: 'label', params: ['current', current.key, true] },
           ],
           ..._getExplanationAndCodeLine('moveNext'),
@@ -107,7 +114,7 @@ const insertInstruction = (data: number[], { value, index }: InsertParams) => {
     if (currentNode) {
       instructions.push({
         actions: [
-          { name: 'visit', params: [currentNode.key, true] },
+          { name: 'visit', params: [previousNode.key, currentNode.key, true] },
           { name: 'label', params: ['previous', previousNode.key, true] },
           { name: 'label', params: ['current', currentNode.key, true] },
         ],
@@ -162,7 +169,9 @@ const deleteInstruction = (data: number[], { index }: DeleteParams) => {
     currentNode = currentNode!.next;
 
     instructions.push({
-      actions: [{ name: 'visit', params: [currentNode?.key] }],
+      actions: [
+        { name: 'visit', params: [previousNode?.key, currentNode?.key] },
+      ],
       ..._getExplanationAndCodeLine('findPosition'),
     });
   }
@@ -184,6 +193,124 @@ const deleteInstruction = (data: number[], { index }: DeleteParams) => {
     actions: [{ name: 'focus', params: [null] }],
     ..._getExplanationAndCodeLine('complete'),
   });
+
+  return instructions.get();
+};
+
+const reverseInstruction = (data: number[]) => {
+  const linkedList = initLinkedList(data);
+  const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
+    null,
+    'reverse',
+  );
+  let instructions = new Instructions();
+  // Start make instruction
+  let previousNode: LinkedListNode | null = null;
+  let currentNode: LinkedListNode | null = linkedList;
+  let tmp;
+  instructions.push({
+    actions: [
+      { name: 'focus', params: [0] },
+      { name: 'label', params: ['current', 0, true] },
+    ],
+    ..._getExplanationAndCodeLine('init'),
+  });
+
+  while (currentNode) {
+    tmp = currentNode.next;
+    instructions.push({
+      actions: [
+        {
+          name: 'label',
+          params: ['temp', tmp && tmp.key, true],
+        },
+        {
+          name: 'changePointer',
+          params: [currentNode.key, previousNode && previousNode.key],
+        },
+      ],
+      ..._getExplanationAndCodeLine('reversePointer'),
+    });
+
+    currentNode.next;
+    previousNode = currentNode;
+    currentNode = tmp;
+
+    const currentNodeKey = currentNode && currentNode.key;
+    instructions.push({
+      actions: [
+        { name: 'focus', params: [currentNodeKey] },
+        { name: 'label', params: ['current', currentNodeKey, true] },
+        { name: 'label', params: ['previous', previousNode.key, true] },
+      ],
+      ..._getExplanationAndCodeLine('moveNext'),
+    });
+  }
+
+  instructions.push({
+    actions: [],
+    ..._getExplanationAndCodeLine('complete'),
+  });
+
+  return instructions.get();
+};
+
+const detectCycleInstruction = (data: number[]) => {
+  const linkedList = initLinkedList(data);
+  const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
+    null,
+    'detectCycle',
+  );
+  let instructions = new Instructions();
+  // Start make instruction
+  let slow: LinkedListNode | null = linkedList;
+  let fast: LinkedListNode | null = linkedList.next;
+  let isLoop = false;
+  instructions.push({
+    actions: [
+      { name: 'focus', params: [slow.key] },
+      { name: 'focus', params: [fast?.key, true] },
+      { name: 'label', params: ['slow', slow.key, true] },
+      { name: 'label', params: ['fast', fast?.key, true] },
+    ],
+    ..._getExplanationAndCodeLine('init'),
+  });
+
+  while (slow !== null && fast !== null) {
+    instructions.push({
+      actions: [],
+      ..._getExplanationAndCodeLine('checkMeet'),
+    });
+    if (slow === fast) {
+      isLoop = true;
+      break;
+    }
+
+    slow = slow.next;
+    fast = fast.next ? fast.next.next : null;
+    instructions.push({
+      actions: [
+        { name: 'focus', params: [slow?.next?.key] },
+        { name: 'focus', params: [fast?.next?.key, true] },
+        {
+          name: 'label',
+          params: ['slow', slow?.next?.key, true],
+        },
+        {
+          name: 'label',
+          params: ['fast', fast?.next?.key, true],
+        },
+      ],
+      ..._getExplanationAndCodeLine('moveNext'),
+    });
+  }
+
+  if (!isLoop) {
+    instructions.push({
+      actions: [],
+      ..._getExplanationAndCodeLine('complete'),
+    });
+  }
 
   return instructions.get();
 };
@@ -239,6 +366,34 @@ const getExplanationAndCodeLine = (
         default:
           return {};
       }
+
+    case 'reverse':
+      switch (subOperation) {
+        case 'init':
+          return { codeLine: '2-4', explanationStep: 1 };
+        case 'reversePointer':
+          return { codeLine: '7-11', explanationStep: 2 };
+        case 'moveNext':
+          return { codeLine: '13-15', explanationStep: 3 };
+        case 'complete':
+          return { codeLine: '18', explanationStep: 4 };
+        default:
+          return {};
+      }
+
+    case 'detectCycle':
+      switch (subOperation) {
+        case 'init':
+          return { codeLine: '2-3', explanationStep: 1 };
+        case 'checkMeet':
+          return { codeLine: '6-7', explanationStep: 3 };
+        case 'moveNext':
+          return { codeLine: '9-11', explanationStep: 4 };
+        case 'outOfLoop':
+          return { codeLine: '14-15', explanationStep: 2 };
+        default:
+          return {};
+      }
   }
 };
 
@@ -277,26 +432,65 @@ const insertCode = `function insert(value, index) {
 }`;
 
 const deleteCode = `function delete(index) {
-  let currentNode = this.list;
-  let previousNode;
+  let current = this.list;
+  let previous;
   for (let i = 0; i < index; i++) {
-    previousNode = currentNode;
-    currentNode = currentNode.next;
+    previous = current;
+    current = current.next;
   }
 
-  previousNode.next = currentNode.next;
+  previous.next = current.next;
   return this.list;
+}`;
+
+const reverseCode = `function reverse(head) {
+  let current = head;
+  let previous = null;
+  let temp;
+
+  while (current) {
+    // Save next before we overwrite current.next!
+    temp = current.next;
+
+    // Reverse pointer
+    current.next = previous;link
+
+    // Step forward in the list
+    previous = current;
+    current = temp;
+  }
+
+  return previous;
+}`;
+
+const detectCycleCode = `function detectCycle(head) {
+  let slow = head;
+  let fast = head.next;
+
+  while (slow !== null && fast !== null) {
+    // If fast and slow meets, this mean the linked list does have a loop
+    if (fast === slow) return true;
+
+    // The fast pointer will jump two nodes while the slow only jump one
+    slow = slow.next;
+    fast = fast.next ? fast.next.next : null;
+  }
+
+  // If either slow or fast reach the end, the linked list doesn't have any loop
+  return false;
 }`;
 
 export const code = {
   search: searchCode,
   insert: insertCode,
   delete: deleteCode,
+  reverse: reverseCode,
+  detectCycle: detectCycleCode,
 };
 
 export const explanation = {
   search: [
-    'Khởi tạo giá trị node hiện tại là head của linked list và giá trị index bằng 0',
+    'Khởi tạo biến lưu giá trị node hiện tại là head của linked list và giá trị index bằng 0',
     'So sánh giá trị của node hiện tại với giá trị đang tìm kiếm',
     'Nếu khớp thì trả về giá trị index',
     'Nếu không thì đặt node tiếp theo (node.next) là node hiện tại và tăng index lên 1',
@@ -304,15 +498,27 @@ export const explanation = {
     'Nếu kết thúc vòng loop mà vẫn chưa tìm thấy value thì trả về null',
   ],
   insert: [
-    'Khởi tạo giá trị index hiện tại, node hiện tại và node phía sau node hiện tại',
+    'Khởi tạo biến lưu giá trị index hiện tại, node hiện tại và node phía sau node hiện tại',
     'Tìm vị trí để chèn node mới',
     'Nếu đã đến index cần tìm thì thêm node mới vào vị trí hiện tại',
     'Trả về giá trị head của linked list',
   ],
   delete: [
-    'Khởi tạo giá trị index hiện tại, node hiện tại và node phía sau node hiện tại',
+    'Khởi tạo biến lưu giá trị index hiện tại, node hiện tại và node phía sau node hiện tại',
     'Tìm node cần xoá',
     'Kết nối node phía trước node cần xoá (previousNode) với node phía sau node cần xoá (currentNode.next)',
     'Trả về giá trị head của linked list',
+  ],
+  reverse: [
+    'Khởi tạo biến lưu giá trị node hiện tại, node phía sau node hiện tại và biến tạm tmp',
+    'Lưu node tiếp theo (current.next) vào biến tạm và đảo ngược pointer: node hiện tại trỏ đến node phía sau (previous)',
+    'Di chuyển đến node tiếp theo',
+    'Trả về giá trị head mới',
+  ],
+  detectCycle: [
+    'Khởi tạo hai biến lưu giá trị slow và fast',
+    'Nếu slow hoặc fast có giá trị bằng null thì thoát khỏi vòng while và trả về giá trị false, linked list không có cycle',
+    'Nếu slow và fast bằng nhau thì trả về giá trị true, linked list có cycle',
+    'Di chuyển slow và fast dến node tiếp theo, slow nhảy 1 node còn fast nhảy 2 node',
   ],
 };
