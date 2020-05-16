@@ -43,3 +43,19 @@ export const compactObject = (object: ObjectType) => {
 
   return object;
 };
+
+export const getProgressDirection = (
+  currentStep: number,
+  previousStep: number,
+  totalStep: number,
+) => {
+  if (previousStep === undefined) return 'forward';
+  if (currentStep === previousStep) return 'stay';
+  if (currentStep > previousStep) {
+    if (currentStep - previousStep === 1) return 'forward';
+    else if (currentStep === totalStep) return 'fastForward';
+  } else {
+    if (previousStep - currentStep === 1) return 'backward';
+    else if (currentStep === 0) return 'fastBackward';
+  }
+};

@@ -9,7 +9,6 @@ export class PointerLink extends Component<IProps, IState> {
 
     this.state = {
       // We will use this offset to animate
-      offsetFromFinish: 0,
       transformList: [],
     };
   }
@@ -28,14 +27,6 @@ export class PointerLink extends Component<IProps, IState> {
     if (!visited && prevProps.visited) {
       this.setState({ isFollowing: false });
     }
-  }
-
-  getLinkLength(props: IProps) {
-    const {
-      start: { x: xStart },
-      finish: { x: xFinish },
-    } = props;
-    return Math.abs(xFinish - xStart);
   }
 
   hide() {
@@ -58,14 +49,6 @@ export class PointerLink extends Component<IProps, IState> {
     });
   }
 
-  produceArrowClassName() {
-    const { isFollowing, isDoneFollowing } = this.state;
-    return classNameHelper({
-      base: 'pointer-link__arrow',
-      follow: !!(isFollowing && isDoneFollowing),
-    });
-  }
-
   produceFullPathWithArrow() {
     const { path } = this.props;
     return `${path} ${this.produceArrowPath()}`;
@@ -75,10 +58,36 @@ export class PointerLink extends Component<IProps, IState> {
     const { arrowDirection } = this.props;
     switch (arrowDirection) {
       case 'right':
-        return 'l -2 5 l 12 -5 l -12 -5 l 2 5';
+        return 'l -2 2 l 8 -2 l -8 -2 l 2 2';
+      case 'left':
+        return 'l 2 2 l -8 -2 l 8 -2 l -2 2';
+      case 'up':
+        return 'l 2 2 l -2 -8 l -2 8 l 2 -2';
       default:
         return '';
     }
+  }
+
+  produceStartPointMark() {
+    const { isFollowing } = this.state;
+    const { path, visited } = this.props;
+    const regex = /^M (\d+) (\d+)/;
+    const startPoint = path.match(regex);
+    if (startPoint) {
+      const className = classNameHelper({
+        base: 'pointer-link__start-dot',
+        follow: !!isFollowing,
+        visited: !!visited,
+      });
+      return (
+        <circle
+          cx={startPoint[1]}
+          cy={startPoint[2]}
+          r='2'
+          className={className}
+        />
+      );
+    } else return null;
   }
 
   render() {
@@ -86,16 +95,17 @@ export class PointerLink extends Component<IProps, IState> {
 
     return (
       <g className={this.produceClassName()}>
-        <path d={this.produceFullPathWithArrow()} className='pointer-link__line' />
         {isFollowing && (
-          <path d={this.produceFullPathWithArrow()} className='pointer-link__line follow animated-path' />
+          <path
+            d={this.produceFullPathWithArrow()}
+            className='pointer-link__line follow animated-path'
+          />
         )}
-        {/* <path
-          d={`M ${
-            xFinish - 10 - offsetFromFinish
-          } ${yStart} l -2 5 l 12 -5 l -12 -5 l 2 5`}
-          className={this.produceArrowClassName()}
-        /> */}
+        <path
+          d={this.produceFullPathWithArrow()}
+          className='pointer-link__line'
+        />
+        {this.produceStartPointMark()}
       </g>
     );
   }

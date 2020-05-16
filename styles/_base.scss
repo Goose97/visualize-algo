@@ -106,6 +106,10 @@ $border-style: 1px solid #cfcfcf;
   .vh-#{$i * 10} {
     height: #{$i * 10}vh;
   }
+
+  .stroke-#{$i} {
+    stroke-width: #{$i}px;
+  }
 }
 
 .h-full {
@@ -250,4 +254,8 @@ $border-style: 1px solid #cfcfcf;
   to {
     stroke-dashoffset: 0;
   }
+}
+
+.no-fill {
+  fill: none;
 }

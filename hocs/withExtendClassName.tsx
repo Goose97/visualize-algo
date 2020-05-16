@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 export interface WithExtendClassName {
   className?: string;
+  children?: ReactNode;
 }
 type MapPropsToClassName = (props: any) => string;
 

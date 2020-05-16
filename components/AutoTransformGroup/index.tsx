@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 
+import withExtendClassName, {
+  WithExtendClassName,
+} from 'hocs/withExtendClassName';
 import { IProps, IState, TransformationChange } from './index.d';
 
 // Component này xử lý logic transform cho các phần tử svg
@@ -9,8 +12,9 @@ import { IProps, IState, TransformationChange } from './index.d';
 // transform thích hợp
 // Lí do phải sử dụng component này là để thực hiện animation
 
-export class AutoTransformGroup extends Component<IProps, IState> {
-  constructor(props: IProps) {
+type PropsWithHoc = IProps & WithExtendClassName;
+export class AutoTransformGroup extends Component<PropsWithHoc, IState> {
+  constructor(props: PropsWithHoc) {
     super(props);
 
     this.state = {
@@ -56,13 +60,13 @@ export class AutoTransformGroup extends Component<IProps, IState> {
   }
 
   render() {
-    const { children } = this.props;
+    const { children, className } = this.props;
     return (
-      <g transform={this.produceTransformString()} className='has-transition'>
+      <g transform={this.produceTransformString()} className={className}>
         {children}
       </g>
     );
   }
 }
 
-export default AutoTransformGroup;
+export default withExtendClassName('has-transition')(AutoTransformGroup);
