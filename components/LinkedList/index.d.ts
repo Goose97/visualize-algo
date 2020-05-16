@@ -1,17 +1,14 @@
-import { Action, DataStructureMethod } from 'types';
+import { Action, DataStructureMethod, BaseMemoryBlockProps } from 'types';
 import { WithReverseStep } from '../../hocs/withReverseStep';
 import { IProps as PointerLinkProps } from 'components/PointerLink/index.d';
 
 export type LinkedListModel = LinkedListNodeModel[];
-export interface LinkedListNodeModel {
+export interface LinkedListNodeModel extends BaseMemoryBlockProps {
   x: number;
   y: number;
-  value: number;
   index: number;
   key: number;
-  visible: boolean;
   visited: boolean;
-  focus: boolean;
   label?: string[];
   pointer: number | null; // pointer to the next node
 }
@@ -58,12 +55,9 @@ export type LinkedListPointerProps = {
   to: number | null;
 } & Omit<PointerLinkProps, 'path'>;
 
-export interface LinkedListMemoryBlockProps {
-  value: number;
+export interface LinkedListMemoryBlockProps extends BaseMemoryBlockProps {
   x: number;
   y: number;
-  visible?: boolean;
   visited?: boolean;
-  focus?: boolean;
   label?: string;
 }

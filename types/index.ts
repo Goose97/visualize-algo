@@ -22,3 +22,9 @@ export interface PointCoordinate {
 }
 
 export type DataStructureMethod<T> = (model: T, params: any) => T;
+
+export interface BaseMemoryBlockProps {
+  visible?: boolean;
+  focus?: boolean;
+  value: string | number;
+}

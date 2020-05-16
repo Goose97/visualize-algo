@@ -1,11 +1,8 @@
-import { PointCoordinate } from '../../types';
+import { PointCoordinate, BaseMemoryBlockProps } from 'types';
 
 export type QueueModel = QueueItemModel[];
 
-export interface QueueItemModel {
-  value: number;
-  focus?: boolean;
-  visible?: boolean;
+export interface QueueItemModel extends BaseMemoryBlockProps {
   key: number;
   offsetFromFront: number;
   isNew?: boolean;

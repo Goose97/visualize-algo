@@ -1,11 +1,8 @@
-import { PointCoordinate } from '../../types';
+import { PointCoordinate, BaseMemoryBlockProps } from 'types';
 
 export type StackModel = StackItemModel[];
 
-export interface StackItemModel {
-  value: number;
-  focus?: boolean;
-  visible?: boolean;
+export interface StackItemModel extends BaseMemoryBlockProps {
   key: number;
   offsetFromFront: number;
   isNew?: boolean;
