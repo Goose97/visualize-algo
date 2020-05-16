@@ -15,7 +15,7 @@ import { IProps } from './index.d';
 export class ProgressControl extends Component<IProps> {
   handleControlProgress = (index: number) => () => {
     const handlerFunction = this.getHandlerFunction(index);
-    handlerFunction && handlerFunction();
+    handlerFunction && !this.isButtonDisabled(index) && handlerFunction();
   };
 
   getHandlerFunction(buttonIndex: number) {

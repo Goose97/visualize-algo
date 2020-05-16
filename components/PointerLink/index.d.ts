@@ -9,10 +9,7 @@ interface IProps {
 }
 
 interface IState {
-  offsetFromFinish: number;
-  offsetOfFollowAnimation?: number;
   transformList: string[];
   isFollowing?: boolean;
   isDisappearing?: boolean;
-  isDoneFollowing?: boolean;
 }

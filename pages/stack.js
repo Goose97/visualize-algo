@@ -2,22 +2,18 @@ import React, { Component, cloneElement } from 'react';
 import produce from 'immer';
 
 import {
-  LinkedList,
+  Stack,
   CanvasContainer,
   Input,
   Button,
   InitLinkedListInput,
 } from 'components';
 import { VisualAlgo } from 'layout';
-import { produceFullState, promiseSetState } from 'utils';
-import {
-  linkedListInstruction,
-  code,
-  explanation,
-} from 'instructions/LinkedList';
+import { promiseSetState } from 'utils';
+import { stackInstruction, code, explanation } from 'instructions/Stack';
 import 'styles/main.scss';
 
-export class LinkedListPage extends Component {
+export class StackPage extends Component {
   constructor(props) {
     super(props);
 
@@ -26,7 +22,7 @@ export class LinkedListPage extends Component {
       stepDescription: [],
       autoPlay: false,
     };
-    this.originalLinkedListData = null;
+    this.originalStackData = null;
     this.ref = React.createRef();
   }
 
@@ -50,49 +46,15 @@ export class LinkedListPage extends Component {
           </span>
         );
 
-      case 'search':
+      case 'enstack':
         return (
           <span>
-            Tìm kiếm giá trị{' '}
+            Thêm vào giá trị{' '}
             <Input
               className='ml-2'
               onChange={this.handleChangeInput('value', convertToNumber)}
             />
           </span>
-        );
-
-      case 'delete':
-        return (
-          <span>
-            Xoá giá trị{' '}
-            <Input
-              className='ml-2'
-              onChange={this.handleChangeInput('index', convertToNumber)}
-            />
-          </span>
-        );
-
-      case 'reverse':
-        return null;
-
-      case 'insert':
-        return (
-          <div className='il-bl'>
-            <span>
-              Thêm giá trị{' '}
-              <Input
-                className='mx-2'
-                onChange={this.handleChangeInput('value', convertToNumber)}
-              />
-            </span>
-            <span>
-              tại index{' '}
-              <Input
-                className='ml-2'
-                onChange={this.handleChangeInput('index', convertToNumber)}
-              />
-            </span>
-          </div>
         );
 
       default:
@@ -111,30 +73,22 @@ export class LinkedListPage extends Component {
   renderActionButton() {
     const {
       currentApi,
-      parameters: { value, index },
+      parameters: { value },
     } = this.state;
     let isButtonDisabled;
     switch (currentApi) {
-      case 'search':
+      case 'enstack':
         isButtonDisabled = value === undefined;
-        break;
-      case 'add':
-        isButtonDisabled = value === undefined || index === undefined;
-        break;
-      case 'delete':
-        isButtonDisabled = index === undefined;
         break;
     }
 
     switch (currentApi) {
       case 'init':
         return (
-          <Button type='primary' onClick={() => this.initLinkedListData(false)}>
+          <Button type='primary' onClick={() => this.initStackData(false)}>
             Khởi tạo
           </Button>
         );
-      case undefined:
-        return null;
       default:
         return (
           <Button
@@ -158,7 +112,7 @@ export class LinkedListPage extends Component {
         currentNode: undefined,
         currentStep: undefined,
       });
-      await this.initLinkedListData(true);
+      await this.initStackData(true);
       await this.handlePlayingChange(true);
     } catch (error) {
       console.log('error', error);
@@ -174,32 +128,32 @@ export class LinkedListPage extends Component {
   generateStepDescription() {
     const { currentApi, parameters, data } = this.state;
     if (!currentApi) return [];
-    const stepDescription = linkedListInstruction(data, currentApi, parameters);
+    const stepDescription = stackInstruction(data, currentApi, parameters);
     this.setState({ stepDescription });
   }
 
-  initLinkedListData = useOldData => {
+  initStackData = useOldData => {
     const {
       parameters: { value },
     } = this.state;
-    let linkedListData;
-    if (useOldData && this.originalLinkedListData) {
-      linkedListData = this.originalLinkedListData;
+    let stackData;
+    if (useOldData && this.originalStackData) {
+      stackData = this.originalStackData;
     } else {
-      if (value && value.length) linkedListData = value;
+      if (value && value.length) stackData = value;
       else
-        linkedListData = Array(5)
+        stackData = Array(5)
           .fill(0)
           .map(() => Math.round(Math.random() * 10));
 
-      this.originalLinkedListData = linkedListData;
+      this.originalStackData = stackData;
     }
 
     // Phải làm thế này để buộc component linked list unmount
     // Linked list chỉ khởi tạo state của nó 1 lần trong constructor
     return new Promise(resolve =>
       this.setState({ data: undefined }, () => {
-        this.setState({ data: linkedListData }, () => resolve());
+        this.setState({ data: stackData }, () => resolve());
       }),
     );
   };
@@ -214,11 +168,8 @@ export class LinkedListPage extends Component {
     } = this.state;
     const apiList = [
       { value: 'init', label: 'Init' },
-      { value: 'search', label: 'Search' },
-      { value: 'insert', label: 'Insert' },
-      { value: 'delete', label: 'Delete' },
-      { value: 'reverse', label: 'Reverse' },
-      { value: 'detectCycle', label: 'Detect Cycle' },
+      { value: 'enstack', label: 'Enstack' },
+      { value: 'destack', label: 'Destack' },
     ];
 
     const instructions = stepDescription.map(({ actions }) => actions || []);
@@ -237,21 +188,24 @@ export class LinkedListPage extends Component {
         onPlayingChange={this.handlePlayingChange}
         ref={this.ref}
       >
-        {data && (
+        {
           <CanvasContainer>
-            <LinkedList
-              x={100}
-              y={200}
-              currentStep={currentStep}
-              totalStep={stepDescription.length - 1}
-              instructions={instructions}
-              initialData={data}
-            />
+            {
+              <Stack
+                x={300}
+                y={500}
+                currentStep={currentStep}
+                totalStep={stepDescription.length - 1}
+                initialData={[1, 2, 3, 4, 5]}
+                // initialData={data}
+                instructions={instructions}
+              />
+            }
           </CanvasContainer>
-        )}
+        }
       </VisualAlgo>
     );
   }
 }
 
-export default LinkedListPage;
+export default StackPage;

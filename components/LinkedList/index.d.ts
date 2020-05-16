@@ -12,7 +12,7 @@ export interface LinkedListNodeModel {
   visible: boolean;
   visited: boolean;
   focus: boolean;
-  label?: string;
+  label?: string[];
   pointer: number | null; // pointer to the next node
 }
 
@@ -22,10 +22,8 @@ export type IProps = {
   currentStep: number;
   totalStep: number;
   instructions: Action[][];
-  currentState: any;
-  fullState: any;
   initialData: number[];
-} & WithReverseStep;
+};
 
 export interface IState {
   linkedListModel: LinkedListModel;

@@ -23,6 +23,19 @@ const arrowRightIcon = (
 export class ApiController extends Component<IProps> {
   render() {
     const { apiList, parameterInput, onApiChange, actionButton } = this.props;
+    const parameter = parameterInput ? (
+      <>
+        {arrowRightIcon}
+        {parameterInput}
+      </>
+    ) : null;
+
+    const button = actionButton ? (
+      <>
+        {arrowRightIcon}
+        {actionButton}
+      </>
+    ) : null;
 
     return (
       <div className='api-control__wrapper fx-center fx-gap-5'>
@@ -35,14 +48,8 @@ export class ApiController extends Component<IProps> {
             if (option && 'value' in option) onApiChange(option.value);
           }}
         />
-        {parameterInput && (
-          <>
-            {arrowRightIcon}
-            {parameterInput}
-            {arrowRightIcon}
-            {actionButton}
-          </>
-        )}
+        {parameter}
+        {button}
       </div>
     );
   }

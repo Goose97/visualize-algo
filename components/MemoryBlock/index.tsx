@@ -2,17 +2,11 @@ import React, { Component } from 'react';
 
 import { classNameHelper } from 'utils';
 import { IProps, IState } from './index.d';
-import { PointCoordinate } from 'types';
 
 export class MemoryBlock extends Component<IProps, IState> {
-  private original: PointCoordinate;
   constructor(props: IProps) {
     super(props);
     this.state = {};
-    this.original = {
-      x: props.x,
-      y: props.y,
-    };
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -50,13 +44,22 @@ export class MemoryBlock extends Component<IProps, IState> {
   }
 
   render() {
-    const { value, label, width, height, children, textOffset } = this.props;
+    const {
+      value,
+      label,
+      width,
+      height,
+      children,
+      textOffset,
+      x,
+      y,
+    } = this.props;
 
     const xOffsetText = textOffset ? textOffset.x : 0;
     const valueText = (
       <text
-        x={this.original.x + (width - xOffsetText) / 2}
-        y={this.original.y + height / 2}
+        x={x + (width - xOffsetText) / 2}
+        y={y + height / 2}
         dominantBaseline='middle'
         textAnchor='middle'
         className='memory-block__text'
@@ -67,8 +70,8 @@ export class MemoryBlock extends Component<IProps, IState> {
 
     const labelText = label && (
       <text
-        x={this.original.x + width / 2}
-        y={this.original.y - height / 2}
+        x={x + width / 2}
+        y={y - height / 2}
         dominantBaseline='middle'
         textAnchor='middle'
         className='memory-block__text italic'
@@ -80,8 +83,8 @@ export class MemoryBlock extends Component<IProps, IState> {
     return (
       <g className={this.produceClassName()}>
         <rect
-          x={this.original.x}
-          y={this.original.y}
+          x={x}
+          y={y}
           width={width}
           height={height}
           className='memory-block__block'
