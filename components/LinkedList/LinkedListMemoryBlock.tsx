@@ -12,18 +12,18 @@ import { PointCoordinate } from 'types';
 export class LinkedListMemoryBlock extends Component<
   LinkedListMemoryBlockProps
 > {
-  private original: PointCoordinate;
+  private initialCoordinate: PointCoordinate;
   constructor(props: LinkedListMemoryBlockProps) {
     super(props);
 
-    this.original = {
+    this.initialCoordinate = {
       x: props.x,
       y: props.y,
     };
   }
 
   constructSeparateLinePath() {
-    const { x, y } = this.original;
+    const { x, y } = this.initialCoordinate;
     return `M ${
       x + LINKED_LIST_BLOCK_WIDTH - POINTER_HOLDER_WIDTH
     } ${y} v${LINKED_LIST_BLOCK_HEIGHT}`;
@@ -36,8 +36,8 @@ export class LinkedListMemoryBlock extends Component<
         width={LINKED_LIST_BLOCK_WIDTH}
         height={LINKED_LIST_BLOCK_HEIGHT}
         textOffset={{ x: POINTER_HOLDER_WIDTH, y: 0 }}
-        x={this.original.x}
-        y={this.original.y}
+        x={this.initialCoordinate.x}
+        y={this.initialCoordinate.y}
       >
         <path
           d={this.constructSeparateLinePath()}

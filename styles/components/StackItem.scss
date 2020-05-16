@@ -1,0 +1,41 @@
+.stack-item__wrapper {
+  &.disappearing {
+    animation: popOut 0.5s ease;
+  }
+
+  &.appearing {
+    animation: popIn 0.5s ease;
+  }
+}
+
+@keyframes popOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+
+  10% {
+    transform: translateX(0) translateY(-20px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(100px) translateY(-20px);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px) translateY(-20px);
+  }
+
+  90% {
+    transform: translateX(0) translateY(-20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+}

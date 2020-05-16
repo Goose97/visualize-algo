@@ -22,8 +22,6 @@ export type IProps = {
   currentStep: number;
   totalStep: number;
   instructions: Action[][];
-  currentState: any;
-  fullState: any;
   initialData: number[];
 };
 

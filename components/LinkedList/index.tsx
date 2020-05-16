@@ -8,6 +8,7 @@ import HeadPointer from './HeadPointer';
 import LinkedListMemoryBlock from './LinkedListMemoryBlock';
 import LinkedListPointer from './LinkedListPointer';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
+import { getProgressDirection } from 'utils';
 import {
   LinkedListModel,
   IProps,
@@ -53,10 +54,17 @@ export class LinkedList extends Component<PropsWithHoc, IState>
   }
 
   componentDidUpdate(prevProps: IProps) {
-    const { currentStep, reverseToStep, saveStepSnapshots } = this.props;
+    const {
+      currentStep,
+      reverseToStep,
+      saveStepSnapshots,
+      totalStep,
+    } = this.props;
     const { linkedListModel } = this.state;
 
-    switch (this.getProgressDirection(prevProps.currentStep)) {
+    switch (
+      getProgressDirection(currentStep, prevProps.currentStep, totalStep)
+    ) {
       case 'forward':
         saveStepSnapshots(linkedListModel, currentStep);
         this.handleForward();

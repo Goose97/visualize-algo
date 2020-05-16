@@ -1,0 +1,39 @@
+.queue-item__wrapper {
+  &.disappearing {
+    opacity: unset;
+    .memory-block__wrapper {
+      animation: slideLeftDownFade 0.75s ease forwards;
+    }
+  }
+
+  &.appearing {
+    animation: slideLeftIn 0.65s ease;
+  }
+}
+
+@keyframes slideLeftDownFade {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: translate(50px, 0px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(50px, 100px);
+  }
+}
+
+@keyframes slideLeftIn {
+  0% {
+    opacity: 0.4;
+    transform: translate(-30px);
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
