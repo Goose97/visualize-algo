@@ -8,11 +8,19 @@ export interface ArrayNode {
   focus?: boolean;
   visited?: boolean;
   visible: boolean;
+  label?: string;
 }
 
 export type ArrayModel = ArrayNode[];
 
-export type ArrayMethod = 'swap';
+export type ArrayMethod =
+  | 'swap'
+  | 'focus'
+  | 'resetFocus'
+  | 'resetFocusAll'
+  | 'complete'
+  | 'label'
+  | 'unlabel';
 
 export interface IState {
   arrayModel: ArrayModel;
@@ -22,6 +30,7 @@ export interface IProps {
   initialData: number[];
   currentStep: number;
   totalStep: number;
+  instructions: Action[][];
 }
 
 export interface ArrayMemoryBlockProps {
@@ -29,4 +38,7 @@ export interface ArrayMemoryBlockProps {
   index: number;
   origin: PointCoordinate;
   visible?: boolean;
+  focus?: boolean;
+  visited?: boolean;
+  label?: string;
 }

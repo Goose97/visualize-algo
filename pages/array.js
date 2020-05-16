@@ -50,6 +50,9 @@ export class ArrayPage extends Component {
       case 'bubbleSort':
         return <input />;
 
+      case 'selectionSort':
+        return <input />;
+
       // case 'delete':
       //   return (
       //     <span>
@@ -159,12 +162,10 @@ export class ArrayPage extends Component {
     const { currentApi, parameters, data } = this.state;
     if (!currentApi) return [];
     const stepDescription = arrayInstruction(data, currentApi, parameters);
-    console.log('step description', stepDescription);
     this.setState({ stepDescription });
   }
 
   initArrayData = useOldData => {
-    console.log('useOldData', useOldData);
     const {
       parameters: { value },
     } = this.state;
@@ -174,7 +175,7 @@ export class ArrayPage extends Component {
     } else {
       if (value && value.length) arrayData = value;
       else
-        arrayData = Array(10)
+        arrayData = Array(5)
           .fill(0)
           .map(() => Math.round(Math.random() * 10));
 
@@ -202,6 +203,7 @@ export class ArrayPage extends Component {
     const apiList = [
       { value: 'init', label: 'Init' },
       { value: 'bubbleSort', label: 'Bubble sort' },
+      { value: 'selectionSort', label: 'Selection sort'},
       // { value: 'insert', label: 'Insert' },
       // { value: 'delete', label: 'Delete' },
     ];
@@ -211,7 +213,6 @@ export class ArrayPage extends Component {
     );
 
     const instructions = stepDescription.map(({ actions }) => actions || []);
-
     return (
       <VisualAlgo
         code={code[currentApi]}

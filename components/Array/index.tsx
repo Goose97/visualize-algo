@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 // import LinkedListPointer from './LinkedListPointer';
 // import { promiseSetState } from 'utils';
 // import { withReverseStep } from 'hocs';
-import { IProps, IState, ArrayModel } from '.';
+import { IProps, IState, ArrayModel } from './index.d';
 import { Action } from 'types';
 // import {
 //   LINKED_LIST_BLOCK_WIDTH,
@@ -35,21 +35,51 @@ export class Array extends Component<IProps, IState> {
       visited: false,
       key: index,
       focus: false,
-    }))
+    }));
   }
 
-  swap(from: number, to: number) {
-    console.log('from', from)
-    console.log('to', to)
-    const { arrayModel } = this.state;
-    const newModel = transformArrayModel(arrayModel, 'swap', [from, to]);
-    this.setState({
-      arrayModel: newModel,
-    });
+  swap(currentModel: ArrayModel, params: [number, number]) {
+    // console.log('from', from)
+    // console.log('to', to)
+    const newModel = transformArrayModel(currentModel, 'swap', params);
+
+    return newModel;
+  }
+
+  label(currentModel: ArrayModel, params: [number]) {
+    const newModel = transformArrayModel(currentModel, 'label', params);
+    return newModel;
+  }
+
+  unlabel(currentModel: ArrayModel, params: [number]) {
+    const newModel = transformArrayModel(currentModel, 'unlabel', params);
+    return newModel;
+  }
+
+  resetFocus(currentModel: ArrayModel, params: [number, number]) {
+    const newModel = transformArrayModel(currentModel, 'resetFocus', params);
+    return newModel;
+  }
+
+  resetFocusAll(currentModel: ArrayModel, params: []) {
+    const newModel = transformArrayModel(currentModel, 'resetFocusAll', params);
+    return newModel;
+  }
+
+  focus(currentModel: ArrayModel, params: [number]) {
+    const newModel = transformArrayModel(currentModel, 'focus', params);
+
+    return newModel;
+  }
+
+  complete(currentModel: ArrayModel, params: []) {
+    const newModel = transformArrayModel(currentModel, 'complete', params);
+
+    return newModel;
   }
 
   componentDidUpdate(prevProps: IProps) {
-    const { currentStep, reverseToStep } = this.props;
+    // const { currentStep, reverseToStep } = this.props;
 
     switch (this.getProgressDirection(prevProps.currentStep)) {
       case 'forward':
@@ -95,15 +125,28 @@ export class Array extends Component<IProps, IState> {
     // This consume pipeline have many side effect in each step. Each
     // method handle each action has their own side effect
 
-    actionsToMakeAtThisStep.forEach(action => {
-      if (action.name === 'swap') this.swap(...action.params)
-    })
+    const newArrayModel = this.consumeMultipleActions(
+      actionsToMakeAtThisStep,
+      arrayModel
+    );
+    this.setState({ arrayModel: newArrayModel });
+  }
 
-    // const newLinkedListModel = this.consumeMultipleActions(
-    //   actionsToMakeAtThisStep,
-    //   linkedListModel,
-    // );
-    // this.setState({ linkedListModel: newLinkedListModel });
+  consumeMultipleActions(
+    actionList: Action[],
+    currentModel: ArrayModel
+  ): ArrayModel {
+    // Treat each action as a transformation function which take a linkedListModel
+    // and return a new one. Consuming multiple actions is merely chaining those
+    // transformations together
+    // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
+    let finalArrayModel = currentModel;
+    actionList.forEach(({ name, params }) => {
+      //@ts-ignore
+      finalArrayModel = this[name](finalArrayModel, params);
+    });
+
+    return finalArrayModel;
   }
 
   getProgressDirection(previousStep: number) {
@@ -118,7 +161,6 @@ export class Array extends Component<IProps, IState> {
       else if (currentStep === 0) return 'fastBackward';
     }
   }
-
 
   render() {
     const { arrayModel } = this.state;

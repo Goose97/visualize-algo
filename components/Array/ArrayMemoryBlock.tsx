@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { MemoryBlock, AutoTransformGroup } from 'components';
 import { ARRAY_BLOCK_WIDTH, ARRAY_BLOCK_HEIGHT } from '../../constants';
-import { ArrayMemoryBlockProps } from '.';
+import { ArrayMemoryBlockProps } from './index.d';
 
 export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   constructor(props: ArrayMemoryBlockProps) {
@@ -18,7 +18,7 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   }
 
   render() {
-    const { value, visible, index } = this.props;
+    const { value, visible, focus, visited, label } = this.props;
     return (
       <AutoTransformGroup origin={this.caculatePosition()}>
         <MemoryBlock
@@ -27,6 +27,9 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
           height={ARRAY_BLOCK_HEIGHT}
           value={value}
           visible={visible}
+          focus={focus}
+          visited={visited}
+          label={label}
         />
       </AutoTransformGroup>
     );
