@@ -1,36 +1,37 @@
 import React, { Component } from 'react';
-import { pick } from 'lodash';
+import { pick, last } from 'lodash';
 
-import QueueItem from './QueueItem';
+import StackItem from './StackItem';
 import {
-  QUEUE_BLOCK_WIDTH,
-  QUEUE_BLOCK_HEIGHT,
-  QUEUE_BLOCK_GAP,
+  STACK_BLOCK_WIDTH,
+  STACK_BLOCK_HEIGHT,
+  STACK_BLOCK_GAP,
+  STACK_BOUNDARY_GAP,
 } from '../../constants';
-import { QueueModel, IState, IProps, QueueItemModel } from './index.d';
+import { StackModel, IState, IProps, StackItemModel } from './index.d';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { Action } from 'types';
 import transformModel from './ModelTransformer';
 import { getProgressDirection } from 'utils';
 
-type PropsWithHoc = IProps & WithReverseStep<QueueModel>;
+type PropsWithHoc = IProps & WithReverseStep<StackModel>;
 
-export class Queue extends Component<PropsWithHoc, IState> {
+export class Stack extends Component<PropsWithHoc, IState> {
   constructor(props: PropsWithHoc) {
     super(props);
 
     this.state = {
-      queueModel: this.initQueueModel(),
+      stackModel: this.initStackModel(),
     };
   }
 
-  initQueueModel() {
+  initStackModel() {
     const { initialData } = this.props;
     return initialData.map((value, index) => ({
       value,
       visible: true,
-      key: initialData.length - 1 - index,
-      offsetFromFront: initialData.length - 1 - index,
+      key: index,
+      offsetFromFront: index,
     }));
   }
 
@@ -63,9 +64,9 @@ export class Queue extends Component<PropsWithHoc, IState> {
 
   saveModelSnapshotAtCurrentStep() {
     const { currentStep, saveStepSnapshots } = this.props;
-    const { queueModel } = this.state;
+    const { stackModel } = this.state;
     if (typeof currentStep === 'number')
-      saveStepSnapshots(queueModel, currentStep);
+      saveStepSnapshots(stackModel, currentStep);
   }
 
   handleForward() {
@@ -73,104 +74,90 @@ export class Queue extends Component<PropsWithHoc, IState> {
     // and return a new one. Consuming multiple actions is merely chaining those
     // transformations together
     // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
-    const { queueModel } = this.state;
+    const { stackModel } = this.state;
     const { currentStep, instructions } = this.props;
     const actionsToMakeAtThisStep = instructions[currentStep];
     if (!actionsToMakeAtThisStep || !actionsToMakeAtThisStep.length) return;
 
     // This consume pipeline have many side effect in each step. Each
     // method handle each action has their own side effect
-    const newQueueModel = this.consumeMultipleActions(
+    const newStackModel = this.consumeMultipleActions(
       actionsToMakeAtThisStep,
-      queueModel,
+      stackModel,
     );
-    this.setState({ queueModel: newQueueModel });
+    this.setState({ stackModel: newStackModel });
   }
 
   consumeMultipleActions(
     actionList: Action[],
-    currentModel: QueueModel,
-  ): QueueModel {
+    currentModel: StackModel,
+  ): StackModel {
     // Treat each action as a transformation function which take a linkedListModel
     // and return a new one. Consuming multiple actions is merely chaining those
     // transformations together
     // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
-    let finalQueueModel = currentModel;
+    let finalStackModel = currentModel;
     actionList.forEach(({ name, params }) => {
       //@ts-ignore
-      finalQueueModel = this[name](finalQueueModel, params);
+      finalStackModel = this[name](finalStackModel, params);
     });
 
-    return finalQueueModel;
+    return finalStackModel;
   }
 
-  renderQueueBoundary() {
-    const { x, y } = this.props;
-    const queueWidth = this.caculateWidthOfQueue();
-    const upperBound = (
-      <path
-        className='default-stroke has-transition'
-        d={`M ${x + QUEUE_BLOCK_WIDTH} ${
-          y - 20
-        } l -2 2 l 8 -2 l -8 -2 l 2 2 h ${-queueWidth}`}
-      ></path>
-    );
-    const lowerBound = (
-      <path
-        className='default-stroke has-transition'
-        d={`M ${x + QUEUE_BLOCK_WIDTH} ${
-          y + QUEUE_BLOCK_HEIGHT + 20
-        } l -2 2 l 8 -2 l -8 -2 l 2 2 h ${-queueWidth}`}
-      ></path>
-    );
-    return (
-      <>
-        {upperBound}
-        {lowerBound}
-      </>
-    );
-  }
-
-  caculateWidthOfQueue() {
-    const { queueModel } = this.state;
-    const numberOfQueueItem = queueModel.length;
-    return (
-      numberOfQueueItem * (QUEUE_BLOCK_WIDTH + QUEUE_BLOCK_GAP) -
-      QUEUE_BLOCK_GAP
-    );
-  }
-
-  dequeue(currentModel: QueueModel, params: []) {
-    const newModel = transformModel(currentModel, 'dequeue', params);
+  pop(currentModel: StackModel, params: []) {
+    const newModel = transformModel(currentModel, 'pop', params);
     return newModel;
   }
 
-  enqueue(currentModel: QueueModel, params: [number]) {
-    const queueItemToEnqueue: QueueItemModel = {
+  push(currentModel: StackModel, params: [number]) {
+    const stackItemToPush: StackItemModel = {
       value: params[0],
       visible: true,
-      offsetFromFront: currentModel[0].offsetFromFront + 1,
-      key: currentModel[0].key + 1,
+      offsetFromFront: last(currentModel)!.offsetFromFront + 1,
+      key: last(currentModel)!.key + 1,
       isNew: true,
     };
-    const newModel = transformModel(currentModel, 'enqueue', [
-      queueItemToEnqueue,
-    ]);
+    const newModel = transformModel(currentModel, 'push', [stackItemToPush]);
     return newModel;
+  }
+
+  renderBoundary() {
+    const { x, y } = this.props;
+    const moveToCenterPoint = `M ${x + STACK_BLOCK_WIDTH / 2} ${
+      y + STACK_BLOCK_HEIGHT + 10
+    }`;
+    const goUpToTop = `v ${-this.caculateStackHeight() - 20}`;
+    return (
+      <path
+        className='default-stroke no-fill stroke-1'
+        d={`${moveToCenterPoint} h ${
+          STACK_BLOCK_WIDTH / 2 + STACK_BOUNDARY_GAP
+        } ${goUpToTop} ${moveToCenterPoint} h ${
+          -STACK_BLOCK_WIDTH / 2 - STACK_BOUNDARY_GAP
+        } ${goUpToTop}`}
+      ></path>
+    );
+  }
+
+  caculateStackHeight() {
+    const { stackModel } = this.state;
+    const itemCount = stackModel.filter(({ visible }) => !!visible).length;
+    return itemCount * (STACK_BLOCK_HEIGHT + STACK_BLOCK_GAP);
   }
 
   render() {
-    const { queueModel } = this.state;
-    const listQueueItem = queueModel.map(item => (
-      <QueueItem {...item} origin={pick(this.props, ['x', 'y'])} />
+    const { stackModel } = this.state;
+    const listStackItem = stackModel.map(item => (
+      <StackItem {...item} origin={pick(this.props, ['x', 'y'])} />
     ));
     return (
       <g className='queue__wrapper'>
-        {listQueueItem}
-        {this.renderQueueBoundary()}
+        {listStackItem}
+        {this.renderBoundary()}
       </g>
     );
   }
 }
 
-export default withReverseStep<QueueModel, PropsWithHoc>(Queue);
+export default withReverseStep<StackModel, PropsWithHoc>(Stack);
