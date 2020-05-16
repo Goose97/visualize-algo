@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import produce from 'immer';
-import { pick, omit } from 'lodash';
+import { pick, omit, flatMap, groupBy } from 'lodash';
 
 import { AutoTransformGroup } from 'components';
 import transformModel from './ModelTransformer';
@@ -16,7 +16,7 @@ import {
   LinkedListNodeModel,
   LinkedListDataStructure,
 } from './index.d';
-import { Action } from 'types';
+import { Action, ActionWithStep } from 'types';
 import {
   LINKED_LIST_BLOCK_WIDTH,
   LINKED_LIST_BLOCK_HEIGHT,
@@ -53,21 +53,20 @@ export class LinkedList extends Component<PropsWithHoc, IState>
     }));
   }
 
-  saveModelSnapshotAtCurrentStep() {
-    const { currentStep, saveStepSnapshots } = this.props;
-    const { linkedListModel } = this.state;
-    if (typeof currentStep === 'number')
-      saveStepSnapshots(linkedListModel, currentStep);
-  }
-
   componentDidUpdate(prevProps: IProps) {
-    const { currentStep, reverseToStep, totalStep } = this.props;
+    const {
+      currentStep,
+      reverseToStep,
+      saveStepSnapshots,
+      totalStep,
+    } = this.props;
+    const { linkedListModel } = this.state;
 
     switch (
       getProgressDirection(currentStep, prevProps.currentStep, totalStep)
     ) {
       case 'forward':
-        this.saveModelSnapshotAtCurrentStep();
+        saveStepSnapshots(linkedListModel, currentStep);
         this.handleForward();
         break;
 
@@ -109,15 +108,24 @@ export class LinkedList extends Component<PropsWithHoc, IState>
   consumeMultipleActions(
     actionList: Action[],
     currentModel: LinkedListModel,
+    onlyTranformData?: boolean,
   ): LinkedListModel {
     // Treat each action as a transformation function which take a linkedListModel
     // and return a new one. Consuming multiple actions is merely chaining those
     // transformations together
     // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
     let finalLinkedListModel = currentModel;
-    actionList.forEach(({ name, params }) => {
-      //@ts-ignore
-      finalLinkedListModel = this[name](finalLinkedListModel, params);
+    actionList.forEach(action => {
+      const { name, params } = action;
+      if (onlyTranformData) {
+        finalLinkedListModel = this.produceNewState(
+          finalLinkedListModel,
+          action,
+        );
+      } else {
+        //@ts-ignore
+        finalLinkedListModel = this[name](finalLinkedListModel, params);
+      }
     });
 
     return finalLinkedListModel;
@@ -220,20 +228,19 @@ export class LinkedList extends Component<PropsWithHoc, IState>
     return this.produceNewState(currentModel, action);
   }
 
-  visit(currentModel: LinkedListModel, params: [number]) {
+  visit(currentModel: LinkedListModel, params: [number, number]) {
     // Nếu node không phải node đầu tiên thì ta sẽ thực thi hàm followLinkToNode
     // Hàm này chịu trách nhiệm thực hiện animation, sau khi animation hoàn thành
     // callbackk handleFinishFollowLink sẽ được thực hiện
     // Nếu node là node đầu tiên thì ta không có animation để thực hiện, focus luôn vào node
-    const [nodeKey] = params;
-    const currentFocusNode = this.getCurrentFocusNode();
-    if (nodeKey !== 0) {
-      this.followLinkToNode(nodeKey);
+    const [nodeKeyToStart, nodeKeyToVisit] = params;
+    if (nodeKeyToVisit !== 0) {
+      this.followLinkToNode(nodeKeyToVisit);
       setTimeout(() => {
-        this.handleFinishFollowLink(currentFocusNode, nodeKey);
+        this.handleFinishFollowLink(nodeKeyToStart, nodeKeyToVisit);
       }, 400);
     } else {
-      this.focus(currentModel, [nodeKey, false]);
+      this.focus(currentModel, [nodeKeyToVisit, false]);
     }
 
     return currentModel;
@@ -403,21 +410,38 @@ export class LinkedList extends Component<PropsWithHoc, IState>
 
   handleFastForward() {
     const { linkedListModel } = this.state;
-    const { instructions } = this.props;
-
-    const allActions = instructions
-      .reduce((acc, instruction) => acc.concat(instruction), [])
-      .map(instruction => {
-        const { name, params } = instruction;
-        return name === 'visit' ? { name: 'focus', params } : instruction;
+    const { instructions, saveStepSnapshots } = this.props;
+    let allActions: ActionWithStep[] = [];
+    for (let i = 0; i < instructions.length; i++) {
+      // Replace visit action with vist + focus
+      // also add step attribute to each action
+      const replacedActions = flatMap(instructions[i], action => {
+        const { name, params } = action;
+        return name === 'visit'
+          ? [
+              { name: 'visit', params: params.slice(0, 1), step: i },
+              { name: 'focus', params: params.slice(1), step: i },
+            ]
+          : { ...action, step: i };
       });
-    let finalLinkedListModel = linkedListModel;
-    for (let i = 0; i < allActions.length; i++) {
-      finalLinkedListModel = this.produceNewState(
-        finalLinkedListModel,
-        allActions[i],
-      );
+
+      allActions.push(...replacedActions);
     }
+
+    const actionsGroupedByStep = groupBy(allActions, item => item.step);
+
+    // Loop through all the action one by one and keep updating the final model
+    let finalLinkedListModel = linkedListModel;
+    Object.entries(actionsGroupedByStep).forEach(
+      ([step, actionsToMakeAtThisStep]) => {
+        saveStepSnapshots(finalLinkedListModel, +step);
+        finalLinkedListModel = this.consumeMultipleActions(
+          actionsToMakeAtThisStep,
+          finalLinkedListModel,
+          true,
+        );
+      },
+    );
 
     this.updateWithoutAnimation(finalLinkedListModel);
   }

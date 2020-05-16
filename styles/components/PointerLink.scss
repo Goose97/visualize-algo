@@ -16,8 +16,10 @@
       fill: $disable-background;
       opacity: 0.3;
 
-      &:not(.follow) {
-        opacity: 0;
+      &.follow {
+        & + .pointer-link__line {
+          opacity: 0;
+        }
       }
     }
     .pointer-link__arrow {

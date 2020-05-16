@@ -12,6 +12,10 @@ export interface Action {
   params: Array<any>;
 }
 
+export interface ActionWithStep extends Action {
+  step: number;
+}
+
 export interface PointCoordinate {
   x: number;
   y: number;
