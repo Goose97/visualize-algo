@@ -1,17 +1,15 @@
 import { LinkedListNodeModel } from '../LinkedList/index.d';
-import { PointCoordinate } from 'types';
+import { PointCoordinate, BaseMemoryBlockProps } from 'types';
 
-export interface IProps {
-  value: number;
+export interface IProps extends BaseMemoryBlockProps {
   width: number;
   height: number;
   x: number;
   y: number;
-  visible?: boolean;
   visited?: boolean;
-  focus?: boolean;
   label?: string;
   textOffset?: PointCoordinate;
+  type: 'rectangle' | 'round';
 }
 
 export interface IState {

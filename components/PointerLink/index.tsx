@@ -9,8 +9,18 @@ export class PointerLink extends Component<IProps, IState> {
 
     this.state = {
       // We will use this offset to animate
-      transformList: [],
+      transformList: this.produceInitialTransformList(),
     };
+  }
+
+  produceInitialTransformList() {
+    const { transform } = this.props;
+    if (transform) {
+      const regexMatch = transform.match(/(rotate|translate)\(.+\)/g);
+      return regexMatch ? regexMatch : [];
+    } else {
+      return [];
+    }
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -94,7 +104,7 @@ export class PointerLink extends Component<IProps, IState> {
     const { isFollowing } = this.state;
 
     return (
-      <g className={this.produceClassName()}>
+      <g className={this.produceClassName()} {...this.props}>
         {isFollowing && (
           <path
             d={this.produceFullPathWithArrow()}

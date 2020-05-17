@@ -1,8 +1,8 @@
-import React, { Component, cloneElement } from 'react';
+import React, { Component } from 'react';
 import produce from 'immer';
 
 import {
-  Stack,
+  BinarySearchTree,
   CanvasContainer,
   Input,
   Button,
@@ -188,7 +188,9 @@ export class BinarySearchTreePage extends Component {
         onPlayingChange={this.handlePlayingChange}
         ref={this.ref}
       >
-        <CanvasContainer></CanvasContainer>
+        <CanvasContainer>
+          <BinarySearchTree />
+        </CanvasContainer>
       </VisualAlgo>
     );
   }

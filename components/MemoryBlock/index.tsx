@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { pick } from 'lodash';
 
 import { classNameHelper } from 'utils';
 import { IProps, IState } from './index.d';
@@ -43,6 +44,36 @@ export class MemoryBlock extends Component<IProps, IState> {
     });
   }
 
+  renderMemoryBlockContainer() {
+    const { type, x, y, width, height } = this.props;
+    switch (type) {
+      case 'rectangle':
+        return (
+          <rect
+            {...pick(this.props, ['x', 'y', 'width', 'height'])}
+            className='memory-block__block'
+          ></rect>
+        );
+
+      case 'round':
+        const cx = x + width / 2;
+        const cy = y + height / 2;
+        return (
+          <circle
+            cx={cx}
+            cy={cy}
+            r={width / 2}
+            className='memory-block__block'
+          />
+
+          // <rect
+          //   {...pick(this.props, ['x', 'y', 'width', 'height'])}
+          //   className='memory-block__block'
+          // ></rect>
+        );
+    }
+  }
+
   render() {
     const {
       value,
@@ -82,13 +113,7 @@ export class MemoryBlock extends Component<IProps, IState> {
 
     return (
       <g className={this.produceClassName()}>
-        <rect
-          x={x}
-          y={y}
-          width={width}
-          height={height}
-          className='memory-block__block'
-        ></rect>
+        {this.renderMemoryBlockContainer()}
         {valueText}
         {labelText}
         {children}

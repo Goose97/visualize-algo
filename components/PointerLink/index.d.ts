@@ -1,7 +1,7 @@
 import { PointCoordinate } from '../../types';
+import { SVGAttributes } from 'react';
 
-interface IProps {
-  path: string;
+interface IProps extends SVGAttributes<SVGGElement> {
   following?: boolean;
   visited?: boolean;
   visible?: boolean;

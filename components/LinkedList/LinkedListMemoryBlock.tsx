@@ -38,6 +38,7 @@ export class LinkedListMemoryBlock extends Component<
         textOffset={{ x: POINTER_HOLDER_WIDTH, y: 0 }}
         x={this.initialCoordinate.x}
         y={this.initialCoordinate.y}
+        type='rectangle'
       >
         <path
           d={this.constructSeparateLinePath()}
