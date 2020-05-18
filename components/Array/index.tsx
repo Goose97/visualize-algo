@@ -78,15 +78,6 @@ export class Array extends Component<IProps, IState> {
     return newModel;
   }
 
-  componentDidMount() {
-    setTimeout(() => {
-      const { arrayModel } = this.state;
-      const newState = this.swap(arrayModel, [0, 1]);
-      console.log('newState', newState);
-      this.setState({ arrayModel: newState });
-    }, 2000);
-  }
-
   componentDidUpdate(prevProps: IProps) {
     // const { currentStep, reverseToStep } = this.props;
 
@@ -173,13 +164,17 @@ export class Array extends Component<IProps, IState> {
 
   render() {
     const { arrayModel } = this.state;
+    const { blockType } = this.props;
+    // // console.log('arrayModel', arrayModel)
     const arrayMemoryBlock = arrayModel.map(arrayNode => (
       <ArrayMemoryBlock
         {...arrayNode}
         origin={{
           x: 100,
-          y: 100,
+          y: 200,
+          
         }}
+        blockType={blockType}
       />
     ));
 

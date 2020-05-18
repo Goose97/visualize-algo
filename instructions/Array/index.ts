@@ -99,12 +99,13 @@ const bubbleSortInstruction = (data: number[], params: SortParams) => {
     'bubbleSort'
   );
   let instructions = new Instructions();
+  instructions.setDuration(500);
   let array = initArray(data);
 
-  instructions.push({
-    actions: [{ name: 'focus', params: [0] }],
-    ..._getExplanationAndCodeLine('init'),
-  });
+  // instructions.push({
+  //   actions: [{ name: 'focus', params: [0] }],
+  //   ..._getExplanationAndCodeLine('init'),
+  // });
 
   // Start make instruction
   let len = array.length;
@@ -151,12 +152,12 @@ const bubbleSortInstruction = (data: number[], params: SortParams) => {
   }
 
   instructions.push({
-    actions: [{ name: 'complete', params: [array[0].key] }],
+    actions: [
+      { name: 'complete', params: [array[0].key] },
+      { name: 'resetFocusAll', params: [] },
+    ],
   });
 
-  instructions.push({
-    actions: [{ name: 'resetFocusAll', params: [] }],
-  });
 
   return instructions.get();
 };

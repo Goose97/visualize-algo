@@ -31,6 +31,7 @@ export interface IProps {
   currentStep: number;
   totalStep: number;
   instructions: Action[][];
+  blockType: string;
 }
 
 export interface ArrayMemoryBlockProps {
@@ -41,4 +42,5 @@ export interface ArrayMemoryBlockProps {
   focus?: boolean;
   visited?: boolean;
   label?: string;
+  blockType: string;
 }

@@ -42,16 +42,32 @@ export class ArrayPage extends Component {
       case 'init':
         return (
           <span>
-            Nhập giá trị của linked list{' '}
+            Nhập giá trị của array list{' '}
             <Input onChange={this.handleChangeInput('value')} />
           </span>
         );
 
       case 'bubbleSort':
-        return <input />;
+        return (
+          <span>
+            Thêm vào giá trị{' '}
+            <Input
+              className="ml-2"
+              onChange={this.handleChangeInput('value', convertToNumber)}
+            />
+          </span>
+        );
 
       case 'selectionSort':
-        return <input />;
+        return (
+          <span>
+            Thêm vào giá trị{' '}
+            <Input
+              className="ml-2"
+              onChange={this.handleChangeInput('value', convertToNumber)}
+            />
+          </span>
+        );
 
       // case 'delete':
       //   return (
@@ -173,8 +189,11 @@ export class ArrayPage extends Component {
     if (useOldData && this.originalArrayData) {
       arrayData = this.originalArrayData;
     } else {
-      if (value && value.length) arrayData = value;
-      else
+      if (value && value.length) {
+        arrayData = value.split(',').map(function(item){
+          return parseInt(item, 10)
+        })
+      } else
         arrayData = Array(5)
           .fill(0)
           .map(() => Math.round(Math.random() * 10));
@@ -200,10 +219,11 @@ export class ArrayPage extends Component {
       stepDescription,
       autoPlay,
     } = this.state;
+    const blockType = 'column';
     const apiList = [
       { value: 'init', label: 'Init' },
       { value: 'bubbleSort', label: 'Bubble sort' },
-      { value: 'selectionSort', label: 'Selection sort'},
+      { value: 'selectionSort', label: 'Selection sort' },
       // { value: 'insert', label: 'Insert' },
       // { value: 'delete', label: 'Delete' },
     ];
@@ -231,6 +251,7 @@ export class ArrayPage extends Component {
           <CanvasContainer>
             {data && (
               <ArrayDataStructure
+                blockType={blockType}
                 initialData={data}
                 currentStep={currentStep}
                 instructions={instructions}
