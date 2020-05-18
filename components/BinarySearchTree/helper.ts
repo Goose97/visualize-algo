@@ -10,11 +10,8 @@ export const caculateTreeHeight = (totalNodeCount: number) => {
 };
 
 const caculateTreeWidthBasedOnHeight = (treeHeight: number): number => {
-  if (treeHeight === 2) {
-    return BST_CHILD_DISTANCE_FROM_PARENT * 2;
-  } else {
-    return caculateTreeWidthBasedOnHeight(treeHeight - 1) * 2 + 100;
-  }
+  if (treeHeight === 2) return BST_CHILD_DISTANCE_FROM_PARENT * 2;
+  return caculateTreeWidthBasedOnHeight(treeHeight - 1) * 2 + 100;
 };
 
 const caculateChildDistanceFromParentBasedOnLevel = (

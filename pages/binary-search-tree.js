@@ -10,7 +10,7 @@ import {
 } from 'components';
 import { VisualAlgo } from 'layout';
 import { promiseSetState } from 'utils';
-import { stackInstruction, code, explanation } from 'instructions/Stack';
+import { bstInstruction, code, explanation } from 'instructions/BST';
 import 'styles/main.scss';
 
 export class BinarySearchTreePage extends Component {
@@ -22,7 +22,7 @@ export class BinarySearchTreePage extends Component {
       stepDescription: [],
       autoPlay: false,
     };
-    this.originalStackData = null;
+    this.originalBSTData = null;
     this.ref = React.createRef();
   }
 
@@ -46,7 +46,7 @@ export class BinarySearchTreePage extends Component {
           </span>
         );
 
-      case 'enstack':
+      case 'search':
         return (
           <span>
             Thêm vào giá trị{' '}
@@ -77,7 +77,7 @@ export class BinarySearchTreePage extends Component {
     } = this.state;
     let isButtonDisabled;
     switch (currentApi) {
-      case 'enstack':
+      case 'search':
         isButtonDisabled = value === undefined;
         break;
     }
@@ -85,7 +85,7 @@ export class BinarySearchTreePage extends Component {
     switch (currentApi) {
       case 'init':
         return (
-          <Button type='primary' onClick={() => this.initStackData(false)}>
+          <Button type='primary' onClick={() => this.initBSTData(false)}>
             Khởi tạo
           </Button>
         );
@@ -112,7 +112,7 @@ export class BinarySearchTreePage extends Component {
         currentNode: undefined,
         currentStep: undefined,
       });
-      await this.initStackData(true);
+      await this.initBSTData(true);
       await this.handlePlayingChange(true);
     } catch (error) {
       console.log('error', error);
@@ -128,32 +128,32 @@ export class BinarySearchTreePage extends Component {
   generateStepDescription() {
     const { currentApi, parameters, data } = this.state;
     if (!currentApi) return [];
-    const stepDescription = stackInstruction(data, currentApi, parameters);
+    const stepDescription = bstInstruction(data, currentApi, parameters);
     this.setState({ stepDescription });
   }
 
-  initStackData = useOldData => {
+  initBSTData = useOldData => {
     const {
       parameters: { value },
     } = this.state;
-    let stackData;
-    if (useOldData && this.originalStackData) {
-      stackData = this.originalStackData;
+    let bstData;
+    if (useOldData && this.originalBSTData) {
+      bstData = this.originalBSTData;
     } else {
-      if (value && value.length) stackData = value;
-      else
-        stackData = Array(5)
-          .fill(0)
-          .map(() => Math.round(Math.random() * 10));
+      if (value && value.length) bstData = value;
+      // bstData = Array(5)
+      //   .fill(0)
+      //   .map(() => Math.round(Math.random() * 10));
+      else bstData = [4, 1, 8, 0, 2, 6, 9];
 
-      this.originalStackData = stackData;
+      this.originalBSTData = bstData;
     }
 
     // Phải làm thế này để buộc component linked list unmount
     // Linked list chỉ khởi tạo state của nó 1 lần trong constructor
     return new Promise(resolve =>
       this.setState({ data: undefined }, () => {
-        this.setState({ data: stackData }, () => resolve());
+        this.setState({ data: bstData }, () => resolve());
       }),
     );
   };
@@ -168,8 +168,7 @@ export class BinarySearchTreePage extends Component {
     } = this.state;
     const apiList = [
       { value: 'init', label: 'Init' },
-      { value: 'enstack', label: 'Enstack' },
-      { value: 'destack', label: 'Destack' },
+      { value: 'search', label: 'Search' },
     ];
 
     const instructions = stepDescription.map(({ actions }) => actions || []);
@@ -189,7 +188,16 @@ export class BinarySearchTreePage extends Component {
         ref={this.ref}
       >
         <CanvasContainer>
-          <BinarySearchTree />
+          {data && (
+            <BinarySearchTree
+              x={400}
+              y={50}
+              instructions={instructions}
+              initialData={data}
+              currentStep={currentStep}
+              totalStep={stepDescription.length - 1}
+            />
+          )}
         </CanvasContainer>
       </VisualAlgo>
     );

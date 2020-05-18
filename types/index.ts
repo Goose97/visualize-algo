@@ -7,8 +7,8 @@ export interface StepInstruction {
   duration?: number;
 }
 
-export interface Action {
-  name: string;
+export interface Action<T = string> {
+  name: T;
   params: Array<any>;
 }
 

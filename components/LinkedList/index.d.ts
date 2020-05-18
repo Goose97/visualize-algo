@@ -13,14 +13,14 @@ export interface LinkedListNodeModel extends BaseMemoryBlockProps {
   pointer: number | null; // pointer to the next node
 }
 
-export type IProps = {
+export interface IProps {
   x: number;
   y: number;
   currentStep: number;
   totalStep: number;
-  instructions: Action[][];
+  instructions: Action<LinkedListMethod>[][];
   initialData: number[];
-};
+}
 
 export interface IState {
   linkedListModel: LinkedListModel;
@@ -48,12 +48,15 @@ export type LinkedListDataStructure = Record<
   DataStructureMethod<LinkedListModel>
 >;
 
-export type LinkedListPointerProps = {
+export type LinkedListPointerProps = Pick<
+  PointerLinkProps,
+  'following' | 'visited' | 'visible' | 'arrowDirection'
+> & {
   linkedListModel: LinkedListModel;
   nodeAboutToAppear: Set<number>;
   from: number;
   to: number | null;
-} & Omit<PointerLinkProps, 'path'>;
+};
 
 export interface LinkedListMemoryBlockProps extends BaseMemoryBlockProps {
   x: number;

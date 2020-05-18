@@ -1,46 +1,143 @@
 import React, { Component } from 'react';
-import { flatMap } from 'lodash';
+import { flatMap, pick } from 'lodash';
 
 import { GraphMemoryBlock, PointerLink } from 'components';
-import { BSTModel, LevelOrderTraversalQueue, BSTNodeModel } from './index.d';
+import {
+  IProps,
+  IState,
+  BSTModel,
+  LevelOrderTraversalQueue,
+  BSTNodeModel,
+  BSTMethod,
+} from './index.d';
+import transformBSTModel from './ModelTransformer';
+import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
+import { getProgressDirection } from 'utils';
 import {
   caculateTreeHeight,
   caculateChildCoordinate,
   caculatePointerPathFromTwoNodeCenter,
 } from './helper';
-import { ObjectType, PointCoordinate } from 'types';
+import { ObjectType, PointCoordinate, Action } from 'types';
 import { GRAPH_NODE_RADIUS } from '../../constants';
 
-export class BinarySearchTree extends Component {
+type PropsWithHoc = IProps & WithReverseStep<BSTModel>;
+
+export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   private treeHeight: number;
-  private tree: BSTModel;
 
-  constructor(props) {
+  constructor(props: PropsWithHoc) {
     super(props);
+    this.state = {
+      nodeAboutToVisit: new Set([]),
+      bstModel: this.initBSTModel(),
+    };
 
-    this.tree = [
-      { value: 1, key: 0, left: 1, right: 2 },
-      { value: 2, key: 1, left: 3, right: 4 },
-      { value: 3, key: 2, left: 5, right: 6 },
-      { value: 4, key: 3, left: 7, right: 8 },
-      { value: 5, key: 4, left: 9, right: 10 },
-      { value: 6, key: 5, left: 11, right: 12 },
-      { value: 7, key: 6, left: null, right: null },
-      { value: 8, key: 7, left: null, right: null },
-      { value: 9, key: 8, left: null, right: null },
-      { value: 10, key: 9, left: null, right: null },
-      { value: 11, key: 10, left: null, right: null },
-      { value: 12, key: 11, left: null, right: null },
-      { value: 13, key: 12, left: null, right: null },
+    this.treeHeight = caculateTreeHeight(this.state.bstModel.length);
+  }
+
+  initBSTModel() {
+    const { initialData } = this.props;
+    return [
+      { value: 4, key: 0, left: 1, right: 2 },
+      { value: 1, key: 1, left: 3, right: 4 },
+      { value: 8, key: 2, left: 5, right: 6 },
+      { value: 0, key: 3, left: null, right: null },
+      { value: 2, key: 4, left: null, right: null },
+      { value: 6, key: 5, left: null, right: null },
+      { value: 9, key: 6, left: null, right: null },
     ];
-    this.origin = { x: 400, y: 50 };
-    this.treeHeight = caculateTreeHeight(this.tree.length);
+  }
+
+  componentDidUpdate(prevProps: IProps) {
+    const {
+      currentStep,
+      reverseToStep,
+      saveStepSnapshots,
+      totalStep,
+    } = this.props;
+    const { bstModel } = this.state;
+
+    switch (
+      getProgressDirection(currentStep, prevProps.currentStep, totalStep)
+    ) {
+      case 'forward':
+        saveStepSnapshots(bstModel, currentStep);
+        this.handleForward();
+        break;
+
+      case 'backward':
+        reverseToStep(currentStep);
+        break;
+
+      case 'fastForward':
+        console.log('fastForward');
+        this.handleFastForward();
+        break;
+
+      case 'fastBackward':
+        console.log('fastBackward');
+        this.handleFastBackward();
+        break;
+    }
+  }
+
+  handleForward() {
+    // Treat each action as a transformation function which take a linkedListModel
+    // and return a new one. Consuming multiple actions is merely chaining those
+    // transformations together
+    // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
+    const { bstModel } = this.state;
+    const { currentStep, instructions } = this.props;
+    const actionsToMakeAtThisStep = instructions[currentStep];
+    if (!actionsToMakeAtThisStep || !actionsToMakeAtThisStep.length) return;
+    console.log('actionsToMakeAtThisStep', actionsToMakeAtThisStep);
+
+    // This consume pipeline have many side effect in each step. Each
+    // method handle each action has their own side effect
+    const newBSTModel = this.consumeMultipleActions(
+      actionsToMakeAtThisStep,
+      bstModel,
+    );
+    this.setState({ bstModel: newBSTModel });
+  }
+
+  consumeMultipleActions(
+    actionList: Action<BSTMethod>[],
+    currentModel: BSTModel,
+    onlyTranformData?: boolean,
+  ): BSTModel {
+    // Treat each action as a transformation function which take a linkedListModel
+    // and return a new one. Consuming multiple actions is merely chaining those
+    // transformations together
+    // model ---- action1 ----> model1 ---- action2 ----> linkedListMode2 ---- action3 ----> model3
+    let finalBSTModel = currentModel;
+    actionList.forEach(action => {
+      const { name, params } = action;
+      if (onlyTranformData) {
+        finalBSTModel = transformBSTModel(finalBSTModel, name, params);
+      } else {
+        // the main function of a handler is doing side effect before transform model
+        // a handler must also return a new model
+        // if no handler is specify, just transform model right away
+        //@ts-ignore
+        const customeHandler = this[name];
+        if (typeof customeHandler === 'function') {
+          finalBSTModel = customeHandler(finalBSTModel, params);
+        } else {
+          finalBSTModel = transformBSTModel(finalBSTModel, name, params);
+        }
+      }
+    });
+
+    return finalBSTModel;
   }
 
   getCoordinationsOfTreeNodes(): ObjectType<PointCoordinate> {
     // Level order traversal tree and caculate
+    const { bstModel } = this.state;
     let result: ObjectType<PointCoordinate> = {};
-    let root = { ...this.tree[0], ...this.origin, level: 1 };
+    let root = { ...bstModel[0], ...pick(this.props, ['x', 'y']), level: 1 };
     let queue: LevelOrderTraversalQueue = [root];
     while (queue.length) {
       const { key, x, y, left, right, level } = queue.shift()!;
@@ -78,7 +175,8 @@ export class BinarySearchTree extends Component {
   }
 
   findNodeInTreeByKey(nodeKey: number): BSTNodeModel {
-    return this.tree.find(({ key }) => key === nodeKey)!;
+    const { bstModel } = this.state;
+    return bstModel.find(({ key }) => key === nodeKey)!;
   }
 
   renderTree() {
@@ -104,8 +202,9 @@ export class BinarySearchTree extends Component {
   }
 
   renderPointerLinkForNode(nodeCoordinate: ObjectType<PointCoordinate>) {
-    return flatMap(this.tree, node => {
-      const { left, right, key } = node;
+    const { bstModel, nodeAboutToVisit } = this.state;
+    return flatMap(bstModel, node => {
+      const { left, right, key, visited } = node;
       const fromNode = nodeCoordinate[key];
       const from = {
         x: fromNode.x + GRAPH_NODE_RADIUS,
@@ -128,6 +227,8 @@ export class BinarySearchTree extends Component {
           <PointerLink
             {...pathAndRotation}
             key={child}
+            visited={visited}
+            following={nodeAboutToVisit.has(child)}
             arrowDirection='right'
           />
         );
@@ -135,10 +236,53 @@ export class BinarySearchTree extends Component {
     });
   }
 
+  visit = (currentModel: BSTModel, params: [number, number]) => {
+    const [nodeKeyToStart, nodeKeyToVisit] = params;
+    this.addNodeToVisitingList(nodeKeyToVisit);
+    setTimeout(() => {
+      this.handleAfterVisitAnimationFinish(
+        currentModel,
+        nodeKeyToStart,
+        nodeKeyToVisit,
+      );
+    }, 400);
+
+    return currentModel;
+  };
+
+  addNodeToVisitingList(nodeKey: number) {
+    const { nodeAboutToVisit } = this.state;
+    let clonedState = new Set(nodeAboutToVisit);
+    clonedState.add(nodeKey);
+    this.setState({ nodeAboutToVisit: clonedState });
+  }
+
+  handleAfterVisitAnimationFinish(
+    currentModel: BSTModel,
+    startNodeKey: number,
+    nodeKeyToVisit: number,
+  ) {
+    // Mark the start node as visited and focus to the node which is just visited
+    const visitAction: Action<BSTMethod> = {
+      name: 'visit',
+      params: [startNodeKey],
+    };
+    const focusAction: Action<BSTMethod> = {
+      name: 'focus',
+      params: [nodeKeyToVisit],
+    };
+
+    const newModel = this.consumeMultipleActions(
+      [visitAction, focusAction],
+      currentModel,
+      true,
+    );
+    this.setState({ bstModel: newModel });
+  }
+
   render() {
     return this.renderTree();
   }
 }
 
-export default BinarySearchTree;
-GRAPH_NODE_RADIUS;
+export default withReverseStep<BSTModel, PropsWithHoc>(BinarySearchTree);

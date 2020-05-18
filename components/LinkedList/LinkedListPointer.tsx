@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { pick } from 'lodash';
 
 import { PointerLink } from 'components';
 import {
@@ -131,9 +132,10 @@ class LinkedListPointer extends Component<LinkedListPointerProps> {
 
   render() {
     const path = this.caculatePathOfPointer();
+    const propsToPass = pick(this.props, ['following', 'visited', 'visible']);
     return path ? (
       <PointerLink
-        {...this.props}
+        {...propsToPass}
         path={path}
         arrowDirection={this.getArrowDirection()}
       />
