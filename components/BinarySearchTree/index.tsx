@@ -34,7 +34,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
 
   initBSTModel() {
     const { initialData } = this.props;
-    return [
+    const bstModelWithoutCoordinate = [
       { value: 4, key: 0, left: 1, right: 2 },
       { value: 1, key: 1, left: 3, right: 4 },
       { value: 8, key: 2, left: 5, right: 6 },
@@ -43,6 +43,32 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       { value: 6, key: 5, left: null, right: null },
       { value: 9, key: 6, left: null, right: null },
     ];
+    const nodeCoordinateByKey = this.getCoordinationsOfTreeNodes(
+      bstModelWithoutCoordinate,
+    );
+    return bstModelWithoutCoordinate.map(item => ({
+      ...item,
+      ...nodeCoordinateByKey[item.key],
+    }));
+  }
+
+  // componentDidMount() {
+  //   setTimeout(() => {
+  //     this.insertTest(4, 3);
+  //   }, 2000);
+
+  //   setTimeout(() => {
+  //     this.insertTest(5, 7);
+  //   }, 3000);
+
+  //   setTimeout(() => {
+  //     this.insertTest(6, 5);
+  //   }, 4000);
+  // }
+
+  insertTest(parentKey: number, value: number) {
+    const { bstModel } = this.state;
+    this.setState({ bstModel: this.insert(bstModel, [parentKey, value]) });
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -130,18 +156,26 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     return finalBSTModel;
   }
 
-  getCoordinationsOfTreeNodes(): ObjectType<PointCoordinate> {
+  getCoordinationsOfTreeNodes(
+    bstModelWithoutCoordinate: Omit<BSTNodeModel, 'x' | 'y'>[],
+  ): ObjectType<PointCoordinate> {
     // Level order traversal tree and caculate
-    const { bstModel } = this.state;
-    const treeHeight = caculateTreeHeight(bstModel.length);
+    const treeHeight = caculateTreeHeight(bstModelWithoutCoordinate.length);
     let result: ObjectType<PointCoordinate> = {};
-    let root = { ...bstModel[0], ...pick(this.props, ['x', 'y']), level: 1 };
+    let root = {
+      ...bstModelWithoutCoordinate[0],
+      ...pick(this.props, ['x', 'y']),
+      level: 1,
+    };
     let queue: LevelOrderTraversalQueue = [root];
     while (queue.length) {
       const { key, x, y, left, right, level } = queue.shift()!;
       result[key] = { x, y };
       if (left !== null) {
-        const leftChild = this.findNodeInTreeByKey(left);
+        const leftChild = this.findNodeInTreeByKey(
+          bstModelWithoutCoordinate,
+          left,
+        );
         queue.push({
           ...leftChild!,
           ...caculateChildCoordinate({ x, y }, level + 1, treeHeight, 'left'),
@@ -150,7 +184,10 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       }
 
       if (right !== null) {
-        const rightChild = this.findNodeInTreeByKey(right);
+        const rightChild = this.findNodeInTreeByKey(
+          bstModelWithoutCoordinate,
+          right,
+        );
         queue.push({
           ...rightChild!,
           ...caculateChildCoordinate({ x, y }, level + 1, treeHeight, 'right'),
@@ -162,45 +199,39 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     return result;
   }
 
-  findNodeInTreeByKey(nodeKey: number): BSTNodeModel {
-    const { bstModel } = this.state;
-    return bstModel.find(({ key }) => key === nodeKey)!;
+  findNodeInTreeByKey(
+    currentModel: Omit<BSTNodeModel, 'x' | 'y'>[],
+    nodeKey: number,
+  ) {
+    return currentModel.find(({ key }) => key === nodeKey)!;
   }
 
   renderTree() {
-    const nodeCoordinateByKey = this.getCoordinationsOfTreeNodes();
     return (
       <>
-        {this.renderTreeNode(nodeCoordinateByKey)}
-        {this.renderPointerLinkForNode(nodeCoordinateByKey)}
+        {this.renderTreeNode()}
+        {this.renderPointerLinkForNode()}
       </>
     );
   }
 
-  renderTreeNode(nodeCoordinate: ObjectType<PointCoordinate>) {
-    return Object.entries(nodeCoordinate).map(([key, coordinate]) => {
-      return (
-        <GraphMemoryBlock
-          {...coordinate}
-          {...this.findNodeInTreeByKey(+key)}
-          key={key}
-        />
-      );
-    });
+  renderTreeNode() {
+    const { bstModel } = this.state;
+    return bstModel.map(node => <GraphMemoryBlock {...node} />);
   }
 
-  renderPointerLinkForNode(nodeCoordinate: ObjectType<PointCoordinate>) {
+  renderPointerLinkForNode() {
     const { bstModel, nodeAboutToVisit } = this.state;
     return flatMap(bstModel, node => {
       const { left, right, key, visited } = node;
-      const fromNode = nodeCoordinate[key];
+      const fromNode = this.findNodeCoordinateByKey(bstModel, key);
       const from = {
         x: fromNode.x + GRAPH_NODE_RADIUS,
         y: fromNode.y + GRAPH_NODE_RADIUS,
       };
       return [left, right].map(child => {
         if (!child) return null;
-        const toNode = nodeCoordinate[child];
+        const toNode = this.findNodeCoordinateByKey(bstModel, child);
         const to = {
           x: toNode.x + GRAPH_NODE_RADIUS,
           y: toNode.y + GRAPH_NODE_RADIUS,
@@ -222,6 +253,14 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
         );
       });
     });
+  }
+
+  findNodeCoordinateByKey(
+    currentModel: BSTModel,
+    nodeKey: number,
+  ): PointCoordinate {
+    const treeNode = currentModel.find(({ key }) => key === nodeKey)!;
+    return { x: treeNode.x, y: treeNode.y };
   }
 
   visit = (currentModel: BSTModel, params: [number, number]) => {
@@ -266,6 +305,49 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       true,
     );
     this.setState({ bstModel: newModel });
+  }
+
+  // params: [parentKey, valueToInsert]
+  insert = (currentModel: BSTModel, params: [number, number]) => {
+    const [parentKey, valueToInsert] = params;
+    const parentNode = currentModel.find(({ key }) => key === parentKey);
+    if (!parentNode) return currentModel;
+
+    const parentCoordinate = pick(parentNode, ['x', 'y']);
+    const treeHeight = caculateTreeHeight(currentModel.length);
+    const childOrientation =
+      valueToInsert > parentNode.value ? 'right' : 'left';
+    const childCoordinate = caculateChildCoordinate(
+      parentCoordinate,
+      treeHeight,
+      treeHeight,
+      childOrientation,
+    );
+    const newChildNode = this.constructNewChildNode(
+      valueToInsert,
+      this.getBiggestKey(currentModel) + 1,
+      childCoordinate,
+    );
+
+    return transformBSTModel(currentModel, 'insert', [parentKey, newChildNode]);
+  };
+
+  getBiggestKey(currentModel: BSTModel) {
+    return Math.max(...currentModel.map(({ key }) => key));
+  }
+
+  constructNewChildNode(
+    value: number | string,
+    key: number,
+    coordinate: PointCoordinate,
+  ): BSTNodeModel {
+    return {
+      value,
+      left: null,
+      right: null,
+      key,
+      ...coordinate,
+    };
   }
 
   render() {

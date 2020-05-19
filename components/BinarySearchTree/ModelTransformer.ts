@@ -33,18 +33,12 @@ const transformBSTModel = (
     }
 
     case 'insert': {
-      const [parentKey, newNodeValue] = payload;
-      const biggestKey = Math.max(...currentModel.map(({ key }) => key));
-      const newNode: BSTNodeModel = {
-        value: newNodeValue,
-        left: null,
-        right: null,
-        key: biggestKey + 1,
-      };
+      const [parentKey, newNode] = payload;
+      console.log('newNode', newNode);
       return produce(currentModel, draft => {
         const parentNode = draft.find(({ key }) => key === parentKey);
         if (parentNode) {
-          if (newNodeValue > parentNode.value) {
+          if (newNode.value > parentNode.value) {
             parentNode.right = newNode.key;
           } else {
             parentNode.left = newNode.key;

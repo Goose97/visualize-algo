@@ -2,6 +2,8 @@ import { BaseMemoryBlockProps } from 'types';
 import { Action } from 'types';
 
 interface BSTNodeModel extends BaseMemoryBlockProps {
+  x: number;
+  y: number;
   key: number;
   left: number | null; // holding key of left child
   right: number | null; // // holding key of right child
