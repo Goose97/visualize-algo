@@ -49,6 +49,17 @@ export class BinarySearchTreePage extends Component {
       case 'search':
         return (
           <span>
+            Tìm kiếm giá trị{' '}
+            <Input
+              className='ml-2'
+              onChange={this.handleChangeInput('value', convertToNumber)}
+            />
+          </span>
+        );
+
+      case 'insert':
+        return (
+          <span>
             Thêm vào giá trị{' '}
             <Input
               className='ml-2'
@@ -78,6 +89,7 @@ export class BinarySearchTreePage extends Component {
     let isButtonDisabled;
     switch (currentApi) {
       case 'search':
+      case 'insert':
         isButtonDisabled = value === undefined;
         break;
     }
@@ -129,6 +141,7 @@ export class BinarySearchTreePage extends Component {
     const { currentApi, parameters, data } = this.state;
     if (!currentApi) return [];
     const stepDescription = bstInstruction(data, currentApi, parameters);
+    console.log('stepDescription', stepDescription);
     this.setState({ stepDescription });
   }
 
@@ -169,6 +182,7 @@ export class BinarySearchTreePage extends Component {
     const apiList = [
       { value: 'init', label: 'Init' },
       { value: 'search', label: 'Search' },
+      { value: 'insert', label: 'Insert' },
     ];
 
     const instructions = stepDescription.map(({ actions }) => actions || []);

@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import produce from 'immer';
-import { pick, omit, flatMap, groupBy } from 'lodash';
+import { omit, flatMap, groupBy } from 'lodash';
 
-import { AutoTransformGroup } from 'components';
 import transformModel from './ModelTransformer';
 import HeadPointer from './HeadPointer';
 import LinkedListMemoryBlock from './LinkedListMemoryBlock';
@@ -300,7 +299,7 @@ export class LinkedList extends Component<PropsWithHoc, IState>
       let newBlock = draft.find(({ key }) => key === newNodeKey);
       newBlock!.visible = false;
     });
-    // this.setState({ linkedListModel: newLinkedListModel });
+    this.setState({ linkedListModel: newLinkedListModel });
 
     this.addOrRemoveNodeAboutToAppear(newNodeKey);
     setTimeout(() => {
@@ -468,15 +467,11 @@ export class LinkedList extends Component<PropsWithHoc, IState>
   render() {
     const { linkedListModel, isVisible } = this.state;
     const listMemoryBlock = linkedListModel.map(linkedListNode => (
-      <AutoTransformGroup
-        origin={pick(linkedListNode, ['x', 'y'])}
+      <LinkedListMemoryBlock
+        {...omit(linkedListNode, ['key'])}
+        label={this.produceMemoryBlockLabel(linkedListNode)}
         key={linkedListNode.key}
-      >
-        <LinkedListMemoryBlock
-          {...omit(linkedListNode, ['key'])}
-          label={this.produceMemoryBlockLabel(linkedListNode)}
-        />
-      </AutoTransformGroup>
+      />
     ));
     const listPointerLink = linkedListModel.map((_, index) =>
       this.renderPointerLinkForMemoryBlock(index),

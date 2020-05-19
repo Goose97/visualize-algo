@@ -32,4 +32,10 @@ export interface NodeInLevelOrderTraversalQueue extends BSTNodeModel {
 
 export type LevelOrderTraversalQueue = NodeInLevelOrderTraversalQueue[];
 
-export type BSTMethod = 'visit' | 'focus' | 'resetFocus' | 'label' | 'delete';
+export type BSTMethod =
+  | 'visit'
+  | 'focus'
+  | 'resetFocus'
+  | 'label'
+  | 'delete'
+  | 'insert';

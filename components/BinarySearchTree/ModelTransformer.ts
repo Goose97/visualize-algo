@@ -1,6 +1,6 @@
 import produce from 'immer';
 
-import { BSTModel, BSTMethod } from './index.d';
+import { BSTModel, BSTMethod, BSTNodeModel } from './index.d';
 
 // Nhận vào trạng thái hiện tại của data structure
 // và operation tương ứng. Trả về trạng thái mới
@@ -29,6 +29,29 @@ const transformBSTModel = (
     case 'resetFocus': {
       return produce(currentModel, draft => {
         draft.forEach(node => (node.focus = false));
+      });
+    }
+
+    case 'insert': {
+      const [parentKey, newNodeValue] = payload;
+      const biggestKey = Math.max(...currentModel.map(({ key }) => key));
+      const newNode: BSTNodeModel = {
+        value: newNodeValue,
+        left: null,
+        right: null,
+        key: biggestKey + 1,
+      };
+      return produce(currentModel, draft => {
+        const parentNode = draft.find(({ key }) => key === parentKey);
+        if (parentNode) {
+          if (newNodeValue > parentNode.value) {
+            parentNode.right = newNode.key;
+          } else {
+            parentNode.left = newNode.key;
+          }
+
+          draft.push(newNode);
+        }
       });
     }
 

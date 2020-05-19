@@ -63,4 +63,5 @@ export interface LinkedListMemoryBlockProps extends BaseMemoryBlockProps {
   y: number;
   visited?: boolean;
   label?: string;
+  isNew?: boolean;
 }

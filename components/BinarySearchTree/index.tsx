@@ -24,16 +24,12 @@ import { GRAPH_NODE_RADIUS } from '../../constants';
 type PropsWithHoc = IProps & WithReverseStep<BSTModel>;
 
 export class BinarySearchTree extends Component<PropsWithHoc, IState> {
-  private treeHeight: number;
-
   constructor(props: PropsWithHoc) {
     super(props);
     this.state = {
       nodeAboutToVisit: new Set([]),
       bstModel: this.initBSTModel(),
     };
-
-    this.treeHeight = caculateTreeHeight(this.state.bstModel.length);
   }
 
   initBSTModel() {
@@ -99,6 +95,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       actionsToMakeAtThisStep,
       bstModel,
     );
+    console.log('newBSTModel', newBSTModel);
     this.setState({ bstModel: newBSTModel });
   }
 
@@ -136,6 +133,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   getCoordinationsOfTreeNodes(): ObjectType<PointCoordinate> {
     // Level order traversal tree and caculate
     const { bstModel } = this.state;
+    const treeHeight = caculateTreeHeight(bstModel.length);
     let result: ObjectType<PointCoordinate> = {};
     let root = { ...bstModel[0], ...pick(this.props, ['x', 'y']), level: 1 };
     let queue: LevelOrderTraversalQueue = [root];
@@ -146,12 +144,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
         const leftChild = this.findNodeInTreeByKey(left);
         queue.push({
           ...leftChild!,
-          ...caculateChildCoordinate(
-            { x, y },
-            level + 1,
-            this.treeHeight,
-            'left',
-          ),
+          ...caculateChildCoordinate({ x, y }, level + 1, treeHeight, 'left'),
           level: level + 1,
         });
       }
@@ -160,12 +153,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
         const rightChild = this.findNodeInTreeByKey(right);
         queue.push({
           ...rightChild!,
-          ...caculateChildCoordinate(
-            { x, y },
-            level + 1,
-            this.treeHeight,
-            'right',
-          ),
+          ...caculateChildCoordinate({ x, y }, level + 1, treeHeight, 'right'),
           level: level + 1,
         });
       }
