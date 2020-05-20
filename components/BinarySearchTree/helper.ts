@@ -1,12 +1,36 @@
+import { pick } from 'lodash';
+
 import {
   TREE_LIKE_LEVEL_GAP,
   BST_CHILD_DISTANCE_FROM_PARENT,
   GRAPH_NODE_RADIUS,
 } from '../../constants';
 import { PointCoordinate } from 'types';
+import { BSTModel } from './index.d';
 
 export const caculateTreeHeight = (totalNodeCount: number) => {
   return Math.floor(Math.log2(totalNodeCount)) + 1;
+};
+
+export const isNodeCoordinateCollideWithOtherNode = (
+  nodeCoordinate: PointCoordinate,
+  currentModel: BSTModel,
+) => {
+  const isIntersect = (
+    nodeCoordinateA: PointCoordinate,
+    nodeCoordinateB: PointCoordinate,
+  ) => {
+    // If distance from A to B smaller than 2 * node radius then they are intersect
+    const distance = Math.sqrt(
+      (nodeCoordinateA.x - nodeCoordinateB.x) ** 2 +
+        (nodeCoordinateA.y - nodeCoordinateB.y) ** 2,
+    );
+    return distance < 2 * GRAPH_NODE_RADIUS;
+  };
+
+  return currentModel.some(node =>
+    isIntersect(nodeCoordinate, pick(node, ['x', 'y'])),
+  );
 };
 
 const caculateTreeWidthBasedOnHeight = (treeHeight: number): number => {

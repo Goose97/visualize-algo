@@ -17,6 +17,7 @@ import {
   caculateTreeHeight,
   caculateChildCoordinate,
   caculatePointerPathFromTwoNodeCenter,
+  isNodeCoordinateCollideWithOtherNode,
 } from './helper';
 import { ObjectType, PointCoordinate, Action } from 'types';
 import { GRAPH_NODE_RADIUS } from '../../constants';
@@ -50,25 +51,6 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       ...item,
       ...nodeCoordinateByKey[item.key],
     }));
-  }
-
-  // componentDidMount() {
-  //   setTimeout(() => {
-  //     this.insertTest(4, 3);
-  //   }, 2000);
-
-  //   setTimeout(() => {
-  //     this.insertTest(5, 7);
-  //   }, 3000);
-
-  //   setTimeout(() => {
-  //     this.insertTest(6, 5);
-  //   }, 4000);
-  // }
-
-  insertTest(parentKey: number, value: number) {
-    const { bstModel } = this.state;
-    this.setState({ bstModel: this.insert(bstModel, [parentKey, value]) });
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -308,7 +290,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   }
 
   // params: [parentKey, valueToInsert]
-  insert = (currentModel: BSTModel, params: [number, number]) => {
+  insert = (currentModel: BSTModel, params: [number, number]): BSTModel => {
     const [parentKey, valueToInsert] = params;
     const parentNode = currentModel.find(({ key }) => key === parentKey);
     if (!parentNode) return currentModel;
@@ -323,14 +305,32 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       treeHeight,
       childOrientation,
     );
-    const newChildNode = this.constructNewChildNode(
-      valueToInsert,
-      this.getBiggestKey(currentModel) + 1,
-      childCoordinate,
-    );
 
-    return transformBSTModel(currentModel, 'insert', [parentKey, newChildNode]);
+    // If the new child coordinate collide with existing node in key
+    // we must recaculate all coordinate of the tree
+    if (isNodeCoordinateCollideWithOtherNode(childCoordinate, currentModel)) {
+      const allocatedBSTModel = this.reallocateAllTreeNode(currentModel);
+      return this.insert(allocatedBSTModel, params);
+    } else {
+      const newChildNode = this.constructNewChildNode(
+        valueToInsert,
+        this.getBiggestKey(currentModel) + 1,
+        childCoordinate,
+      );
+      return transformBSTModel(currentModel, 'insert', [
+        parentKey,
+        newChildNode,
+      ]);
+    }
   };
+
+  reallocateAllTreeNode(currentModel: BSTModel) {
+    const nodeCoordinateByKey = this.getCoordinationsOfTreeNodes(currentModel);
+    return currentModel.map(node => ({
+      ...node,
+      ...nodeCoordinateByKey[node.key],
+    }));
+  }
 
   getBiggestKey(currentModel: BSTModel) {
     return Math.max(...currentModel.map(({ key }) => key));
