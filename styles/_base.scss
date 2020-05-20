@@ -103,8 +103,16 @@ $border-style: 1px solid #cfcfcf;
     width: #{$i * 10}vw;
   }
 
+  .max-w-#{$i} {
+    max-width: #{$i * 10%};
+  }
+
   .vh-#{$i * 10} {
     height: #{$i * 10}vh;
+  }
+
+  .max-h-#{$i} {
+    max-height: #{$i * 10%};
   }
 
   .stroke-#{$i} {
