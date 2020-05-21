@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import produce from 'immer';
 import { pick, omit, flatMap, groupBy } from 'lodash';
 
-import { AutoTransformGroup } from 'components';
+import { AutoTransformGroup, HTMLRenderer } from 'components';
 import transformModel from './ModelTransformer';
 import HeadPointer from './HeadPointer';
 import LinkedListMemoryBlock from './LinkedListMemoryBlock';
 import LinkedListPointer from './LinkedListPointer';
+import LinkedListHTML from './LinkedListHTML';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { getProgressDirection } from 'utils';
 import {
@@ -51,6 +52,10 @@ export class LinkedList extends Component<PropsWithHoc, IState>
       focus: false,
       pointer: index === initialData.length - 1 ? null : index + 1,
     }));
+  }
+
+  componentDidMount() {
+    HTMLRenderer.inject(<LinkedListHTML />, { x: 100, y: 200 });
   }
 
   componentDidUpdate(prevProps: IProps) {
