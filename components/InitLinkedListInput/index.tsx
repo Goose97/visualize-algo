@@ -1,26 +1,34 @@
 import React, { Component, ReactText } from 'react';
+import ReactDOM from 'react-dom';
 
-import { Input } from 'components';
+import { Button, Input } from 'components';
+import withExtendClassName, {
+  WithExtendClassName,
+} from 'hocs/withExtendClassName';
+import { classNameHelper } from 'utils';
 import { IProps, IState } from './index.d';
 
-export class InitLinkedListInput extends Component<IProps, IState> {
+type PropsWithHoc = IProps & WithExtendClassName;
+
+export class InitLinkedListInput extends Component<PropsWithHoc, IState> {
+  private inputRef: React.RefObject<HTMLInputElement>;
   constructor(props: IProps) {
     super(props);
 
     this.state = {
       input: [],
       error: null,
+      isTyping: false,
     };
+    this.inputRef = React.createRef();
   }
 
   handleChange = (value: ReactText) => {
-    const { onChange } = this.props;
     const {
       value: arrayValue,
       error,
     } = this.getArrayRepresentationFromInputText(value.toString());
     this.setState({ input: arrayValue, error });
-    onChange && onChange(arrayValue);
   };
 
   getArrayRepresentationFromInputText(
@@ -38,18 +46,59 @@ export class InitLinkedListInput extends Component<IProps, IState> {
     };
   }
 
+  produceClassName() {
+    const { isTyping } = this.state;
+    return classNameHelper({
+      base: 'init-linked-list-button__wrapper',
+      typing: isTyping,
+    });
+  }
+
+  focusToInput = () => {
+    const inputElement = this.inputRef.current;
+    const htmlInput = ReactDOM.findDOMNode(inputElement) as HTMLInputElement;
+    htmlInput?.focus();
+  };
+
+  handleClick = () => {
+    const { onSubmit } = this.props;
+    const { isTyping, input } = this.state;
+    if (!isTyping) {
+      this.setState({ isTyping: true }, this.focusToInput);
+    } else {
+      console.log('input', input);
+      const linkedListData =
+        input === undefined || !input.length
+          ? this.generateRandomData()
+          : input;
+      console.log('linkedListData', linkedListData);
+      onSubmit(linkedListData);
+    }
+  };
+
+  generateRandomData() {
+    return Array(5)
+      .fill(0)
+      .map(() => Math.round(Math.random() * 10));
+  }
+
   render() {
+    const { isTyping } = this.state;
+    const { className } = this.props;
     return (
-      <div className='il-bl'>
-        <Input
-          style={{ minWidth: 300 }}
-          className='ml-2'
-          placeholder='[4,2,8,1,4,5,6]'
-          onChange={this.handleChange}
-        />
+      <div className={this.produceClassName()}>
+        <Button type='primary' className={className} onClick={this.handleClick}>
+          {isTyping ? 'Initialize' : 'Create new linked list'}
+          <Input
+            ref={this.inputRef}
+            onChange={this.handleChange}
+            onClick={e => e.stopPropagation()}
+            placeholder='[5,2,3,7,4]'
+          />
+        </Button>
       </div>
     );
   }
 }
 
-export default InitLinkedListInput;
+export default withExtendClassName('f-big-2 px-6 py-2')(InitLinkedListInput);

@@ -25,8 +25,6 @@ export class CustomDropDown extends Component<IProps> {
 
   renderMenu() {
     const { options } = this.props;
-    console.log('this.props', this.props);
-    console.log('options', options);
     return (
       <Menu>
         {options.map(({ label, value }) => (

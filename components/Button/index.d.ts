@@ -3,4 +3,5 @@ export interface IProps {
   disabled?: boolean;
   onClick?: React.MouseEventHandler;
   style?: React.CSSProperties;
+  className?: string;
 }

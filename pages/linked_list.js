@@ -213,7 +213,6 @@ export class LinkedListPage extends Component {
       autoPlay,
     } = this.state;
     const apiList = [
-      { value: 'init', label: 'Init' },
       { value: 'search', label: 'Search' },
       { value: 'insert', label: 'Insert' },
       { value: 'delete', label: 'Delete' },
@@ -237,7 +236,7 @@ export class LinkedListPage extends Component {
         onPlayingChange={this.handlePlayingChange}
         ref={this.ref}
       >
-        {data && (
+        {data ? (
           <CanvasContainer>
             <LinkedList
               x={100}
@@ -248,6 +247,14 @@ export class LinkedListPage extends Component {
               initialData={data}
             />
           </CanvasContainer>
+        ) : (
+          <div className='h-full fx-center linked-list-page__init-button'>
+            <InitLinkedListInput
+              onSubmit={linkedListData =>
+                this.setState({ data: linkedListData })
+              }
+            />
+          </div>
         )}
       </VisualAlgo>
     );
