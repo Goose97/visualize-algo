@@ -28,6 +28,7 @@ type PropsWithHoc = IProps & WithReverseStep<LinkedListModel>;
 export class LinkedList extends Component<PropsWithHoc, IState>
   implements LinkedListDataStructure {
   private initialLinkedListModel: LinkedListModel;
+  private wrapperRef: React.RefObject<SVGGElement>;
 
   constructor(props: PropsWithHoc) {
     super(props);
@@ -38,6 +39,7 @@ export class LinkedList extends Component<PropsWithHoc, IState>
       nodeAboutToAppear: new Set([]),
       isVisible: true,
     };
+    this.wrapperRef = React.createRef();
   }
 
   initiateMemoryLinkedListModel(props: IProps): LinkedListModel {
@@ -55,7 +57,13 @@ export class LinkedList extends Component<PropsWithHoc, IState>
   }
 
   componentDidMount() {
-    HTMLRenderer.inject(<LinkedListHTML />, { x: 100, y: 200 });
+    const wrapperElement = this.wrapperRef.current;
+    if (wrapperElement) {
+      const { x, y, width, height } = wrapperElement.getBoundingClientRect();
+      const elementX = x + width + 50;
+      const elementY = y - height;
+      HTMLRenderer.inject(<LinkedListHTML />, { x: elementX, y: elementY });
+    }
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -488,7 +496,7 @@ export class LinkedList extends Component<PropsWithHoc, IState>
 
     return (
       isVisible && (
-        <g>
+        <g ref={this.wrapperRef}>
           <HeadPointer headBlock={this.findNextBlock(-1)} />
           {listMemoryBlock}
           {listPointerLink}

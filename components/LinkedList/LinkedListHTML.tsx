@@ -1,9 +1,26 @@
 import React, { Component } from 'react';
-import { Input } from 'antd';
+
+import { CustomDropDown } from 'components';
 
 export class LinkedListHTML extends Component {
   render() {
-    return <Input />;
+    const options = [
+      {
+        label: 'Search',
+        value: 'search',
+      },
+      {
+        label: 'Insert',
+        value: 'insert',
+      },
+      {
+        label: 'Delete',
+        value: 'delete',
+      },
+    ];
+    return (
+      <CustomDropDown options={options} onSelect={e => console.log('e', e)} />
+    );
   }
 }
 
