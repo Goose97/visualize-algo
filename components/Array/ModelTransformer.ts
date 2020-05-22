@@ -83,6 +83,30 @@ const transformArrayModel = (
       });
     }
 
+    case 'setValue': {
+      const [keyToResetValue, value] = payload;
+      return produce(currentModel, draft => {
+        const nodeToResetValue = draft.find(
+          ({ key }) => key === keyToResetValue
+        );
+        if (nodeToResetValue) {
+          nodeToResetValue.value = value;
+          // nodeToValue.value = 0;
+        }
+      });
+    }
+
+    case 'setLine': {
+      const [keyToSetLine] = payload;
+      return produce(currentModel, draft => {
+        const nodeToSetLine = draft.find(({ key }) => key === keyToSetLine);
+        draft.forEach(node => (node.hasLine = false));
+        if (nodeToSetLine) {
+          nodeToSetLine.hasLine = true;
+        }
+      });
+    }
+
     default:
       return currentModel;
   }

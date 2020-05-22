@@ -1,4 +1,4 @@
-export type ArrayOperation = 'bubbleSort' | 'selectionSort';
+export type ArrayOperation = 'bubbleSort' | 'selectionSort' | 'insertionSort';
 
 // export interface ILinkedListNode {
 //   val: number;

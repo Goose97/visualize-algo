@@ -2,7 +2,7 @@ import { LinkedListNodeModel } from '../LinkedList/index.d';
 import { PointCoordinate } from 'types';
 
 export interface IProps {
-  value: number;
+  value: number | null;
   width: number;
   height: number;
   x: number;

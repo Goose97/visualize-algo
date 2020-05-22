@@ -194,7 +194,7 @@ export class ArrayPage extends Component {
           return parseInt(item, 10)
         })
       } else
-        arrayData = Array(5)
+        arrayData = Array(10)
           .fill(0)
           .map(() => Math.round(Math.random() * 10));
 
@@ -219,11 +219,12 @@ export class ArrayPage extends Component {
       stepDescription,
       autoPlay,
     } = this.state;
-    const blockType = 'column';
+    const blockType = 'block';
     const apiList = [
       { value: 'init', label: 'Init' },
       { value: 'bubbleSort', label: 'Bubble sort' },
       { value: 'selectionSort', label: 'Selection sort' },
+      { value: 'insertionSort', label: 'Insertion sort' },
       // { value: 'insert', label: 'Insert' },
       // { value: 'delete', label: 'Delete' },
     ];

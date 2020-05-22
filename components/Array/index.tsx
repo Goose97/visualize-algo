@@ -78,6 +78,16 @@ export class Array extends Component<IProps, IState> {
     return newModel;
   }
 
+  setValue(currentModel: ArrayModel, params: []) {
+    const newModel = transformArrayModel(currentModel, 'setValue', params);
+    return newModel;
+  }
+
+  setLine(currentModel: ArrayModel, params: []) {
+    const newModel = transformArrayModel(currentModel, 'setLine', params);
+    return newModel;
+  }
+
   componentDidUpdate(prevProps: IProps) {
     // const { currentStep, reverseToStep } = this.props;
 
@@ -127,14 +137,14 @@ export class Array extends Component<IProps, IState> {
 
     const newArrayModel = this.consumeMultipleActions(
       actionsToMakeAtThisStep,
-      arrayModel,
+      arrayModel
     );
     this.setState({ arrayModel: newArrayModel });
   }
 
   consumeMultipleActions(
     actionList: Action[],
-    currentModel: ArrayModel,
+    currentModel: ArrayModel
   ): ArrayModel {
     // Treat each action as a transformation function which take a linkedListModel
     // and return a new one. Consuming multiple actions is merely chaining those
@@ -172,13 +182,17 @@ export class Array extends Component<IProps, IState> {
         origin={{
           x: 100,
           y: 200,
-          
         }}
         blockType={blockType}
       />
     ));
 
-    return arrayMemoryBlock;
+    return (
+      // <g>
+        arrayMemoryBlock
+        // {/* <Line /> */}
+      // </g>
+    );
   }
 }
 

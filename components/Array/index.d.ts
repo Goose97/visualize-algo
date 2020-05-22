@@ -2,13 +2,14 @@
 import { PointCoordinate } from '../../types';
 
 export interface ArrayNode {
-  value: number;
+  value: number | null;
   key: number;
   index: number;
   focus?: boolean;
   visited?: boolean;
   visible: boolean;
   label?: string;
+  hasLine?: boolean;
 }
 
 export type ArrayModel = ArrayNode[];
@@ -20,7 +21,9 @@ export type ArrayMethod =
   | 'resetFocusAll'
   | 'complete'
   | 'label'
-  | 'unlabel';
+  | 'unlabel'
+  | 'setValue'
+  | 'setLine';
 
 export interface IState {
   arrayModel: ArrayModel;
@@ -35,7 +38,7 @@ export interface IProps {
 }
 
 export interface ArrayMemoryBlockProps {
-  value: number;
+  value: number | null;
   index: number;
   origin: PointCoordinate;
   visible?: boolean;

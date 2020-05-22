@@ -14,6 +14,9 @@ export const arrayInstruction = (
     case 'selectionSort':
       return selectionSortInstruction(data, parameters);
 
+    case 'insertionSort':
+      return insertionSortInstruction(data, parameters);
+
     default:
       return [];
   }
@@ -158,6 +161,50 @@ const bubbleSortInstruction = (data: number[], params: SortParams) => {
     ],
   });
 
+  return instructions.get();
+};
+
+const insertionSortInstruction = (data: number[], params: SortParams) => {
+  const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
+    null,
+    'insertionSort'
+  );
+  let instructions = new Instructions();
+  instructions.setDuration(1000);
+  let array = initArray(data);
+
+  // instructions.push({
+  //   actions: [{ name: 'focus', params: [0] }],
+  //   ..._getExplanationAndCodeLine('init'),
+  // });
+
+  // Start make instruction
+
+  let len = array.length;
+  let i, j, keyValue;
+  for (i = 1; i < len; i++) {
+    instructions.push({
+      actions: [{ name: 'setLine', params: [array[i].key] }],
+    });
+    keyValue = array[i].val;
+    j = i - 1;
+    /* Move elements of arr[0..i-1], that are 
+          greater than key, to one position ahead 
+          of their current position */
+    for (j = i - 1; j >= 0 && array[j].val > keyValue; j--) {
+      instructions.push({
+        actions: [
+          { name: 'setValue', params: [array[j + 1].key, array[j].val] },
+          { name: 'setValue', params: [array[j].key, null] },
+        ],
+      });
+      array[j + 1].val = array[j].val;
+    }
+    instructions.push({
+      actions: [{ name: 'setValue', params: [array[j + 1].key, keyValue] }],
+    });
+    array[j + 1].val = keyValue;
+  }
 
   return instructions.get();
 };
@@ -183,6 +230,23 @@ const getExplanationAndCodeLine = (
           return {};
       }
     case 'selectionSort':
+      switch (subOperation) {
+        case 'init':
+          return { codeLine: '1', explanationStep: 1 };
+        case 'swap':
+          return { codeLine: '10-14', explanationStep: 5 };
+        case 'iteration':
+          return { codeLine: '3', explanationStep: 2 };
+        case 'findMin':
+          return { codeLine: '5', explanationStep: 3 };
+        case 'updateMin':
+          return { codeLine: '6-7', explanationStep: 4 };
+        case 'compare':
+          return { codeLine: '6', explanationStep: 4 };
+        default:
+          return {};
+      }
+    case 'insertionSort':
       switch (subOperation) {
         case 'init':
           return { codeLine: '1', explanationStep: 1 };
