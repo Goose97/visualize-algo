@@ -23,6 +23,10 @@ export type IProps = {
   totalStep: number;
   instructions: Action[][];
   initialData: number[];
+  renderHtmlElements?: (
+    model: LinkedListModel,
+    wrapperElement: SVGGElement | null,
+  ) => void;
 };
 
 export interface IState {
@@ -66,4 +70,9 @@ export interface LinkedListMemoryBlockProps {
   visited?: boolean;
   focus?: boolean;
   label?: string;
+}
+
+export interface LinkedListHTMLProps {
+  wrapperElement: SVGGElement;
+  linkedListModel: LinkedListModel;
 }

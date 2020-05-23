@@ -28,7 +28,7 @@ export class CustomDropDown extends Component<IProps> {
     return (
       <Menu>
         {options.map(({ label, value }) => (
-          <Menu.Item onClick={this.handleSelectMenuOption(value)}>
+          <Menu.Item onClick={this.handleSelectMenuOption(value)} key={value}>
             {label}
           </Menu.Item>
         ))}
@@ -42,12 +42,15 @@ export class CustomDropDown extends Component<IProps> {
   };
 
   render() {
+    const { overlay } = this.props;
     return (
       <Dropdown
-        overlay={this.renderMenu()}
+        {...this.props}
+        overlay={overlay || this.renderMenu()}
         overlayClassName='dropdown__overlay'
+        trigger={['click']}
       >
-        <div className='dropdown__trigger'>{ellipsisSvg}</div>
+        <div className='dropdown__trigger il-bl'>{ellipsisSvg}</div>
       </Dropdown>
     );
   }

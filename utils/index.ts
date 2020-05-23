@@ -59,3 +59,8 @@ export const getProgressDirection = (
     else if (currentStep === 0) return 'fastBackward';
   }
 };
+
+export const upcaseFirstLetter = (string: string) => {
+  if (string.length === 0) return string;
+  return string[0].toUpperCase() + string.slice(1);
+};

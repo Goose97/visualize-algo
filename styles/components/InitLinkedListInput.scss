@@ -4,22 +4,24 @@
     position: relative;
   }
 
-  input {
+  .visual-algo-input__wrapper {
     display: none;
     min-width: 350px;
     color: $primary-text-color;
   }
 
   &.typing {
-    input {
+    .visual-algo-input__wrapper {
       display: inline-block;
-      border-radius: $border-radius 0 0 $border-radius;
-      border-right-width: 0px;
       animation: fadeIn 0.3s ease forwards;
       position: absolute;
       top: 0;
       bottom: 0;
       right: 100%;
+
+      & > input {
+        border-radius: $border-radius 0 0 $border-radius;
+      }
     }
 
     button {
@@ -36,15 +38,5 @@
 
   100% {
     transform: translateX(200px);
-  }
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
   }
 }

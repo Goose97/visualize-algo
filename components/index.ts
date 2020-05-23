@@ -15,3 +15,4 @@ export { default as Queue } from './Queue';
 export { default as Stack } from './Stack';
 export { default as HTMLRenderer } from './HTMLRenderer';
 export { default as CustomDropDown } from './CustomDropDown';
+export { default as ParameterInputPopover } from './ParameterInputPopover';

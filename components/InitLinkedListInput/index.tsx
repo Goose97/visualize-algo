@@ -66,12 +66,10 @@ export class InitLinkedListInput extends Component<PropsWithHoc, IState> {
     if (!isTyping) {
       this.setState({ isTyping: true }, this.focusToInput);
     } else {
-      console.log('input', input);
       const linkedListData =
         input === undefined || !input.length
           ? this.generateRandomData()
           : input;
-      console.log('linkedListData', linkedListData);
       onSubmit(linkedListData);
     }
   };

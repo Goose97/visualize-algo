@@ -5,4 +5,5 @@ export type IProps = {
   onClick?: (e: React.MouseEvent) => void;
   style?: React.CSSProperties;
   placeholder?: string;
+  status?: 'normal' | 'warning' | 'error' | 'success';
 } & WithExtendClassName;

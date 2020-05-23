@@ -24,12 +24,28 @@
   &.disabled {
     background-color: $disable-background-1;
     color: $disable-text-color;
-    &:hover, &:focus, &:active {
+    &:hover,
+    &:focus,
+    &:active {
       background-color: $disable-background-1;
     }
 
     &:hover {
       cursor: not-allowed;
     }
+  }
+
+  &.secondary {
+    background-color: white;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+
+    &:hover {
+      @extend .shadow;
+    }
+
+    // &:active {
+    //   background-color: darken($primary-color, 8%);
+    // }
   }
 }

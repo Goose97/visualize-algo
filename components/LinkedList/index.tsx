@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import produce from 'immer';
 import { pick, omit, flatMap, groupBy } from 'lodash';
 
-import { AutoTransformGroup, HTMLRenderer } from 'components';
+import { AutoTransformGroup } from 'components';
 import transformModel from './ModelTransformer';
 import HeadPointer from './HeadPointer';
 import LinkedListMemoryBlock from './LinkedListMemoryBlock';
@@ -57,13 +57,10 @@ export class LinkedList extends Component<PropsWithHoc, IState>
   }
 
   componentDidMount() {
-    const wrapperElement = this.wrapperRef.current;
-    if (wrapperElement) {
-      const { x, y, width, height } = wrapperElement.getBoundingClientRect();
-      const elementX = x + width + 50;
-      const elementY = y - height;
-      HTMLRenderer.inject(<LinkedListHTML />, { x: elementX, y: elementY });
-    }
+    const { renderHtmlElements } = this.props;
+    const { linkedListModel } = this.state;
+    renderHtmlElements &&
+      renderHtmlElements(linkedListModel, this.wrapperRef.current);
   }
 
   componentDidUpdate(prevProps: IProps) {
