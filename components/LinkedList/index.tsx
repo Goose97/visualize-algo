@@ -7,7 +7,6 @@ import transformModel from './ModelTransformer';
 import HeadPointer from './HeadPointer';
 import LinkedListMemoryBlock from './LinkedListMemoryBlock';
 import LinkedListPointer from './LinkedListPointer';
-import LinkedListHTML from './LinkedListHTML';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { getProgressDirection } from 'utils';
 import {
@@ -57,6 +56,10 @@ export class LinkedList extends Component<PropsWithHoc, IState>
   }
 
   componentDidMount() {
+    this.injectHTMLIntoCanvas();
+  }
+
+  injectHTMLIntoCanvas() {
     const { renderHtmlElements } = this.props;
     const { linkedListModel } = this.state;
     renderHtmlElements &&
@@ -76,6 +79,7 @@ export class LinkedList extends Component<PropsWithHoc, IState>
       getProgressDirection(currentStep, prevProps.currentStep, totalStep)
     ) {
       case 'forward':
+        this.getLastStepActions(prevProps.currentStep);
         saveStepSnapshots(linkedListModel, currentStep);
         this.handleForward();
         break;
@@ -151,6 +155,22 @@ export class LinkedList extends Component<PropsWithHoc, IState>
     } else {
       if (previousStep - currentStep === 1) return 'backward';
       else if (currentStep === 0) return 'fastBackward';
+    }
+  }
+
+  getLastStepActions(previousStep: number) {
+    const { instructions } = this.props;
+    const actionMadeAtPreviousStep = instructions[previousStep] || [];
+    if (!actionMadeAtPreviousStep || !actionMadeAtPreviousStep.length) return;
+
+    // Check if in those action we made, if exists any action that affect the position layout
+    // of the svg. Then we must rerender the html
+    if (
+      actionMadeAtPreviousStep.some(({ name }) =>
+        ['add', 'remove'].includes(name),
+      )
+    ) {
+      this.injectHTMLIntoCanvas();
     }
   }
 

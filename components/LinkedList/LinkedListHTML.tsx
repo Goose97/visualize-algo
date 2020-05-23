@@ -14,7 +14,7 @@ import {
   LINKED_LIST_BLOCK_HEIGHT,
 } from '../../constants';
 import { classNameHelper, upcaseFirstLetter } from 'utils';
-import { ObjectType } from 'types';
+import { ObjectType, PointCoordinate } from 'types';
 
 const options: Array<{ label: string; value: LinkedListOperation }> = [
   {
@@ -23,6 +23,24 @@ const options: Array<{ label: string; value: LinkedListOperation }> = [
   },
   {
     label: 'Insert',
+    value: 'insert',
+  },
+  {
+    label: 'Delete',
+    value: 'delete',
+  },
+];
+
+const individualNodeOptions: Array<{
+  label: string;
+  value: LinkedListOperation;
+}> = [
+  {
+    label: 'Search',
+    value: 'search',
+  },
+  {
+    label: 'Insert before',
     value: 'insert',
   },
   {
@@ -72,7 +90,7 @@ class LinkedListNodeDropDown extends Component<
     const { nodeKey } = this.props;
     return (
       <Menu>
-        {options.map(({ label, value: apiName }) => {
+        {individualNodeOptions.map(({ label, value: apiName }) => {
           switch (apiName) {
             case 'search':
             case 'delete':
@@ -148,20 +166,42 @@ interface LinkedListHTMLParams {
 export class LinkedListHTML {
   static renderToView(params: LinkedListHTMLParams) {
     const { wrapperElement } = params;
-    wrapperElement && LinkedListHTML.renderApiDropDown(wrapperElement);
+    // wrapperElement && LinkedListHTML.renderApiDropDown(wrapperElement);
     LinkedListHTML.renderActionDropdownForEachNode(params);
   }
 
-  static renderApiDropDown(wrapperElement: SVGGElement) {
-    const { x, y, width, height } = wrapperElement.getBoundingClientRect();
-    const dropdownToSelectApi = (
-      <CustomDropDown options={options} onSelect={e => console.log('e', e)} />
-    );
-    HTMLRenderer.inject(dropdownToSelectApi, {
-      x: x + width + 50,
-      y: y - height,
-    });
-  }
+  static renderApiDropDown = (() => {
+    let originalCoordinate: PointCoordinate | undefined;
+    return (wrapperElement: SVGGElement) => {
+      let dropdownCoordinate;
+      const dropdownToSelectApi = (
+        <CustomDropDown options={options} onSelect={e => console.log('e', e)} />
+      );
+      const htmlOverlayPosition = HTMLRenderer.getHTMLOverlayPosition();
+
+      if (!htmlOverlayPosition) return;
+      if (originalCoordinate) {
+        const { width } = wrapperElement.getBoundingClientRect();
+        dropdownCoordinate = {
+          x: originalCoordinate.x + width + 50,
+          y: originalCoordinate.y - htmlOverlayPosition.y - 20,
+        };
+      } else {
+        const { x, y, width } = wrapperElement.getBoundingClientRect();
+        originalCoordinate = { x, y };
+        dropdownCoordinate = {
+          x: x + width + 50,
+          y: y - htmlOverlayPosition.y - 20,
+        };
+      }
+
+      HTMLRenderer.inject(
+        dropdownToSelectApi,
+        dropdownCoordinate,
+        'linked-list-dropdown',
+      );
+    };
+  })();
 
   static renderActionDropdownForEachNode(params: LinkedListHTMLParams) {
     const { model } = params;
@@ -174,7 +214,11 @@ export class LinkedListHTML {
       );
       const coordinate = { x, y };
 
-      HTMLRenderer.inject(elementToRender, coordinate);
+      HTMLRenderer.inject(
+        elementToRender,
+        coordinate,
+        `linked-list-node-dropdown__${key}`,
+      );
     });
   }
 }

@@ -228,7 +228,10 @@ export class LinkedListPage extends Component<IProps, IState> {
           const index = model.findIndex(({ key }) => key === nodeKey);
           this.handleExecuteApi('insert', { value, index });
         },
-        onDelete: params => console.log('params', params),
+        onDelete: ({ key: nodeKey }) => {
+          const index = model.findIndex(({ key }) => key === nodeKey);
+          this.handleExecuteApi('delete', { index });
+        },
       });
     }, 0);
   };
