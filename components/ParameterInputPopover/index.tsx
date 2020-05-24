@@ -20,7 +20,7 @@ export class ParameterInputPopover extends Component<IProps, IState> {
     if (parameters) {
       const listInputParams = Object.entries(parameters).map(
         ([paramName, type]) => (
-          <Row key={paramName} className='fx-center'>
+          <Row key={paramName} className='fx-center mb-2'>
             <Col span={8}>{upcaseFirstLetter(paramName)}:</Col>
             <Col span={16}>
               <Input onChange={this.handleInputChange.bind(null, paramName)} />
@@ -66,8 +66,10 @@ export class ParameterInputPopover extends Component<IProps, IState> {
     const { children } = this.props;
     return (
       <Popover
-        {...this.props}
+        trigger='click'
+        placement='right'
         title='Parameters'
+        {...this.props}
         content={this.renderPopoverContent()}
         className='parameter-input-popover'
       >

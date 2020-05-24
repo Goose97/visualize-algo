@@ -220,17 +220,28 @@ export class LinkedListPage extends Component<IProps, IState> {
       LinkedListHTML.renderToView({
         wrapperElement,
         model: model,
-        onSearch: ({ key: nodeKey }) => {
-          const node = model.find(({ key }) => key === nodeKey);
-          this.handleExecuteApi('search', { value: node?.value });
+        onSearch: ({ key: nodeKey, value }) => {
+          let valueToFind = value;
+          if (valueToFind === undefined) {
+            const node = model.find(({ key }) => key === nodeKey);
+            valueToFind = node?.value;
+          }
+
+          this.handleExecuteApi('search', { value: valueToFind });
         },
-        onInsert: ({ key: nodeKey, value }) => {
-          const index = model.findIndex(({ key }) => key === nodeKey);
-          this.handleExecuteApi('insert', { value, index });
+        onInsert: ({ key: nodeKey, value, index }) => {
+          let indexToInsert = index;
+          if (indexToInsert === undefined)
+            indexToInsert = model.findIndex(({ key }) => key === nodeKey);
+
+          this.handleExecuteApi('insert', { value, index: indexToInsert });
         },
-        onDelete: ({ key: nodeKey }) => {
-          const index = model.findIndex(({ key }) => key === nodeKey);
-          this.handleExecuteApi('delete', { index });
+        onDelete: ({ key: nodeKey, index }) => {
+          let nodeIndexToDelete = index;
+          if (nodeIndexToDelete === undefined)
+            nodeIndexToDelete = model.findIndex(({ key }) => key === nodeKey);
+
+          this.handleExecuteApi('delete', { index: nodeIndexToDelete });
         },
       });
     }, 0);
