@@ -15,3 +15,6 @@ export { default as Queue } from './Queue';
 export { default as Stack } from './Stack';
 export { default as BinarySearchTree } from './BinarySearchTree';
 export { default as GraphMemoryBlock } from './GraphMemoryBlock';
+export { default as HTMLRenderer } from './HTMLRenderer';
+export { default as CustomDropDown } from './CustomDropDown';
+export { default as ParameterInputPopover } from './ParameterInputPopover';

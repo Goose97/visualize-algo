@@ -27,6 +27,7 @@ type PropsWithHoc = IProps & WithReverseStep<LinkedListModel>;
 export class LinkedList extends Component<PropsWithHoc, IState>
   implements LinkedListDataStructure {
   private initialLinkedListModel: LinkedListModel;
+  private wrapperRef: React.RefObject<SVGGElement>;
 
   constructor(props: PropsWithHoc) {
     super(props);
@@ -37,6 +38,7 @@ export class LinkedList extends Component<PropsWithHoc, IState>
       nodeAboutToAppear: new Set([]),
       isVisible: true,
     };
+    this.wrapperRef = React.createRef();
   }
 
   initiateMemoryLinkedListModel(props: IProps): LinkedListModel {
@@ -53,6 +55,17 @@ export class LinkedList extends Component<PropsWithHoc, IState>
     }));
   }
 
+  componentDidMount() {
+    this.injectHTMLIntoCanvas();
+  }
+
+  injectHTMLIntoCanvas() {
+    const { renderHtmlElements } = this.props;
+    const { linkedListModel } = this.state;
+    renderHtmlElements &&
+      renderHtmlElements(linkedListModel, this.wrapperRef.current);
+  }
+
   componentDidUpdate(prevProps: IProps) {
     const {
       currentStep,
@@ -66,6 +79,7 @@ export class LinkedList extends Component<PropsWithHoc, IState>
       getProgressDirection(currentStep, prevProps.currentStep, totalStep)
     ) {
       case 'forward':
+        this.getLastStepActions(prevProps.currentStep);
         saveStepSnapshots(linkedListModel, currentStep);
         this.handleForward();
         break;
@@ -141,6 +155,22 @@ export class LinkedList extends Component<PropsWithHoc, IState>
     } else {
       if (previousStep - currentStep === 1) return 'backward';
       else if (currentStep === 0) return 'fastBackward';
+    }
+  }
+
+  getLastStepActions(previousStep: number) {
+    const { instructions } = this.props;
+    const actionMadeAtPreviousStep = instructions[previousStep] || [];
+    if (!actionMadeAtPreviousStep || !actionMadeAtPreviousStep.length) return;
+
+    // Check if in those action we made, if exists any action that affect the position layout
+    // of the svg. Then we must rerender the html
+    if (
+      actionMadeAtPreviousStep.some(({ name }) =>
+        ['add', 'remove'].includes(name),
+      )
+    ) {
+      this.injectHTMLIntoCanvas();
     }
   }
 
@@ -479,7 +509,7 @@ export class LinkedList extends Component<PropsWithHoc, IState>
 
     return (
       isVisible && (
-        <g>
+        <g ref={this.wrapperRef}>
           <HeadPointer headBlock={this.findNextBlock(-1)} />
           {listMemoryBlock}
           {listPointerLink}

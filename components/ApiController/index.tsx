@@ -39,15 +39,17 @@ export class ApiController extends Component<IProps> {
 
     return (
       <div className='api-control__wrapper fx-center fx-gap-5'>
-        <Select
-          options={apiList}
-          className='api-select'
-          classNamePrefix='api-select'
-          placeholder='Chọn API'
-          onChange={option => {
-            if (option && 'value' in option) onApiChange(option.value);
-          }}
-        />
+        {apiList && (
+          <Select
+            options={apiList}
+            className='api-select'
+            classNamePrefix='api-select'
+            placeholder='Chọn API'
+            onChange={option => {
+              if (option && 'value' in option) onApiChange(option.value);
+            }}
+          />
+        )}
         {parameter}
         {button}
       </div>
