@@ -6,10 +6,33 @@ import {
   GRAPH_NODE_RADIUS,
 } from '../../constants';
 import { PointCoordinate } from 'types';
-import { BSTModel } from './index.d';
+import { BSTModel, BSTNodeModel } from './index.d';
+import { BinaryTreeNode } from 'instructions/BST/helper';
 
-export const caculateTreeHeight = (totalNodeCount: number) => {
-  return Math.floor(Math.log2(totalNodeCount)) + 1;
+// Also included null node
+export const caculateTreeHeight = (
+  bstModel: Omit<BSTNodeModel, 'x' | 'y'>[],
+) => {
+  if (!bstModel.length) return 0;
+
+  let biggestLevel = 0;
+  const findNodeByKey = (nodeKey: number) =>
+    bstModel.find(({ key }) => key === nodeKey);
+  let stack: any[] = [{ node: bstModel[0], level: 1 }];
+  // Do DFS to find tree height
+  while (stack.length) {
+    const {
+      node: { left, right },
+      level,
+    } = stack.pop();
+    biggestLevel = Math.max(biggestLevel, level);
+    const leftChild = findNodeByKey(left);
+    const rightChild = findNodeByKey(right);
+    if (leftChild) stack.push({ node: leftChild, level: level + 1 });
+    if (rightChild) stack.push({ node: rightChild, level: level + 1 });
+  }
+
+  return biggestLevel;
 };
 
 export const isNodeCoordinateCollideWithOtherNode = (
@@ -115,4 +138,43 @@ const caculateAngleOfLine = (
       ? Math.atan(tan) - Math.PI
       : Math.atan(tan) + Math.PI;
   }
+};
+
+export const produceInitialBSTData = (
+  array: Array<number | null> | Array<string | null>,
+) => {
+  if (!array.length) return [];
+  let queue: Omit<BSTNodeModel, 'x' | 'y'>[] = [];
+  let result: Omit<BSTNodeModel, 'x' | 'y'>[] = [];
+  let counter = 0;
+  for (let i = 0; i < array.length; i++) {
+    let val = array[i];
+    let parentNode = queue[0];
+
+    const newNode = val !== null ? new BinaryTreeNode(val, i) : null;
+    if (newNode)
+      queue.push({
+        key: newNode!.key,
+        value: newNode!.val,
+        left: null,
+        right: null,
+      });
+
+    if (parentNode) {
+      if (counter === 0) {
+        // this node is left of parent node
+        parentNode.left = newNode ? newNode.key : null;
+        counter++;
+      } else {
+        // this node is right of parent node
+        parentNode.right = newNode ? newNode.key : null;
+        counter = 0;
+        result.push(queue.shift()!);
+      }
+    }
+  }
+
+  result.push(...queue);
+
+  return result;
 };

@@ -20,10 +20,11 @@ export interface IState {
 export interface IProps {
   x: number;
   y: number;
-  currentStep: number;
-  totalStep: number;
-  instructions: Action<BSTMethod>[][];
-  initialData: number[];
+  currentStep?: number;
+  totalStep?: number;
+  instructions?: Action<BSTMethod>[][];
+  initialData: Array<number, null>;
+  updateWhenDataChanges?: boolean;
 }
 
 export interface NodeInLevelOrderTraversalQueue extends BSTNodeModel {

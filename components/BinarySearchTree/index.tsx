@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { flatMap, pick } from 'lodash';
+import { flatMap, pick, isEqual } from 'lodash';
 
 import { GraphMemoryBlock, PointerLink } from 'components';
 import {
@@ -12,12 +12,13 @@ import {
 } from './index.d';
 import transformBSTModel from './ModelTransformer';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
-import { getProgressDirection } from 'utils';
+import { getProgressDirection, keyExist } from 'utils';
 import {
   caculateTreeHeight,
   caculateChildCoordinate,
   caculatePointerPathFromTwoNodeCenter,
   isNodeCoordinateCollideWithOtherNode,
+  produceInitialBSTData,
 } from './helper';
 import { ObjectType, PointCoordinate, Action } from 'types';
 import { GRAPH_NODE_RADIUS } from '../../constants';
@@ -35,15 +36,16 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
 
   initBSTModel() {
     const { initialData } = this.props;
-    const bstModelWithoutCoordinate = [
-      { value: 4, key: 0, left: 1, right: 2 },
-      { value: 1, key: 1, left: 3, right: 4 },
-      { value: 8, key: 2, left: 5, right: 6 },
-      { value: 0, key: 3, left: null, right: null },
-      { value: 2, key: 4, left: null, right: null },
-      { value: 6, key: 5, left: null, right: null },
-      { value: 9, key: 6, left: null, right: null },
-    ];
+    // const bstModelWithoutCoordinate = [
+    //   { value: 4, key: 0, left: 1, right: 2 },
+    //   { value: 1, key: 1, left: 3, right: 4 },
+    //   { value: 8, key: 2, left: 5, right: 6 },
+    //   { value: 0, key: 3, left: null, right: null },
+    //   { value: 2, key: 4, left: null, right: null },
+    //   { value: 6, key: 5, left: null, right: null },
+    //   { value: 9, key: 6, left: null, right: null },
+    // ];
+    const bstModelWithoutCoordinate = produceInitialBSTData(initialData);
     const nodeCoordinateByKey = this.getCoordinationsOfTreeNodes(
       bstModelWithoutCoordinate,
     );
@@ -59,30 +61,42 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       reverseToStep,
       saveStepSnapshots,
       totalStep,
+      updateWhenDataChanges,
+      initialData,
     } = this.props;
     const { bstModel } = this.state;
 
-    switch (
-      getProgressDirection(currentStep, prevProps.currentStep, totalStep)
-    ) {
-      case 'forward':
-        saveStepSnapshots(bstModel, currentStep);
-        this.handleForward();
-        break;
+    // Update according to algorithm progression
+    if (keyExist(this.props, ['currentStep', 'totalStep', 'instructions'])) {
+      switch (
+        getProgressDirection(currentStep!, prevProps.currentStep!, totalStep!)
+      ) {
+        case 'forward':
+          saveStepSnapshots(bstModel, currentStep!);
+          this.handleForward();
+          break;
 
-      case 'backward':
-        reverseToStep(currentStep);
-        break;
+        case 'backward':
+          reverseToStep(currentStep!);
+          break;
 
-      case 'fastForward':
-        console.log('fastForward');
-        this.handleFastForward();
-        break;
+        case 'fastForward':
+          console.log('fastForward');
+          this.handleFastForward();
+          break;
 
-      case 'fastBackward':
-        console.log('fastBackward');
-        this.handleFastBackward();
-        break;
+        case 'fastBackward':
+          console.log('fastBackward');
+          this.handleFastBackward();
+          break;
+      }
+    }
+
+    // Update according to controlled data
+    if (updateWhenDataChanges) {
+      if (!isEqual(initialData, prevProps.initialData)) {
+        this.setState({ bstModel: this.initBSTModel() });
+      }
     }
   }
 
@@ -93,7 +107,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
     const { bstModel } = this.state;
     const { currentStep, instructions } = this.props;
-    const actionsToMakeAtThisStep = instructions[currentStep];
+    const actionsToMakeAtThisStep = instructions![currentStep];
     if (!actionsToMakeAtThisStep || !actionsToMakeAtThisStep.length) return;
     console.log('actionsToMakeAtThisStep', actionsToMakeAtThisStep);
 
@@ -142,7 +156,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     bstModelWithoutCoordinate: Omit<BSTNodeModel, 'x' | 'y'>[],
   ): ObjectType<PointCoordinate> {
     // Level order traversal tree and caculate
-    const treeHeight = caculateTreeHeight(bstModelWithoutCoordinate.length);
+    const treeHeight = caculateTreeHeight(bstModelWithoutCoordinate);
     let result: ObjectType<PointCoordinate> = {};
     let root = {
       ...bstModelWithoutCoordinate[0],
@@ -296,7 +310,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     if (!parentNode) return currentModel;
 
     const parentCoordinate = pick(parentNode, ['x', 'y']);
-    const treeHeight = caculateTreeHeight(currentModel.length);
+    const treeHeight = caculateTreeHeight(currentModel);
     const childOrientation =
       valueToInsert > parentNode.value ? 'right' : 'left';
     const childCoordinate = caculateChildCoordinate(

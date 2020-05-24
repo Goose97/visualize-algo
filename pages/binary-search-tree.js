@@ -7,6 +7,7 @@ import {
   Input,
   Button,
   InitLinkedListInput,
+  InitBSTInput,
 } from 'components';
 import { VisualAlgo } from 'layout';
 import { promiseSetState } from 'utils';
@@ -95,12 +96,6 @@ export class BinarySearchTreePage extends Component {
     }
 
     switch (currentApi) {
-      case 'init':
-        return (
-          <Button type='primary' onClick={() => this.initBSTData(false)}>
-            Khởi tạo
-          </Button>
-        );
       default:
         return (
           <Button
@@ -193,16 +188,16 @@ export class BinarySearchTreePage extends Component {
         explanation={explanation[currentApi]}
         stepDescription={stepDescription}
         onStepChange={this.handleStepChange}
-        apiList={apiList}
-        onApiChange={this.handleApiChange}
-        parameterInput={this.renderParameterInput()}
-        actionButton={this.renderActionButton()}
+        // apiList={apiList}
+        // onApiChange={this.handleApiChange}
+        // parameterInput={this.renderParameterInput()}
+        // actionButton={this.renderActionButton()}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
         ref={this.ref}
       >
-        <CanvasContainer>
-          {data && (
+        {data ? (
+          <CanvasContainer>
             <BinarySearchTree
               x={400}
               y={50}
@@ -211,8 +206,14 @@ export class BinarySearchTreePage extends Component {
               currentStep={currentStep}
               totalStep={stepDescription.length - 1}
             />
-          )}
-        </CanvasContainer>
+          </CanvasContainer>
+        ) : (
+          <div className='h-full fx-center linked-list-page__init-button'>
+            <InitBSTInput
+              onSubmit={bstData => this.setState({ data: bstData })}
+            />
+          </div>
+        )}
       </VisualAlgo>
     );
   }

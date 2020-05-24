@@ -18,3 +18,5 @@ export { default as GraphMemoryBlock } from './GraphMemoryBlock';
 export { default as HTMLRenderer } from './HTMLRenderer';
 export { default as CustomDropDown } from './CustomDropDown';
 export { default as ParameterInputPopover } from './ParameterInputPopover';
+export { default as CustomModal } from './CustomModal';
+export { default as InitBSTInput } from './InitBSTInput';

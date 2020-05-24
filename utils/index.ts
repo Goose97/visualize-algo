@@ -64,3 +64,7 @@ export const upcaseFirstLetter = (string: string) => {
   if (string.length === 0) return string;
   return string[0].toUpperCase() + string.slice(1);
 };
+
+export const keyExist = (object: Object, keys: string[]) => {
+  return keys.every(key => key in object);
+};

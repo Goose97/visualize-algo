@@ -1,0 +1,12 @@
+.init-bst-modal__wrapper {
+  min-height: 60vh;
+
+  .init-bst-modal__input {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    & > * {
+      @extend .mb-4;
+    }
+  }
+}

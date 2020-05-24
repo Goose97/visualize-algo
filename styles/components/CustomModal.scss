@@ -1,0 +1,35 @@
+.custom-modal-medium-title {
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.custom-modal-medium-description {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.custom-modal {
+  .ant-modal-title {
+    @extend .f-big-2;
+    @extend .f-bold;
+  }
+
+  .custom-modal__side-modal {
+    position: absolute;
+    min-width: 400px;
+    top: 0;
+    left: 0;
+    transform: translateX(-105%);
+  }
+
+  .ant-modal-close-x {
+    & > span {
+      font-size: 25px;
+    }
+    transition: $transition-style;
+
+    &:hover {
+      color: $destructive-color;
+    }
+  }
+}
