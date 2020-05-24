@@ -1,0 +1,40 @@
+@mixin render-menu($visible) {
+  @if ($visible) {
+    @extend .shadow-1;
+    opacity: 1;
+
+    svg {
+      opacity: 1;
+    }
+  } @else {
+    box-shadow: none;
+    opacity: 0;
+
+    svg {
+      opacity: 0;
+    }
+  }
+}
+
+.linked-list-html__node-dropdown {
+  position: relative;
+  &:hover {
+    .dropdown__trigger {
+      @include render-menu(true);
+    }
+  }
+
+  .dropdown__trigger {
+    @extend .has-transition;
+    @include render-menu(false);
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+
+  &.menu-visible {
+    .dropdown__trigger {
+      @include render-menu(true);
+    }
+  }
+}
