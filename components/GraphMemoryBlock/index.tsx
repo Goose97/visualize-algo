@@ -15,17 +15,17 @@ export class GraphMemoryBlock extends Component<IProps> {
   }
 
   render() {
-    const { value } = this.props;
+    const { value, aboutToDelete } = this.props;
     return (
       <AutoTransformGroup origin={pick(this.props, ['x', 'y'])}>
         <MemoryBlock
-          {...pick(this.props, ['focus', 'visited'])}
+          {...pick(this.props, ['focus', 'visited', 'visible'])}
           {...this.initialCoordinate}
           value={value}
-          visible
           width={GRAPH_NODE_RADIUS * 2}
           height={GRAPH_NODE_RADIUS * 2}
           type='round'
+          className={aboutToDelete ? 'focus-to-delete' : ''}
         />
       </AutoTransformGroup>
     );

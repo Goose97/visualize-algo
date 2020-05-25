@@ -8,6 +8,8 @@ interface BSTNodeModel extends BaseMemoryBlockProps {
   left: number | null; // holding key of left child
   right: number | null; // // holding key of right child
   visited?: boolean;
+  visible?: boolean;
+  aboutToDelete?: boolean;
 }
 
 export type BSTModel = BSTNodeModel[];
@@ -45,4 +47,5 @@ export type BSTMethod =
   | 'resetFocus'
   | 'label'
   | 'delete'
-  | 'insert';
+  | 'insert'
+  | 'focusToDelete';

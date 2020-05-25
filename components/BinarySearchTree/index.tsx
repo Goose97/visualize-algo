@@ -56,7 +56,51 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     return bstModelWithoutCoordinate.map(item => ({
       ...item,
       ...nodeCoordinateByKey[item.key],
+      visible: true,
     }));
+  }
+
+  getCoordinationsOfTreeNodes(
+    bstModelWithoutCoordinate: Omit<BSTNodeModel, 'x' | 'y'>[],
+  ): ObjectType<PointCoordinate> {
+    // Level order traversal tree and caculate
+    const treeHeight = caculateTreeHeight(bstModelWithoutCoordinate);
+    let result: ObjectType<PointCoordinate> = {};
+    let root = {
+      ...bstModelWithoutCoordinate[0],
+      ...pick(this.props, ['x', 'y']),
+      level: 1,
+    };
+    let queue: LevelOrderTraversalQueue = [root];
+    while (queue.length) {
+      const { key, x, y, left, right, level } = queue.shift()!;
+      result[key] = { x, y };
+      if (left !== null) {
+        const leftChild = this.findNodeInTreeByKey(
+          bstModelWithoutCoordinate,
+          left,
+        );
+        queue.push({
+          ...leftChild!,
+          ...caculateChildCoordinate({ x, y }, level + 1, treeHeight, 'left'),
+          level: level + 1,
+        });
+      }
+
+      if (right !== null) {
+        const rightChild = this.findNodeInTreeByKey(
+          bstModelWithoutCoordinate,
+          right,
+        );
+        queue.push({
+          ...rightChild!,
+          ...caculateChildCoordinate({ x, y }, level + 1, treeHeight, 'right'),
+          level: level + 1,
+        });
+      }
+    }
+
+    return result;
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -156,49 +200,6 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     return finalBSTModel;
   }
 
-  getCoordinationsOfTreeNodes(
-    bstModelWithoutCoordinate: Omit<BSTNodeModel, 'x' | 'y'>[],
-  ): ObjectType<PointCoordinate> {
-    // Level order traversal tree and caculate
-    const treeHeight = caculateTreeHeight(bstModelWithoutCoordinate);
-    let result: ObjectType<PointCoordinate> = {};
-    let root = {
-      ...bstModelWithoutCoordinate[0],
-      ...pick(this.props, ['x', 'y']),
-      level: 1,
-    };
-    let queue: LevelOrderTraversalQueue = [root];
-    while (queue.length) {
-      const { key, x, y, left, right, level } = queue.shift()!;
-      result[key] = { x, y };
-      if (left !== null) {
-        const leftChild = this.findNodeInTreeByKey(
-          bstModelWithoutCoordinate,
-          left,
-        );
-        queue.push({
-          ...leftChild!,
-          ...caculateChildCoordinate({ x, y }, level + 1, treeHeight, 'left'),
-          level: level + 1,
-        });
-      }
-
-      if (right !== null) {
-        const rightChild = this.findNodeInTreeByKey(
-          bstModelWithoutCoordinate,
-          right,
-        );
-        queue.push({
-          ...rightChild!,
-          ...caculateChildCoordinate({ x, y }, level + 1, treeHeight, 'right'),
-          level: level + 1,
-        });
-      }
-    }
-
-    return result;
-  }
-
   findNodeInTreeByKey(
     currentModel: Omit<BSTNodeModel, 'x' | 'y'>[],
     nodeKey: number,
@@ -246,6 +247,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
           <PointerLink
             {...pathAndRotation}
             key={child}
+            visible={!!this.isNodeVisible(bstModel, child)}
             visited={visited}
             following={nodeAboutToVisit.has(child)}
             arrowDirection='right'
@@ -261,6 +263,10 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   ): PointCoordinate {
     const treeNode = currentModel.find(({ key }) => key === nodeKey)!;
     return { x: treeNode.x, y: treeNode.y };
+  }
+
+  isNodeVisible(currentModel: BSTModel, nodeKey: number) {
+    return !!currentModel.find(({ key }) => key === nodeKey)?.visible;
   }
 
   visit = (currentModel: BSTModel, params: [number, number]) => {
@@ -367,7 +373,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       ...coordinate,
     };
   }
-
+  
   componentDidMount() {
     this.injectHTMLIntoCanvas();
   }

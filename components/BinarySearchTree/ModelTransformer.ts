@@ -34,7 +34,6 @@ const transformBSTModel = (
 
     case 'insert': {
       const [parentKey, newNode] = payload;
-      console.log('newNode', newNode);
       return produce(currentModel, draft => {
         const parentNode = draft.find(({ key }) => key === parentKey);
         if (parentNode) {
@@ -46,6 +45,22 @@ const transformBSTModel = (
 
           draft.push(newNode);
         }
+      });
+    }
+
+    case 'delete': {
+      const [keyToDelete] = payload;
+      return produce(currentModel, draft => {
+        const nodeToDelete = draft.find(({ key }) => key === keyToDelete);
+        if (nodeToDelete) nodeToDelete.visible = false;
+      });
+    }
+
+    case 'focusToDelete': {
+      const [keyToDelete] = payload;
+      return produce(currentModel, draft => {
+        const nodeToDelete = draft.find(({ key }) => key === keyToDelete);
+        if (nodeToDelete) nodeToDelete.aboutToDelete = true;
       });
     }
 

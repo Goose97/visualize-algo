@@ -1,4 +1,5 @@
 import { StepInstruction } from 'types';
+import { BSTInputData } from './index.d'
 
 const DEFAULT_DURATION = 1500;
 

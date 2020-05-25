@@ -7,3 +7,9 @@ export interface SearchParams {
 export interface InsertParams {
   value: number | string;
 }
+
+export interface DeleteParams {
+  value: number | string;
+}
+
+export type BSTInputData = Array<number | null> | Array<number | string>;

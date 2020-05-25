@@ -187,9 +187,9 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
             this.handleExecuteApi('search', { value: nodeToFind.value });
         },
         onDelete: ({ key: nodeKey }) => {
-          // const nodeToFind = model.find(({ key }) => key === nodeKey);
-          // if (nodeToFind)
-          //   this.handleExecuteApi('delete', { value: nodeToFind.value });
+          const nodeToFind = model.find(({ key }) => key === nodeKey);
+          if (nodeToFind)
+            this.handleExecuteApi('delete', { value: nodeToFind.value });
         },
       });
     }, 0);

@@ -2,9 +2,14 @@ import React, { Component } from 'react';
 import { pick } from 'lodash';
 
 import { classNameHelper } from 'utils';
+import withExtendClassName, {
+  WithExtendClassName,
+} from 'hocs/withExtendClassName';
 import { IProps, IState } from './index.d';
 
-export class MemoryBlock extends Component<IProps, IState> {
+type PropsWithHoc = IProps & WithExtendClassName;
+
+export class MemoryBlock extends Component<PropsWithHoc, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {};
@@ -32,10 +37,10 @@ export class MemoryBlock extends Component<IProps, IState> {
   }
 
   produceClassName() {
-    const { visible, visited, focus } = this.props;
+    const { visible, visited, focus, className } = this.props;
     const { isHiding, isShowing } = this.state;
     return classNameHelper({
-      base: 'memory-block__wrapper has-transition',
+      base: className as string,
       disappearing: !!isHiding,
       appearing: !!isShowing,
       invisible: !visible,
@@ -122,4 +127,6 @@ export class MemoryBlock extends Component<IProps, IState> {
   }
 }
 
-export default MemoryBlock;
+export default withExtendClassName('memory-block__wrapper has-transition')(
+  MemoryBlock,
+);

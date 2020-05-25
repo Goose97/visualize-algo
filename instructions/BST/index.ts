@@ -1,5 +1,11 @@
 import { Instructions, initBinaryTree, BinaryTreeNode } from './helper';
-import { BSTOperation, SearchParams, InsertParams } from './index.d';
+import {
+  BSTOperation,
+  SearchParams,
+  InsertParams,
+  DeleteParams,
+  BSTInputData,
+} from './index.d';
 import { StepInstruction } from 'types';
 
 export const bstInstruction = (
@@ -14,15 +20,15 @@ export const bstInstruction = (
     case 'insert':
       return insertInstruction(data, parameters);
 
+    case 'delete':
+      return deleteInstruction(data, parameters);
+
     default:
       return [];
   }
 };
 
-const searchInstruction = (
-  data: number[] | string[],
-  { value }: SearchParams,
-) => {
+const searchInstruction = (data: BSTInputData, { value }: SearchParams) => {
   const bst = initBinaryTree(data);
   const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
     null,
@@ -100,10 +106,7 @@ const searchInstruction = (
   return instructions.get();
 };
 
-const insertInstruction = (
-  data: number[] | string[],
-  { value }: InsertParams,
-) => {
+const insertInstruction = (data: BSTInputData, { value }: InsertParams) => {
   const bst = initBinaryTree(data);
   const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
     null,
@@ -168,6 +171,80 @@ const insertInstruction = (
   return instructions.get();
 };
 
+const deleteInstruction = (data: BSTInputData, { value }: DeleteParams) => {
+  const bst = initBinaryTree(data);
+  const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
+    null,
+    'delete',
+  );
+  let instructions = new Instructions();
+
+  let current = bst;
+  let found = false;
+  instructions.push({
+    actions: [{ name: 'focus', params: [current?.key] }],
+    ..._getExplanationAndCodeLine('find'),
+  });
+  while (current !== null && !found) {
+    if (current.val === value) {
+      // Found the element!
+      instructions.push({
+        actions: [
+          { name: 'focusToDelete', params: [current ? current.key : null] },
+        ],
+        ..._getExplanationAndCodeLine('delete'),
+      });
+      found = true;
+    } else if (value < current.val) {
+      // Go Left as data is smaller than parent
+      instructions.push({
+        actions: [
+          {
+            name: 'resetFocus',
+            params: [],
+          },
+          {
+            name: 'visit',
+            params: [current.key, current.left && current.left.key],
+          },
+        ],
+      });
+      current = current.left;
+    } else {
+      // Go right as data is greater than parent
+      instructions.push({
+        actions: [
+          {
+            name: 'resetFocus',
+            params: [],
+          },
+          {
+            name: 'visit',
+            params: [current.key, current.right && current.right.key],
+          },
+        ],
+      });
+      current = current.right;
+    }
+  }
+
+  if (found) {
+    // Delete the node just found
+    instructions.push({
+      actions: [{ name: 'delete', params: [current ? current.key : null] }],
+      ..._getExplanationAndCodeLine('delete'),
+    });
+  } else {
+    // Can not find the node to delete
+    instructions.push({
+      actions: [],
+      ..._getExplanationAndCodeLine('notFound'),
+    });
+  }
+
+  return instructions.get();
+};
+
 const getExplanationAndCodeLine = (
   operation: BSTOperation,
   subOperation: string,
@@ -203,6 +280,19 @@ const getExplanationAndCodeLine = (
           return { codeLine: '12-16', explanationStep: 4 };
         case 'recursionRight':
           return { codeLine: '18-23', explanationStep: 5 };
+        default:
+          return {};
+      }
+    }
+
+    case 'delete': {
+      switch (subOperation) {
+        case 'find':
+          return { codeLine: '2', explanationStep: 1 };
+        case 'notFound':
+          return { codeLine: '3-4', explanationStep: 2 };
+        case 'delete':
+          return { codeLine: '6', explanationStep: 3 };
         default:
           return {};
       }
