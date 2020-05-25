@@ -25,6 +25,10 @@ export interface IProps {
   instructions?: Action<BSTMethod>[][];
   initialData: Array<number, null>;
   updateWhenDataChanges?: boolean;
+  renderHtmlElements?: (
+    model: BSTModel,
+    wrapperElement: SVGGElement | null,
+  ) => void;
 }
 
 export interface NodeInLevelOrderTraversalQueue extends BSTNodeModel {

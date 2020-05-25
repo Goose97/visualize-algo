@@ -1,4 +1,4 @@
-import React, { Component, ReactText } from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Input } from 'antd';
 
@@ -6,7 +6,6 @@ import { Button, CustomModal, BinarySearchTree } from 'components';
 import withExtendClassName, {
   WithExtendClassName,
 } from 'hocs/withExtendClassName';
-import { classNameHelper } from 'utils';
 import { IProps, IState } from './index.d';
 
 const { TextArea } = Input;
@@ -63,7 +62,7 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
   };
 
   generateRandomData() {
-    // return [1, 2, 3, null, null, 4, 5, 6];
+    return [4, 1, 8, 0, 2, 6, 9];
     return Array(8)
       .fill(0)
       .map(() => {

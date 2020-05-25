@@ -26,12 +26,16 @@ import { GRAPH_NODE_RADIUS } from '../../constants';
 type PropsWithHoc = IProps & WithReverseStep<BSTModel>;
 
 export class BinarySearchTree extends Component<PropsWithHoc, IState> {
+  private wrapperRef: React.RefObject<SVGGElement>;
+
   constructor(props: PropsWithHoc) {
     super(props);
     this.state = {
       nodeAboutToVisit: new Set([]),
       bstModel: this.initBSTModel(),
     };
+
+    this.wrapperRef = React.createRef();
   }
 
   initBSTModel() {
@@ -204,10 +208,10 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
 
   renderTree() {
     return (
-      <>
+      <g ref={this.wrapperRef}>
         {this.renderTreeNode()}
         {this.renderPointerLinkForNode()}
-      </>
+      </g>
     );
   }
 
@@ -362,6 +366,16 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       key,
       ...coordinate,
     };
+  }
+
+  componentDidMount() {
+    this.injectHTMLIntoCanvas();
+  }
+
+  injectHTMLIntoCanvas() {
+    const { renderHtmlElements } = this.props;
+    const { bstModel } = this.state;
+    renderHtmlElements && renderHtmlElements(bstModel, this.wrapperRef.current);
   }
 
   render() {

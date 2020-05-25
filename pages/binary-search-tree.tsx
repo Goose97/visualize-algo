@@ -9,13 +9,28 @@ import {
   InitLinkedListInput,
   InitBSTInput,
 } from 'components';
+import BinarySearchTreeHTML from '../components/BinarySearchTree/BinarySearchTreeHTML';
 import { VisualAlgo } from 'layout';
 import { promiseSetState } from 'utils';
 import { bstInstruction, code, explanation } from 'instructions/BST';
+import { BSTOperation } from 'instructions/BST/index.d';
+import { BSTModel } from 'components/BinarySearchTree/index.d';
+import { StepInstruction } from 'types';
 import 'styles/main.scss';
 
-export class BinarySearchTreePage extends Component {
-  constructor(props) {
+interface IState {
+  data?: number[];
+  currentStep?: number;
+  currentApi?: BSTOperation;
+  stepDescription: StepInstruction[];
+  autoPlay: boolean;
+  parameters: any;
+}
+
+interface IProps {}
+
+export class BinarySearchTreePage extends Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
 
     this.state = {
@@ -132,14 +147,6 @@ export class BinarySearchTreePage extends Component {
     this.setState({ autoPlay: newPlayingState });
   };
 
-  generateStepDescription() {
-    const { currentApi, parameters, data } = this.state;
-    if (!currentApi) return [];
-    const stepDescription = bstInstruction(data, currentApi, parameters);
-    console.log('stepDescription', stepDescription);
-    this.setState({ stepDescription });
-  }
-
   initBSTData = useOldData => {
     const {
       parameters: { value },
@@ -165,6 +172,40 @@ export class BinarySearchTreePage extends Component {
       }),
     );
   };
+
+  renderHtmlElements = (
+    model: BSTModel,
+    wrapperElement: SVGGElement | null,
+  ) => {
+    setTimeout(() => {
+      BinarySearchTreeHTML.renderToView({
+        wrapperElement,
+        model,
+        onSearch: ({ key: nodeKey }) => {
+          const nodeToFind = model.find(({ key }) => key === nodeKey);
+          if (nodeToFind)
+            this.handleExecuteApi('search', { value: nodeToFind.value });
+        },
+        onDelete: ({ key: nodeKey }) => {
+          // const nodeToFind = model.find(({ key }) => key === nodeKey);
+          // if (nodeToFind)
+          //   this.handleExecuteApi('delete', { value: nodeToFind.value });
+        },
+      });
+    }, 0);
+  };
+
+  handleExecuteApi(api: BSTOperation, params: any) {
+    const stepDescription = this.generateStepDescription(api, params);
+    console.log('stepDescription', stepDescription);
+    this.setState({ stepDescription, autoPlay: true });
+  }
+
+  generateStepDescription(currentApi: BSTOperation, params: any) {
+    const { data } = this.state;
+    if (!currentApi) return [];
+    return bstInstruction(data!, currentApi, params);
+  }
 
   render() {
     const {
@@ -205,6 +246,7 @@ export class BinarySearchTreePage extends Component {
               initialData={data}
               currentStep={currentStep}
               totalStep={stepDescription.length - 1}
+              renderHtmlElements={this.renderHtmlElements}
             />
           </CanvasContainer>
         ) : (

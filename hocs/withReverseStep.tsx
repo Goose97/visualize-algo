@@ -20,12 +20,14 @@ interface SnapshotLog<T> {
 const withReverseStep = <T extends {}, P extends {}>(
   Page: React.ComponentType<P>,
 ) => {
-  class WrapperComponent extends Component<P & WithReverseStep<T>> {
+  class WrapperComponent extends Component<
+    Omit<P, 'saveReverseLog' | 'saveStepSnapshots' | 'reverseToStep'>
+  > {
     private reverseLogs: ActionLog[];
     private stepSnapshots: SnapshotLog<T>[];
     private ref: React.RefObject<React.ReactElement>;
 
-    constructor(props: P & WithReverseStep<T>) {
+    constructor(props: P) {
       super(props);
 
       this.state = {};
