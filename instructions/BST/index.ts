@@ -228,21 +228,38 @@ const deleteInstruction = (data: BSTInputData, { value }: DeleteParams) => {
     }
   }
 
-  if (found) {
-    // Delete the node just found
-    instructions.push({
-      actions: [{ name: 'delete', params: [current ? current.key : null] }],
-      ..._getExplanationAndCodeLine('delete'),
-    });
+  if (found && current) {
+    if (current.left === null && current.right === null) {
+      // Delete the node just found
+      instructions.push({
+        actions: [{ name: 'delete', params: [current ? current.key : null] }],
+        ..._getExplanationAndCodeLine('delete'),
+      });
+      return instructions.get();
+    }
+
+    if (current.left !== null || current.right !== null) {
+      // Copy value and delete child
+      const onlyChildNode = current.left || current.right;
+      const { key, val } = onlyChildNode!;
+      instructions.push({
+        actions: [{ name: 'delete', params: [key] }],
+        ..._getExplanationAndCodeLine('delete'),
+      });
+      instructions.push({
+        actions: [{ name: 'delete', params: [key] }],
+        ..._getExplanationAndCodeLine('delete'),
+      });
+      return instructions.get();
+    }
   } else {
     // Can not find the node to delete
     instructions.push({
       actions: [],
       ..._getExplanationAndCodeLine('notFound'),
     });
+    return instructions.get();
   }
-
-  return instructions.get();
 };
 
 const getExplanationAndCodeLine = (
@@ -351,6 +368,7 @@ function insertHelper(currentNode, newNode) {
 export const code = {
   search: searchCode,
   insert: insertCode,
+  delete: insertCode,
 };
 
 export const explanation = {
@@ -368,5 +386,11 @@ export const explanation = {
     'Nếu không thì đệ quy bắt đầu từ root để tìm vị trí insert',
     'Nếu giá trị cần insert nhỏ hơn giá node hiện tại thì insert nếu còn chỗ (currentNode.left === null), nếu không tiếp tục đệ quy với node con bên trái',
     'Nếu giá trị cần insert lớn hơn giá node hiện tại thì insert nếu còn chỗ (currentNode.right === null), nếu không tiếp tục đệ quy với node con bên phải',
+  ],
+  delete: [
+    'Tìm kiếm node cần xoá',
+    'Nếu node cần xoá không có children (là leaf node) thì chỉ cần xoá node đó đi',
+    'Nếu node cần xoá có 1 children sao chép giá trị của child sang node cần xoá rồi xoá child đi',
+    'Nếu node cần xoá có 2 children thì tìm node lớn nhất ở nhánh trái hoặc node nhỏ nhất của nhánh phải, sao chép giá trị sang node cần xoá rồi xoá node ấy',
   ],
 };

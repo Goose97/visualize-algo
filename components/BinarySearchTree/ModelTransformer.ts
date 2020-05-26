@@ -64,6 +64,14 @@ const transformBSTModel = (
       });
     }
 
+    case 'setValue': {
+      const [value, keyToSet] = payload;
+      return produce(currentModel, draft => {
+        const nodeToSetValue = draft.find(({ key }) => key === keyToSet);
+        if (nodeToSetValue) nodeToSetValue.value = value;
+      });
+    }
+
     default:
       return currentModel;
   }

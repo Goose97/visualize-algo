@@ -14,8 +14,8 @@ import { VisualAlgo } from 'layout';
 import { promiseSetState } from 'utils';
 import { bstInstruction, code, explanation } from 'instructions/BST';
 import { BSTOperation } from 'instructions/BST/index.d';
-import { BSTModel } from 'components/BinarySearchTree/index.d';
-import { StepInstruction } from 'types';
+import { BSTModel, BSTMethod } from 'components/BinarySearchTree/index.d';
+import { StepInstruction, Action } from 'types';
 import 'styles/main.scss';
 
 interface IState {
@@ -221,12 +221,14 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
       { value: 'insert', label: 'Insert' },
     ];
 
-    const instructions = stepDescription.map(({ actions }) => actions || []);
+    const instructions = stepDescription.map(
+      ({ actions }) => actions || [],
+    ) as Action<BSTMethod>[][];
 
     return (
       <VisualAlgo
-        code={code[currentApi]}
-        explanation={explanation[currentApi]}
+        code={currentApi ? code[currentApi] : undefined}
+        explanation={currentApi ? explanation[currentApi] : undefined}
         stepDescription={stepDescription}
         onStepChange={this.handleStepChange}
         // apiList={apiList}

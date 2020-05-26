@@ -48,4 +48,5 @@ export type BSTMethod =
   | 'label'
   | 'delete'
   | 'insert'
-  | 'focusToDelete';
+  | 'focusToDelete'
+  | 'setValue';
