@@ -1,0 +1,7 @@
+.parameter-input-popover {
+  & + div {
+    .ant-popover {
+      min-width: 200px;
+    }
+  }
+}

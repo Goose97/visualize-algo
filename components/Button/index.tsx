@@ -2,16 +2,17 @@ import React, { Component } from 'react';
 import { classNameHelper } from 'utils';
 
 import { IProps } from './index.d';
-// import './style.scss';
 
 export class Button extends Component<IProps> {
   produceClassName() {
-    const { type, disabled } = this.props;
-    return classNameHelper({
+    const { type, disabled, className } = this.props;
+    let classNameObject = {
       base: 'visual-algo-button__wrapper',
       [type]: !!type,
       disabled: !!disabled,
-    });
+    };
+    if (className) classNameObject[className] = true;
+    return classNameHelper(classNameObject);
   }
 
   handleClick = (e: React.MouseEvent) => {

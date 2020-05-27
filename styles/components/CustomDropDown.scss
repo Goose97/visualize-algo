@@ -1,0 +1,65 @@
+.dropdown__trigger {
+  @extend .shadow-1;
+  @extend .interactive;
+  padding: 2px 8px;
+  line-height: 0;
+  border-radius: 4px;
+}
+
+// .cakecloud-dropdown {
+//   @extend .flex-center;
+//   @extend .flex-gap-5;
+//   @extend .hover-pointer;
+//   @extend .hover-interactive;
+//   background-color: $neutral-color;
+//   height: 36px;
+//   padding: 0 15px;
+//   transition: $transition-style;
+
+//   &.active {
+//     background-color: $background-hover-color;
+//     border-color: $primary-color;
+//   }
+
+//   &.transparent {
+//     background-color: unset;
+//   }
+
+//   &.disabled {
+//     cursor: not-allowed;
+//     color: lighten($primary-text-color, 40%);
+//     &:hover {
+//       background-color: $neutral-color;
+//     }
+
+//     path {
+//       fill: lighten($primary-text-color, 40%);
+//     }
+//   }
+// }
+
+.dropdown__overlay {
+  background-color: white;
+  & > ul {
+    padding: 3px;
+    background-color: transparent;
+    // Custom box shadow to make it less bold
+    -webkit-box-shadow: 0 3px 2px -2px rgba(0, 0, 0, 0.12),
+      0 4px 4px 0 rgba(0, 0, 0, 0.08), 0 9px 10px 6px rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 3px 2px -2px rgba(0, 0, 0, 0.12),
+      0 4px 4px 0 rgba(0, 0, 0, 0.08), 0 9px 10px 6px rgba(0, 0, 0, 0.05) !important;
+
+    & > li.ant-dropdown-menu-item {
+      min-width: 80px;
+      text-align: center;
+
+      &:not(.ant-dropdown-menu-item-disabled) {
+        @extend .interactive;
+        &:hover {
+          color: black;
+        }
+      }
+      border-radius: $border-radius;
+    }
+  }
+}

@@ -1,18 +1,16 @@
 @import './color.scss';
 @import './base.scss';
+@import './animation.scss';
 @import './components/main.scss';
+@import './pages/main.scss';
 @import './layout/main.scss';
+@import '~antd/dist/antd.css';
 
 html,
 body {
   @extend .h-full;
   margin: 0;
   padding: 0;
-}
-
-.canvas-container {
-  height: 45vh;
-  width: 100vw;
 }
 
 * {

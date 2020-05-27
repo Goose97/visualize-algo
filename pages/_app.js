@@ -1,7 +1,7 @@
 // import App from 'next/app'
 import { Fragment } from 'react';
 
-function VisualAlgo({ Component, pageProps }) {
+function CustomApp({ Component, pageProps }) {
   return <Component {...pageProps} />;
 }
 
@@ -17,4 +17,4 @@ function VisualAlgo({ Component, pageProps }) {
 //   return { ...appProps }
 // }
 
-export default VisualAlgo;
+export default CustomApp;

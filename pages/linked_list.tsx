@@ -1,4 +1,4 @@
-import React, { Component, cloneElement } from 'react';
+import React, { Component } from 'react';
 import produce from 'immer';
 
 import {
@@ -8,17 +8,35 @@ import {
   Button,
   InitLinkedListInput,
 } from 'components';
+import LinkedListHTML from 'components/LinkedList/LinkedListHTML';
 import { VisualAlgo } from 'layout';
-import { produceFullState, promiseSetState } from 'utils';
+import { promiseSetState } from 'utils';
 import {
   linkedListInstruction,
   code,
   explanation,
 } from 'instructions/LinkedList';
 import 'styles/main.scss';
+import { LinkedListOperation } from 'instructions/LinkedList/index.d';
+import { LinkedListModel } from 'components/LinkedList/index.d';
+import { StepInstruction } from 'types';
 
-export class LinkedListPage extends Component {
-  constructor(props) {
+interface IState {
+  data?: number[];
+  currentStep?: number;
+  currentApi?: LinkedListOperation;
+  stepDescription: StepInstruction[];
+  autoPlay: boolean;
+  parameters: any;
+}
+
+interface IProps {}
+
+export class LinkedListPage extends Component<IProps, IState> {
+  private originalLinkedListData: number[] | null;
+  private ref: React.RefObject<any>;
+
+  constructor(props: IProps) {
     super(props);
 
     this.state = {
@@ -166,23 +184,11 @@ export class LinkedListPage extends Component {
     }
   };
 
-  handlePlayingChange = newPlayingState => {
-    if (newPlayingState) this.generateStepDescription();
-    this.setState({ autoPlay: newPlayingState });
-  };
-
-  generateStepDescription() {
-    const { currentApi, parameters, data } = this.state;
-    if (!currentApi) return [];
-    const stepDescription = linkedListInstruction(data, currentApi, parameters);
-    this.setState({ stepDescription });
-  }
-
-  initLinkedListData = useOldData => {
+  initLinkedListData = (useOldData: boolean) => {
     const {
       parameters: { value },
     } = this.state;
-    let linkedListData;
+    let linkedListData: number[];
     if (useOldData && this.originalLinkedListData) {
       linkedListData = this.originalLinkedListData;
     } else {
@@ -204,6 +210,59 @@ export class LinkedListPage extends Component {
     );
   };
 
+  renderHtmlElements = (
+    model: LinkedListModel,
+    wrapperElement: SVGGElement | null,
+  ) => {
+    // Lỗi liên quan đến việc svg element chưa đc render đúng vị trí
+    // setTimeout somehow fixed it!!
+    setTimeout(() => {
+      LinkedListHTML.renderToView({
+        wrapperElement,
+        model: model,
+        onSearch: ({ key: nodeKey, value }) => {
+          let valueToFind = value;
+          if (valueToFind === undefined) {
+            const node = model.find(({ key }) => key === nodeKey);
+            valueToFind = node?.value;
+          }
+
+          this.handleExecuteApi('search', { value: valueToFind });
+        },
+        onInsert: ({ key: nodeKey, value, index }) => {
+          let indexToInsert = index;
+          if (indexToInsert === undefined)
+            indexToInsert = model.findIndex(({ key }) => key === nodeKey);
+
+          this.handleExecuteApi('insert', { value, index: indexToInsert });
+        },
+        onDelete: ({ key: nodeKey, index }) => {
+          let nodeIndexToDelete = index;
+          if (nodeIndexToDelete === undefined)
+            nodeIndexToDelete = model.findIndex(({ key }) => key === nodeKey);
+
+          this.handleExecuteApi('delete', { index: nodeIndexToDelete });
+        },
+      });
+    }, 0);
+  };
+
+  handleExecuteApi(api: LinkedListOperation, params: any) {
+    const stepDescription = this.generateStepDescription(api, params);
+    this.setState({ stepDescription, autoPlay: true });
+  }
+
+  handlePlayingChange = newPlayingState => {
+    // if (newPlayingState) this.generateStepDescription();
+    this.setState({ autoPlay: newPlayingState });
+  };
+
+  generateStepDescription(currentApi: LinkedListOperation, parameters: any) {
+    const { data } = this.state;
+    if (!currentApi) return [];
+    return linkedListInstruction(data!, currentApi, parameters);
+  }
+
   render() {
     const {
       data,
@@ -213,7 +272,6 @@ export class LinkedListPage extends Component {
       autoPlay,
     } = this.state;
     const apiList = [
-      { value: 'init', label: 'Init' },
       { value: 'search', label: 'Search' },
       { value: 'insert', label: 'Insert' },
       { value: 'delete', label: 'Delete' },
@@ -225,29 +283,38 @@ export class LinkedListPage extends Component {
 
     return (
       <VisualAlgo
-        code={code[currentApi]}
-        explanation={explanation[currentApi]}
+        code={currentApi ? code[currentApi] : undefined}
+        explanation={currentApi ? explanation[currentApi] : undefined}
         stepDescription={stepDescription}
         onStepChange={this.handleStepChange}
-        apiList={apiList}
-        onApiChange={this.handleApiChange}
-        parameterInput={this.renderParameterInput()}
-        actionButton={this.renderActionButton()}
+        // apiList={apiList}
+        // onApiChange={this.handleApiChange}
+        // parameterInput={this.renderParameterInput()}
+        // actionButton={this.renderActionButton()}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
         ref={this.ref}
       >
-        {data && (
+        {data ? (
           <CanvasContainer>
             <LinkedList
               x={100}
               y={200}
-              currentStep={currentStep}
+              currentStep={currentStep!}
               totalStep={stepDescription.length - 1}
               instructions={instructions}
               initialData={data}
+              renderHtmlElements={this.renderHtmlElements}
             />
           </CanvasContainer>
+        ) : (
+          <div className='h-full fx-center linked-list-page__init-button'>
+            <InitLinkedListInput
+              onSubmit={linkedListData =>
+                this.setState({ data: linkedListData })
+              }
+            />
+          </div>
         )}
       </VisualAlgo>
     );

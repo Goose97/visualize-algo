@@ -60,14 +60,16 @@ class CanvasContainer extends Component<IProps, IState> {
   render() {
     const { children } = this.props;
     return (
-      <svg
-        className='canvas-container'
-        viewBox={this.produceViewBox()}
-        preserveAspectRatio='xMinYMin slice'
-        ref={this.ref}
-      >
-        {children}
-      </svg>
+      <div className='canvas-container'>
+        <svg
+          viewBox={this.produceViewBox()}
+          preserveAspectRatio='xMinYMin slice'
+          ref={this.ref}
+        >
+          {children}
+        </svg>
+        <div id='html-overlay'></div>
+      </div>
     );
   }
 }
