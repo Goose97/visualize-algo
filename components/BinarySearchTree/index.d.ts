@@ -49,4 +49,7 @@ export type BSTMethod =
   | 'delete'
   | 'insert'
   | 'focusToDelete'
-  | 'setValue';
+  | 'setValue'
+  | 'resetVisited'
+  | 'resetLabel'
+  | 'resetAll';

@@ -1,6 +1,7 @@
 import produce from 'immer';
+import { compose } from 'lodash/fp';
 
-import { BSTModel, BSTMethod, BSTNodeModel } from './index.d';
+import { BSTModel, BSTMethod } from './index.d';
 
 // Nhận vào trạng thái hiện tại của data structure
 // và operation tương ứng. Trả về trạng thái mới
@@ -69,6 +70,50 @@ const transformBSTModel = (
       return produce(currentModel, draft => {
         const nodeToSetValue = draft.find(({ key }) => key === keyToSet);
         if (nodeToSetValue) nodeToSetValue.value = value;
+      });
+    }
+
+    case 'label': {
+      const [label, nodeKeyToLabel, removeThisLabelInOtherNode] = payload;
+      return produce(currentModel, draft => {
+        if (removeThisLabelInOtherNode) {
+          draft.forEach(node => {
+            const oldLabel = node.label;
+            const newLabel =
+              oldLabel && oldLabel.filter(item => item !== label);
+            node.label = newLabel;
+          });
+        }
+
+        const nodeToLabel = draft.find(({ key }) => key === nodeKeyToLabel);
+        if (nodeToLabel) {
+          const oldLabel = nodeToLabel.label || [];
+          nodeToLabel.label = oldLabel.concat(label);
+        }
+      });
+    }
+
+    case 'resetAll': {
+      // Reset focus, visited and label
+      const listTransformation = ([
+        'resetFocus',
+        'resetVisited',
+        'resetLabel',
+      ] as BSTMethod[]).map(method => (model: BSTModel) =>
+        transformBSTModel(model, method, []),
+      );
+      return compose(listTransformation)(currentModel);
+    }
+
+    case 'resetVisited': {
+      return produce(currentModel, draft => {
+        draft.forEach(item => (item.visited = false));
+      });
+    }
+
+    case 'resetLabel': {
+      return produce(currentModel, draft => {
+        draft.forEach(item => (item.label = []));
       });
     }
 

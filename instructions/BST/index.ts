@@ -1,4 +1,9 @@
-import { Instructions, initBinaryTree, BinaryTreeNode } from './helper';
+import {
+  Instructions,
+  initBinaryTree,
+  BinaryTreeNode,
+  findPredecessorOfNode,
+} from './helper';
 import {
   BSTOperation,
   SearchParams,
@@ -190,9 +195,12 @@ const deleteInstruction = (data: BSTInputData, { value }: DeleteParams) => {
       // Found the element!
       instructions.push({
         actions: [
-          { name: 'focusToDelete', params: [current ? current.key : null] },
+          {
+            name: 'label',
+            params: ['Node to delete', current ? current.key : null],
+          },
         ],
-        ..._getExplanationAndCodeLine('delete'),
+        ..._getExplanationAndCodeLine('find'),
       });
       found = true;
     } else if (value < current.val) {
@@ -208,6 +216,7 @@ const deleteInstruction = (data: BSTInputData, { value }: DeleteParams) => {
             params: [current.key, current.left && current.left.key],
           },
         ],
+        ..._getExplanationAndCodeLine('find'),
       });
       current = current.left;
     } else {
@@ -223,6 +232,7 @@ const deleteInstruction = (data: BSTInputData, { value }: DeleteParams) => {
             params: [current.key, current.right && current.right.key],
           },
         ],
+        ..._getExplanationAndCodeLine('find'),
       });
       current = current.right;
     }
@@ -230,32 +240,72 @@ const deleteInstruction = (data: BSTInputData, { value }: DeleteParams) => {
 
   if (found && current) {
     if (current.left === null && current.right === null) {
+      // No child situation
       // Delete the node just found
       instructions.push({
         actions: [{ name: 'delete', params: [current ? current.key : null] }],
-        ..._getExplanationAndCodeLine('delete'),
+        ..._getExplanationAndCodeLine('noChild'),
       });
-      return instructions.get();
     }
 
-    if (current.left !== null || current.right !== null) {
+    if (current.left !== null && current.right !== null) {
+      // Two child situation
+      // Find the biggest node in the left sub-tree
+      let predecessor = current.left;
+      instructions.push({
+        actions: [{ name: 'focus', params: [predecessor.key] }],
+        ..._getExplanationAndCodeLine('bothChild'),
+      });
+      while (predecessor.right) {
+        instructions.push({
+          actions: [
+            {
+              name: 'resetFocus',
+              params: [],
+            },
+            {
+              name: 'focus',
+              params: [current.key],
+            },
+            { name: 'visit', params: [predecessor.key, predecessor.right.key] },
+          ],
+          ..._getExplanationAndCodeLine('bothChild'),
+        });
+        predecessor = predecessor.right;
+      }
+
+      const { key, val } = predecessor;
+      instructions.push({
+        actions: [{ name: 'setValue', params: [val, current.key] }],
+        ..._getExplanationAndCodeLine('bothChild'),
+      });
+      instructions.push({
+        actions: [{ name: 'delete', params: [key] }],
+        ..._getExplanationAndCodeLine('bothChild'),
+      });
+    } else {
+      // One child situation
       // Copy value and delete child
       const onlyChildNode = current.left || current.right;
       const { key, val } = onlyChildNode!;
       instructions.push({
-        actions: [{ name: 'delete', params: [key] }],
-        ..._getExplanationAndCodeLine('delete'),
+        actions: [{ name: 'setValue', params: [val, current.key] }],
+        ..._getExplanationAndCodeLine('onlyChild'),
       });
       instructions.push({
         actions: [{ name: 'delete', params: [key] }],
-        ..._getExplanationAndCodeLine('delete'),
+        ..._getExplanationAndCodeLine('onlyChild'),
       });
-      return instructions.get();
     }
+
+    instructions.push({
+      actions: [{ name: 'resetAll', params: [] }],
+    });
+    return instructions.get();
   } else {
     // Can not find the node to delete
     instructions.push({
-      actions: [],
+      actions: [{ name: 'resetAll', params: [] }],
       ..._getExplanationAndCodeLine('notFound'),
     });
     return instructions.get();
@@ -305,11 +355,15 @@ const getExplanationAndCodeLine = (
     case 'delete': {
       switch (subOperation) {
         case 'find':
-          return { codeLine: '2', explanationStep: 1 };
+          return { codeLine: '2-3', explanationStep: 1 };
+        case 'noChild':
+          return { codeLine: '8-9', explanationStep: 2 };
+        case 'onlyChild':
+          return { codeLine: '11-15', explanationStep: 3 };
+        case 'bothChild':
+          return { codeLine: '17-21', explanationStep: 4 };
         case 'notFound':
-          return { codeLine: '3-4', explanationStep: 2 };
-        case 'delete':
-          return { codeLine: '6', explanationStep: 3 };
+          return { codeLine: '5-6', explanationStep: 2 };
         default:
           return {};
       }
@@ -365,10 +419,33 @@ function insertHelper(currentNode, newNode) {
   }
 }`;
 
+const deleteCode = `function delete(value) {
+  // Find node to delete
+  let nodeToDelete = this.search(value);
+
+  // If can't find node to delete, return root
+  if (!nodeToDelete) return this.root;
+
+  // If node has no child, just delete it
+  // parent.left = null or parent.right = null
+
+  // If node has one children, copy value of child then delete the child
+  let onlyChild = nodeToDelete.left || nodeToDelete.right;
+  nodeToDelete.val = onlyChild.val;
+  if (nodeToDelete.left) nodeToDelete.left = null;
+  else nodeToDelete.right = null;
+
+  // If node has two children, find its predecessor (biggest node in the left subtree)
+  // Copy its value then delete it
+  let [predecessor, parentOfPredecessor] = this.findPredecessor(nodeToDelete);
+  nodeToDelete.val = predecessor.delete;
+  parentOfPredecessor.right = null;
+}`;
+
 export const code = {
   search: searchCode,
   insert: insertCode,
-  delete: insertCode,
+  delete: deleteCode,
 };
 
 export const explanation = {

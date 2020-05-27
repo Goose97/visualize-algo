@@ -197,8 +197,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
 
   handleExecuteApi(api: BSTOperation, params: any) {
     const stepDescription = this.generateStepDescription(api, params);
-    console.log('stepDescription', stepDescription);
-    this.setState({ stepDescription, autoPlay: true });
+    this.setState({ stepDescription, autoPlay: true, currentApi: api });
   }
 
   generateStepDescription(currentApi: BSTOperation, params: any) {

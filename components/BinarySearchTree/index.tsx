@@ -373,7 +373,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       ...coordinate,
     };
   }
-  
+
   componentDidMount() {
     this.injectHTMLIntoCanvas();
   }

@@ -9,7 +9,6 @@ export interface LinkedListNodeModel extends BaseMemoryBlockProps {
   index: number;
   key: number;
   visited: boolean;
-  label?: string[];
   pointer: number | null; // pointer to the next node
 }
 

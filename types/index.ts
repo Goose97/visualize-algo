@@ -27,4 +27,5 @@ export interface BaseMemoryBlockProps {
   visible?: boolean;
   focus?: boolean;
   value: string | number;
+  label?: string[];
 }

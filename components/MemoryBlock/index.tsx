@@ -104,7 +104,7 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
       </text>
     );
 
-    const labelText = label && (
+    const labelText = label && label.length && (
       <text
         x={x + width / 2}
         y={y - height / 2}
@@ -112,7 +112,7 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
         textAnchor='middle'
         className='memory-block__text italic'
       >
-        {label}
+        {label.join(' / ')}
       </text>
     );
 

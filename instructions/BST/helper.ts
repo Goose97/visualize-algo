@@ -1,5 +1,5 @@
 import { StepInstruction } from 'types';
-import { BSTInputData } from './index.d'
+import { BSTInputData } from './index.d';
 
 const DEFAULT_DURATION = 1500;
 
@@ -64,3 +64,14 @@ export function initBinaryTree(array: Array<number | string | null>) {
 
   return head;
 }
+
+export const findPredecessorOfNode = (node: BinaryTreeNode): BinaryTreeNode => {
+  // The biggest node in the left sub-tree
+  if (!node.left) return node;
+  let currentNode = node.left;
+  while (currentNode.right) {
+    currentNode = currentNode.right;
+  }
+
+  return currentNode;
+};
