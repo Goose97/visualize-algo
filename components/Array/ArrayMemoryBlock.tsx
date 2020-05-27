@@ -82,6 +82,7 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
       origin,
       hasLine,
     } = this.props;
+    const { x1, y1, x2, y2 } = this.calculateLine();
     return (
       <AutoTransformGroup origin={this.calculatePosition()}>
         <MemoryBlock
@@ -93,7 +94,17 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
           visited={visited}
           label={label}
         />
-        {hasLine && <Line {...this.calculateLine()} />}
+        {hasLine && (
+          <g>
+            <text x={x2 - 80} y={y2}>
+              Đã sắp xếp
+            </text>
+            <Line x1={x1} x2={x2} y1={y1} y2={y2} />
+            <text x={x2 + 10} y={y2}>
+              Chưa sắp xếp
+            </text>
+          </g>
+        )}
       </AutoTransformGroup>
     );
   }

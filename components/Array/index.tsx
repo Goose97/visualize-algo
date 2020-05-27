@@ -16,6 +16,7 @@ import { Action } from 'types';
 // } from '../../constants';
 import ArrayMemoryBlock from './ArrayMemoryBlock';
 import transformArrayModel from './ModelTransformer';
+import MemoryBlock from 'components/MemoryBlock';
 
 export class Array extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -187,11 +188,12 @@ export class Array extends Component<IProps, IState> {
       />
     ));
 
+
     return (
-      // <g>
-        arrayMemoryBlock
-        // {/* <Line /> */}
-      // </g>
+      <g>
+        {arrayMemoryBlock}
+        {/* {visitMemoryBlock} */}
+      </g>
     );
   }
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { IProps, IState } from './index.d';
+import { MemoryBlock } from 'components';
 
 export class Line extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -9,13 +10,7 @@ export class Line extends Component<IProps, IState> {
   render() {
     const { x1, y1, x2, y2 } = this.props;
     return (
-      <line
-        className="line--wrapper"
-        x1={x1}
-        y1={y1}
-        x2={x2}
-        y2={y2}
-      ></line>
+      <line className="line--wrapper" x1={x1} y1={y1} x2={x2} y2={y2}></line>
     );
   }
 }

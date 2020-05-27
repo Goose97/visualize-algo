@@ -210,6 +210,10 @@ export class ArrayPage extends Component {
     );
   };
 
+  filterInstruction() {
+    instructions.filter(({ name }) => name !== 'createDeatchNode')
+  }
+
   render() {
     const {
       data,
@@ -259,6 +263,15 @@ export class ArrayPage extends Component {
                 totalStep={stepDescription.length - 1}
               />
             )}
+
+              {/* <ArrayDataStructure
+                blockType={blockType}
+                initialData={data}
+                currentStep={currentStep}
+                instructions={instructions}
+                totalStep={stepDescription.length - 1}
+              /> */}
+
           </CanvasContainer>
         }
       </VisualAlgo>
