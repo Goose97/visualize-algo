@@ -1,15 +1,15 @@
 import produce from 'immer';
 import { compose } from 'lodash/fp';
 
-import { BSTModel, BSTMethod } from './index.d';
+import { BST } from 'types/ds/BST';
 
 // Nhận vào trạng thái hiện tại của data structure
 // và operation tương ứng. Trả về trạng thái mới
 const transformBSTModel = (
-  currentModel: BSTModel,
-  operation: BSTMethod,
+  currentModel: BST.Model,
+  operation: BST.Method,
   payload: any[],
-): BSTModel => {
+): BST.Model => {
   switch (operation) {
     case 'visit': {
       const [nodeKeyToVisit] = payload;
@@ -99,7 +99,7 @@ const transformBSTModel = (
         'resetFocus',
         'resetVisited',
         'resetLabel',
-      ] as BSTMethod[]).map(method => (model: BSTModel) =>
+      ] as BST.Method[]).map(method => (model: BST.Model) =>
         transformBSTModel(model, method, []),
       );
       return compose(listTransformation)(currentModel);

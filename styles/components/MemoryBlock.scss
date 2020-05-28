@@ -50,4 +50,8 @@
       fill: $white-text-color;
     }
   }
+
+  &.appearing {
+    animation: fadeIn 0.65s ease;
+  }
 }

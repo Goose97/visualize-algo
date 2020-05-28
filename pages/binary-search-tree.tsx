@@ -9,19 +9,17 @@ import {
   InitLinkedListInput,
   InitBSTInput,
 } from 'components';
-import BinarySearchTreeHTML from '../components/BinarySearchTree/BinarySearchTreeHTML';
 import { VisualAlgo } from 'layout';
 import { promiseSetState } from 'utils';
 import { bstInstruction, code, explanation } from 'instructions/BST';
-import { BSTOperation } from 'instructions/BST/index.d';
-import { BSTModel, BSTMethod } from 'components/BinarySearchTree/index.d';
 import { StepInstruction, Action, ObjectType } from 'types';
+import { BST } from 'types/ds/BST';
 import 'styles/main.scss';
 
 interface IState {
   data?: number[];
   currentStep?: number;
-  currentApi?: BSTOperation;
+  currentApi?: BST.Api;
   stepDescription: StepInstruction[];
   autoPlay: boolean;
   parameters: any;
@@ -173,12 +171,12 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
     );
   };
 
-  handleExecuteApi = (api: BSTOperation, params: ObjectType<any>) => {
+  handleExecuteApi = (api: BST.Api, params: ObjectType<any>) => {
     const stepDescription = this.generateStepDescription(api, params);
     this.setState({ stepDescription, autoPlay: true, currentApi: api });
   };
 
-  generateStepDescription(currentApi: BSTOperation, params: any) {
+  generateStepDescription(currentApi: BST.Api, params: any) {
     const { data } = this.state;
     if (!currentApi) return [];
     return bstInstruction(data!, currentApi, params);
@@ -200,7 +198,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
 
     const instructions = stepDescription.map(
       ({ actions }) => actions || [],
-    ) as Action<BSTMethod>[][];
+    ) as Action<BST.Method>[][];
 
     return (
       <VisualAlgo

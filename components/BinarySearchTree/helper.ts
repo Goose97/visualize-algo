@@ -6,12 +6,12 @@ import {
   GRAPH_NODE_RADIUS,
 } from '../../constants';
 import { PointCoordinate } from 'types';
-import { BSTModel, BSTNodeModel } from './index.d';
 import { BinaryTreeNode } from 'instructions/BST/helper';
+import { BST } from 'types/ds/BST';
 
 // Also included null node
 export const caculateTreeHeight = (
-  bstModel: Omit<BSTNodeModel, 'x' | 'y'>[],
+  bstModel: Omit<BST.NodeModel, 'x' | 'y'>[],
 ) => {
   if (!bstModel.length) return 0;
 
@@ -37,7 +37,7 @@ export const caculateTreeHeight = (
 
 export const isNodeCoordinateCollideWithOtherNode = (
   nodeCoordinate: PointCoordinate,
-  currentModel: BSTModel,
+  currentModel: BST.Model,
 ) => {
   const isIntersect = (
     nodeCoordinateA: PointCoordinate,
@@ -142,10 +142,10 @@ const caculateAngleOfLine = (
 
 export const produceInitialBSTData = (
   array: Array<number | null> | Array<string | null>,
-) => {
+): Omit<BST.NodeModel, 'x' | 'y'>[] => {
   if (!array.length) return [];
-  let queue: Omit<BSTNodeModel, 'x' | 'y'>[] = [];
-  let result: Omit<BSTNodeModel, 'x' | 'y'>[] = [];
+  let queue: Omit<BST.NodeModel, 'x' | 'y'>[] = [];
+  let result: Omit<BST.NodeModel, 'x' | 'y'>[] = [];
   let counter = 0;
   for (let i = 0; i < array.length; i++) {
     let val = array[i];

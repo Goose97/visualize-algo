@@ -1,21 +1,10 @@
-import {
-  Instructions,
-  initBinaryTree,
-  BinaryTreeNode,
-  findPredecessorOfNode,
-} from './helper';
-import {
-  BSTOperation,
-  SearchParams,
-  InsertParams,
-  DeleteParams,
-  BSTInputData,
-} from './index.d';
+import { Instructions, initBinaryTree, BinaryTreeNode } from './helper';
 import { StepInstruction } from 'types';
+import { BST } from 'types/ds/BST';
 
 export const bstInstruction = (
   data: number[],
-  operation: BSTOperation,
+  operation: BST.Api,
   parameters: any,
 ) => {
   switch (operation) {
@@ -33,7 +22,10 @@ export const bstInstruction = (
   }
 };
 
-const searchInstruction = (data: BSTInputData, { value }: SearchParams) => {
+const searchInstruction = (
+  data: BST.InputData,
+  { value }: BST.SearchParams,
+) => {
   const bst = initBinaryTree(data);
   const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
     null,
@@ -111,7 +103,10 @@ const searchInstruction = (data: BSTInputData, { value }: SearchParams) => {
   return instructions.get();
 };
 
-const insertInstruction = (data: BSTInputData, { value }: InsertParams) => {
+const insertInstruction = (
+  data: BST.InputData,
+  { value }: BST.InsertParams,
+) => {
   const bst = initBinaryTree(data);
   const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
     null,
@@ -173,10 +168,17 @@ const insertInstruction = (data: BSTInputData, { value }: InsertParams) => {
     }
   }
 
+  instructions.push({
+    actions: [{ name: 'resetAll', params: [] }],
+  });
+
   return instructions.get();
 };
 
-const deleteInstruction = (data: BSTInputData, { value }: DeleteParams) => {
+const deleteInstruction = (
+  data: BST.InputData,
+  { value }: BST.DeleteParams,
+) => {
   const bst = initBinaryTree(data);
   const _getExplanationAndCodeLine = getExplanationAndCodeLine.bind(
     null,
@@ -246,9 +248,7 @@ const deleteInstruction = (data: BSTInputData, { value }: DeleteParams) => {
         actions: [{ name: 'delete', params: [current ? current.key : null] }],
         ..._getExplanationAndCodeLine('noChild'),
       });
-    }
-
-    if (current.left !== null && current.right !== null) {
+    } else if (current.left !== null && current.right !== null) {
       // Two child situation
       // Find the biggest node in the left sub-tree
       let predecessor = current.left;
@@ -313,7 +313,7 @@ const deleteInstruction = (data: BSTInputData, { value }: DeleteParams) => {
 };
 
 const getExplanationAndCodeLine = (
-  operation: BSTOperation,
+  operation: BST.Api,
   subOperation: string,
 ): Pick<StepInstruction, 'codeLine' | 'explanationStep'> => {
   switch (operation) {

@@ -2,16 +2,10 @@ import React, { Component } from 'react';
 import { flatMap, pick, isEqual } from 'lodash';
 
 import { GraphMemoryBlock, PointerLink } from 'components';
-import {
-  IProps,
-  IState,
-  BSTModel,
-  LevelOrderTraversalQueue,
-  BSTNodeModel,
-  BSTMethod,
-} from './index.d';
-import transformBSTModel from './ModelTransformer';
 import BinarySearchTreeHTML from './BinarySearchTreeHTML';
+import { IProps, IState, LevelOrderTraversalQueue } from './index.d';
+import { BST } from 'types/ds/BST';
+import transformBSTModel from './ModelTransformer';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { getProgressDirection, keyExist } from 'utils';
 import {
@@ -24,7 +18,7 @@ import {
 import { ObjectType, PointCoordinate, Action } from 'types';
 import { GRAPH_NODE_RADIUS } from '../../constants';
 
-type PropsWithHoc = IProps & WithReverseStep<BSTModel>;
+type PropsWithHoc = IProps & WithReverseStep<BST.Model>;
 
 export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   private wrapperRef: React.RefObject<SVGUseElement>;
@@ -39,7 +33,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     this.wrapperRef = React.createRef();
   }
 
-  initBSTModel() {
+  initBSTModel(): BST.Model {
     const { initialData } = this.props;
     const bstModelWithoutCoordinate = produceInitialBSTData(initialData);
     const nodeCoordinateByKey = this.getCoordinationsOfTreeNodes(
@@ -53,7 +47,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   }
 
   getCoordinationsOfTreeNodes(
-    bstModelWithoutCoordinate: Omit<BSTNodeModel, 'x' | 'y'>[],
+    bstModelWithoutCoordinate: Omit<BST.NodeModel, 'x' | 'y'>[],
   ): ObjectType<PointCoordinate> {
     // Level order traversal tree and caculate
     const treeHeight = caculateTreeHeight(bstModelWithoutCoordinate);
@@ -171,10 +165,10 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   }
 
   consumeMultipleActions(
-    actionList: Action<BSTMethod>[],
-    currentModel: BSTModel,
+    actionList: Action<BST.Method>[],
+    currentModel: BST.Model,
     onlyTranformData?: boolean,
-  ): BSTModel {
+  ): BST.Model {
     // Treat each action as a transformation function which take a linkedListModel
     // and return a new one. Consuming multiple actions is merely chaining those
     // transformations together
@@ -202,7 +196,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   }
 
   findNodeInTreeByKey(
-    currentModel: Omit<BSTNodeModel, 'x' | 'y'>[],
+    currentModel: Omit<BST.NodeModel, 'x' | 'y'>[],
     nodeKey: number,
   ) {
     return currentModel.find(({ key }) => key === nodeKey)!;
@@ -268,18 +262,18 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   }
 
   findNodeCoordinateByKey(
-    currentModel: BSTModel,
+    currentModel: BST.Model,
     nodeKey: number,
   ): PointCoordinate {
     const treeNode = currentModel.find(({ key }) => key === nodeKey)!;
     return { x: treeNode.x, y: treeNode.y };
   }
 
-  isNodeVisible(currentModel: BSTModel, nodeKey: number) {
+  isNodeVisible(currentModel: BST.Model, nodeKey: number) {
     return !!currentModel.find(({ key }) => key === nodeKey)?.visible;
   }
 
-  visit = (currentModel: BSTModel, params: [number, number]) => {
+  visit = (currentModel: BST.Model, params: [number, number]) => {
     const [nodeKeyToStart, nodeKeyToVisit] = params;
     this.addNodeToVisitingList(nodeKeyToVisit);
     setTimeout(() => {
@@ -301,16 +295,16 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   }
 
   handleAfterVisitAnimationFinish(
-    currentModel: BSTModel,
+    currentModel: BST.Model,
     startNodeKey: number,
     nodeKeyToVisit: number,
   ) {
     // Mark the start node as visited and focus to the node which is just visited
-    const visitAction: Action<BSTMethod> = {
+    const visitAction: Action<BST.Method> = {
       name: 'visit',
       params: [startNodeKey],
     };
-    const focusAction: Action<BSTMethod> = {
+    const focusAction: Action<BST.Method> = {
       name: 'focus',
       params: [nodeKeyToVisit],
     };
@@ -324,7 +318,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   }
 
   // params: [parentKey, valueToInsert]
-  insert = (currentModel: BSTModel, params: [number, number]): BSTModel => {
+  insert = (currentModel: BST.Model, params: [number, number]): BST.Model => {
     const [parentKey, valueToInsert] = params;
     const parentNode = currentModel.find(({ key }) => key === parentKey);
     if (!parentNode) return currentModel;
@@ -358,7 +352,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     }
   };
 
-  reallocateAllTreeNode(currentModel: BSTModel) {
+  reallocateAllTreeNode(currentModel: BST.Model) {
     const nodeCoordinateByKey = this.getCoordinationsOfTreeNodes(currentModel);
     return currentModel.map(node => ({
       ...node,
@@ -366,7 +360,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     }));
   }
 
-  getBiggestKey(currentModel: BSTModel) {
+  getBiggestKey(currentModel: BST.Model) {
     return Math.max(...currentModel.map(({ key }) => key));
   }
 
@@ -374,12 +368,14 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     value: number | string,
     key: number,
     coordinate: PointCoordinate,
-  ): BSTNodeModel {
+  ): BST.NodeModel {
     return {
       value,
       left: null,
       right: null,
       key,
+      visible: true,
+      isNew: true,
       ...coordinate,
     };
   }
@@ -407,4 +403,4 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   }
 }
 
-export default withReverseStep<BSTModel, PropsWithHoc>(BinarySearchTree);
+export default withReverseStep<BST.Model, PropsWithHoc>(BinarySearchTree);

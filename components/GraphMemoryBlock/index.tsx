@@ -5,6 +5,7 @@ import { MemoryBlock, AutoTransformGroup } from 'components';
 import { IProps } from './index.d';
 import { GRAPH_NODE_RADIUS } from '../../constants';
 import { PointCoordinate } from 'types';
+import { classNameHelper } from 'utils';
 
 export class GraphMemoryBlock extends Component<IProps> {
   private initialCoordinate: PointCoordinate;
@@ -14,8 +15,17 @@ export class GraphMemoryBlock extends Component<IProps> {
     this.initialCoordinate = { x: props.x, y: props.y };
   }
 
+  produceClassName() {
+    const { aboutToDelete, isNew } = this.props;
+    return classNameHelper({
+      base: '',
+      ['focus-to-delete']: !!aboutToDelete,
+      ['appearing']: !!isNew,
+    });
+  }
+
   render() {
-    const { value, aboutToDelete } = this.props;
+    const { value } = this.props;
     return (
       <AutoTransformGroup origin={pick(this.props, ['x', 'y'])}>
         <MemoryBlock
@@ -25,7 +35,7 @@ export class GraphMemoryBlock extends Component<IProps> {
           width={GRAPH_NODE_RADIUS * 2}
           height={GRAPH_NODE_RADIUS * 2}
           type='round'
-          className={aboutToDelete ? 'focus-to-delete' : ''}
+          className={this.produceClassName()}
         />
       </AutoTransformGroup>
     );

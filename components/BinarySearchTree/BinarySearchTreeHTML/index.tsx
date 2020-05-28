@@ -2,8 +2,8 @@ import React from 'react';
 
 import { HTMLRenderer, DropdownWithParamsInput } from 'components';
 import BSTNodeApiDropdown from './BSTNodeApiDropdown';
-import { BSTModel } from '../index.d';
 import { ObjectType, PointCoordinate } from 'types';
+import { BST } from 'types/ds/BST';
 
 const options: Array<{ label: string; value: string }> = [
   {
@@ -33,7 +33,7 @@ const requiredParams = {
 };
 
 interface BinarySearchTreeHTMLParams {
-  model: BSTModel;
+  model: BST.Model;
   wrapperElement: SVGGElement | null;
   coordinate: PointCoordinate;
   apiHandler?: (apiName: string, params?: ObjectType<any>) => void;

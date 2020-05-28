@@ -5,11 +5,11 @@ import { CustomDropDown } from 'components';
 import { GRAPH_NODE_RADIUS } from '../../../constants';
 import { classNameHelper } from 'utils';
 import { BSTNodeApiDropdownProps, BSTNodeApiDropdownState } from './index.d';
-import { BSTOperation } from 'instructions/BST/index.d';
+import { BST } from 'types/ds/BST';
 
 const options: Array<{
   label: string;
-  value: BSTOperation;
+  value: BST.Api;
 }> = [
   {
     label: 'Search',
@@ -33,7 +33,7 @@ export class BSTNodeApiDropdown extends Component<
     };
   }
 
-  handleSelectApi(api: BSTOperation, params: any) {
+  handleSelectApi(api: BST.Api, params: any) {
     const { handler } = this.props;
     if (handler) {
       handler(api, params);
