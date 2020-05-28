@@ -2,8 +2,8 @@
   .memory-block__block {
     @extend .default-stroke;
     @extend .has-transition;
+    @extend .stroke-2;
     fill: $background-light;
-    stroke-width: 1px;
   }
 
   .memory-block__text {

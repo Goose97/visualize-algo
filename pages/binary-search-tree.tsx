@@ -15,7 +15,7 @@ import { promiseSetState } from 'utils';
 import { bstInstruction, code, explanation } from 'instructions/BST';
 import { BSTOperation } from 'instructions/BST/index.d';
 import { BSTModel, BSTMethod } from 'components/BinarySearchTree/index.d';
-import { StepInstruction, Action } from 'types';
+import { StepInstruction, Action, ObjectType } from 'types';
 import 'styles/main.scss';
 
 interface IState {
@@ -173,32 +173,10 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
     );
   };
 
-  renderHtmlElements = (
-    model: BSTModel,
-    wrapperElement: SVGGElement | null,
-  ) => {
-    setTimeout(() => {
-      BinarySearchTreeHTML.renderToView({
-        wrapperElement,
-        model,
-        onSearch: ({ key: nodeKey }) => {
-          const nodeToFind = model.find(({ key }) => key === nodeKey);
-          if (nodeToFind)
-            this.handleExecuteApi('search', { value: nodeToFind.value });
-        },
-        onDelete: ({ key: nodeKey }) => {
-          const nodeToFind = model.find(({ key }) => key === nodeKey);
-          if (nodeToFind)
-            this.handleExecuteApi('delete', { value: nodeToFind.value });
-        },
-      });
-    }, 0);
-  };
-
-  handleExecuteApi(api: BSTOperation, params: any) {
+  handleExecuteApi = (api: BSTOperation, params: ObjectType<any>) => {
     const stepDescription = this.generateStepDescription(api, params);
     this.setState({ stepDescription, autoPlay: true, currentApi: api });
-  }
+  };
 
   generateStepDescription(currentApi: BSTOperation, params: any) {
     const { data } = this.state;
@@ -241,13 +219,15 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
         {data ? (
           <CanvasContainer>
             <BinarySearchTree
-              x={400}
+              x={100}
               y={50}
               instructions={instructions}
               initialData={data}
               currentStep={currentStep}
               totalStep={stepDescription.length - 1}
-              renderHtmlElements={this.renderHtmlElements}
+              //@ts-ignore
+              handleExecuteApi={this.handleExecuteApi}
+              interactive
             />
           </CanvasContainer>
         ) : (

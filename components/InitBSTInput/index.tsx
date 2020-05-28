@@ -80,7 +80,7 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
         <svg className='h-full w-full'>
           {!!input.length && (
             <BinarySearchTree
-              x={350}
+              x={10}
               y={50}
               initialData={input}
               updateWhenDataChanges

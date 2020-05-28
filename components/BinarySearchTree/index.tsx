@@ -11,6 +11,7 @@ import {
   BSTMethod,
 } from './index.d';
 import transformBSTModel from './ModelTransformer';
+import BinarySearchTreeHTML from './BinarySearchTreeHTML';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { getProgressDirection, keyExist } from 'utils';
 import {
@@ -26,7 +27,7 @@ import { GRAPH_NODE_RADIUS } from '../../constants';
 type PropsWithHoc = IProps & WithReverseStep<BSTModel>;
 
 export class BinarySearchTree extends Component<PropsWithHoc, IState> {
-  private wrapperRef: React.RefObject<SVGGElement>;
+  private wrapperRef: React.RefObject<SVGUseElement>;
 
   constructor(props: PropsWithHoc) {
     super(props);
@@ -40,15 +41,6 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
 
   initBSTModel() {
     const { initialData } = this.props;
-    // const bstModelWithoutCoordinate = [
-    //   { value: 4, key: 0, left: 1, right: 2 },
-    //   { value: 1, key: 1, left: 3, right: 4 },
-    //   { value: 8, key: 2, left: 5, right: 6 },
-    //   { value: 0, key: 3, left: null, right: null },
-    //   { value: 2, key: 4, left: null, right: null },
-    //   { value: 6, key: 5, left: null, right: null },
-    //   { value: 9, key: 6, left: null, right: null },
-    // ];
     const bstModelWithoutCoordinate = produceInitialBSTData(initialData);
     const nodeCoordinateByKey = this.getCoordinationsOfTreeNodes(
       bstModelWithoutCoordinate,
@@ -69,6 +61,8 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     let root = {
       ...bstModelWithoutCoordinate[0],
       ...pick(this.props, ['x', 'y']),
+      x: 0,
+      y: 0,
       level: 1,
     };
     let queue: LevelOrderTraversalQueue = [root];
@@ -100,6 +94,13 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       }
     }
 
+    // Some coordination will have negative x value
+    // we have to shift all coordination to right to make sure they start at 0
+    const allXValue = Object.values(result).map(({ x }) => x);
+    let amountToShiftToRight = -Math.min(...allXValue, 0);
+    Object.values(result).forEach(coordinate => {
+      coordinate.x += amountToShiftToRight;
+    });
     return result;
   }
 
@@ -188,9 +189,9 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
         // a handler must also return a new model
         // if no handler is specify, just transform model right away
         //@ts-ignore
-        const customeHandler = this[name];
-        if (typeof customeHandler === 'function') {
-          finalBSTModel = customeHandler(finalBSTModel, params);
+        const customHandler = this[name];
+        if (typeof customHandler === 'function') {
+          finalBSTModel = customHandler(finalBSTModel, params);
         } else {
           finalBSTModel = transformBSTModel(finalBSTModel, name, params);
         }
@@ -209,10 +210,19 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
 
   renderTree() {
     return (
-      <g ref={this.wrapperRef}>
-        {this.renderTreeNode()}
-        {this.renderPointerLinkForNode()}
-      </g>
+      <>
+        <use
+          href='#binary-search-tree'
+          {...pick(this.props, ['x', 'y'])}
+          ref={this.wrapperRef}
+        />
+        <defs>
+          <g id='binary-search-tree' x='0' y='0'>
+            {this.renderTreeNode()}
+            {this.renderPointerLinkForNode()}
+          </g>
+        </defs>
+      </>
     );
   }
 
@@ -375,13 +385,21 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   }
 
   componentDidMount() {
-    this.injectHTMLIntoCanvas();
+    const { interactive } = this.props;
+    if (interactive) this.injectHTMLIntoCanvas();
   }
 
   injectHTMLIntoCanvas() {
-    const { renderHtmlElements } = this.props;
     const { bstModel } = this.state;
-    renderHtmlElements && renderHtmlElements(bstModel, this.wrapperRef.current);
+    const { handleExecuteApi } = this.props;
+    setTimeout(() => {
+      BinarySearchTreeHTML.renderToView({
+        model: bstModel,
+        wrapperElement: this.wrapperRef.current,
+        coordinate: pick(this.props, ['x', 'y']),
+        apiHandler: handleExecuteApi,
+      });
+    }, 0);
   }
 
   render() {

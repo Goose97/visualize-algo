@@ -1,4 +1,4 @@
-import { BaseMemoryBlockProps } from 'types';
+import { BaseMemoryBlockProps, ObjectType } from 'types';
 import { Action } from 'types';
 
 interface BSTNodeModel extends BaseMemoryBlockProps {
@@ -27,10 +27,8 @@ export interface IProps {
   instructions?: Action<BSTMethod>[][];
   initialData: Array<number, null>;
   updateWhenDataChanges?: boolean;
-  renderHtmlElements?: (
-    model: BSTModel,
-    wrapperElement: SVGGElement | null,
-  ) => void;
+  interactive?: boolean;
+  handleExecuteApi?: (apiName: string, params?: ObjectType<any>) => void;
 }
 
 export interface NodeInLevelOrderTraversalQueue extends BSTNodeModel {

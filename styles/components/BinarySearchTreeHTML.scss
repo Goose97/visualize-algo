@@ -39,3 +39,13 @@
     }
   }
 }
+
+.bst-html__wrapper {
+  position: relative;
+
+  & > .dropdown__trigger {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}

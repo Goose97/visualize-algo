@@ -3,7 +3,7 @@ import { Menu } from 'antd';
 
 import { CustomDropDown } from 'components';
 import { GRAPH_NODE_RADIUS } from '../../../constants';
-import { classNameHelper, upcaseFirstLetter } from 'utils';
+import { classNameHelper } from 'utils';
 import { BSTNodeApiDropdownProps, BSTNodeApiDropdownState } from './index.d';
 import { BSTOperation } from 'instructions/BST/index.d';
 
@@ -34,21 +34,21 @@ export class BSTNodeApiDropdown extends Component<
   }
 
   handleSelectApi(api: BSTOperation, params: any) {
-    const method = `on${upcaseFirstLetter(api)}`;
-    //@ts-ignore
-    const handler = this.props[method];
-    handler && handler(params);
+    const { handler } = this.props;
+    if (handler) {
+      handler(api, params);
+    }
+
     this.setState({ isMenuVisible: false });
   }
 
   renderMenu() {
-    const { nodeKey } = this.props;
-
+    const { value } = this.props;
     return (
       <Menu>
         {options.map(({ label, value: apiName }) => (
           <Menu.Item
-            onClick={() => this.handleSelectApi(apiName, { key: nodeKey })}
+            onClick={() => this.handleSelectApi(apiName, { value })}
             key={apiName}
           >
             {label}

@@ -1,40 +1,67 @@
 import React from 'react';
-import { pick } from 'lodash';
 
-import { HTMLRenderer } from 'components';
+import { HTMLRenderer, DropdownWithParamsInput } from 'components';
 import BSTNodeApiDropdown from './BSTNodeApiDropdown';
 import { BSTModel } from '../index.d';
-import { ObjectType } from 'types';
+import { ObjectType, PointCoordinate } from 'types';
+
+const options: Array<{ label: string; value: string }> = [
+  {
+    label: 'Search',
+    value: 'search',
+  },
+  {
+    label: 'Insert',
+    value: 'insert',
+  },
+  {
+    label: 'Delete',
+    value: 'delete',
+  },
+];
+
+const requiredParams = {
+  search: {
+    value: 'number',
+  },
+  delete: {
+    value: 'number',
+  },
+  insert: {
+    value: 'number',
+  },
+};
 
 interface BinarySearchTreeHTMLParams {
-  wrapperElement: SVGGElement | null;
   model: BSTModel;
-  onSearch: (params: ObjectType<any>) => void;
-  onDelete: (params: ObjectType<any>) => void;
+  wrapperElement: SVGGElement | null;
+  coordinate: PointCoordinate;
+  apiHandler?: (apiName: string, params?: ObjectType<any>) => void;
 }
 
 export class BinarySearchTreeHTML {
   static renderToView(params: BinarySearchTreeHTMLParams) {
-    BinarySearchTreeHTML.renderActionDropdownForEachNode(params);
-  }
+    const { wrapperElement, coordinate, apiHandler, model } = params;
+    if (wrapperElement) {
+      const { width, height } = wrapperElement.getBoundingClientRect();
+      const dropdownForEachTreeNode = model.map(({ value, x, y }) => (
+        <div style={{ position: 'absolute', top: y, left: x }}>
+          <BSTNodeApiDropdown value={value} handler={apiHandler} />
+        </div>
+      ));
 
-  static renderActionDropdownForEachNode(params: BinarySearchTreeHTMLParams) {
-    const { model } = params;
-    model.forEach(({ x, y, key }) => {
       const elementToRender = (
-        <BSTNodeApiDropdown
-          {...pick(params, ['onSearch', 'onDelete'])}
-          nodeKey={key}
-        />
+        <div style={{ width, height }} className='bst-html__wrapper'>
+          <DropdownWithParamsInput
+            options={options}
+            requiredApiParams={requiredParams}
+            handler={apiHandler}
+          />
+          {dropdownForEachTreeNode}
+        </div>
       );
-      const coordinate = { x, y };
-
-      HTMLRenderer.inject(
-        elementToRender,
-        coordinate,
-        `bst-node-dropdown__${key}`,
-      );
-    });
+      HTMLRenderer.inject(elementToRender, coordinate, `bst-html__wrapper`);
+    }
   }
 }
 
