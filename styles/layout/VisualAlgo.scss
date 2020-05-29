@@ -7,12 +7,32 @@
     margin-top: auto;
     margin-bottom: auto;
     width: 150px;
-  
+
     .api-select__menu {
       z-index: 20;
     }
   }
-  
+}
+
+.drag-handler {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  cursor: ns-resize;
+
+  &:after {
+    @extend .has-transition;
+    display: block;
+    content: '';
+    width: 100%;
+    height: 2px;
+  }
+
+  &:hover:after {
+    background-color: $primary-color;
+  }
 }
 
 .code-container {

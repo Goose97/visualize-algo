@@ -1,27 +1,49 @@
-import { IProps as MemoryBlockProps } from '../MemoryBlock/index.d';
+// import { IProps as MemoryBlockProps } from '../MemoryBlock';
 import { PointCoordinate } from '../../types';
 
 export interface ArrayNode {
-  value: number;
+  value: number | null;
   key: number;
   index: number;
   focus?: boolean;
   visited?: boolean;
+  visible: boolean;
+  label?: string;
+  hasLine?: boolean;
 }
 
 export type ArrayModel = ArrayNode[];
 
-export type ArrayMethod = 'swap';
+export type ArrayMethod =
+  | 'swap'
+  | 'focus'
+  | 'resetFocus'
+  | 'resetFocusAll'
+  | 'complete'
+  | 'label'
+  | 'unlabel'
+  | 'setValue'
+  | 'setLine';
 
 export interface IState {
   arrayModel: ArrayModel;
 }
 
-export interface IProps {}
+export interface IProps {
+  initialData: number[];
+  currentStep: number;
+  totalStep: number;
+  instructions: Action[][];
+  blockType: string;
+}
 
 export interface ArrayMemoryBlockProps {
-  value: number;
+  value: number | null;
   index: number;
   origin: PointCoordinate;
   visible?: boolean;
+  focus?: boolean;
+  visited?: boolean;
+  label?: string;
+  blockType: string;
 }

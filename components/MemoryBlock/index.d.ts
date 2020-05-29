@@ -1,7 +1,8 @@
 import { LinkedListNodeModel } from '../LinkedList/index.d';
 import { PointCoordinate, BaseMemoryBlockProps } from 'types';
 
-export interface IProps extends BaseMemoryBlockProps {
+export interface IProps {
+  value: number | null;
   width: number;
   height: number;
   x: number;
