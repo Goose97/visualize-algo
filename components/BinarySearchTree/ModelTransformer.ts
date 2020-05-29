@@ -11,8 +11,9 @@ const transformBSTModel = (
   payload: any[],
 ): BST.Model => {
   switch (operation) {
-    case 'visit': {
+    case 'visited': {
       const [nodeKeyToVisit] = payload;
+      console.log('nodeKeyToVisit', nodeKeyToVisit)
       return produce(currentModel, draft => {
         const treeNode = draft.find(({ key }) => key === nodeKeyToVisit);
         if (treeNode) treeNode.visited = true;

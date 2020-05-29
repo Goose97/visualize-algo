@@ -18,6 +18,18 @@ const options: Array<{ label: string; value: string }> = [
     label: 'Delete',
     value: 'delete',
   },
+  {
+    label: 'Preorder traversal',
+    value: 'preorder',
+  },
+  {
+    label: 'Inorder traversal',
+    value: 'inorder',
+  },
+  {
+    label: 'Postorder traversal',
+    value: 'postorder',
+  },
 ];
 
 const requiredParams = {
@@ -45,7 +57,7 @@ export class BinarySearchTreeHTML {
     if (wrapperElement) {
       const { width, height } = wrapperElement.getBoundingClientRect();
       const dropdownForEachTreeNode = model.map(({ value, x, y }) => (
-        <div style={{ position: 'absolute', top: y, left: x }}>
+        <div style={{ position: 'absolute', top: y, left: x }} key={value}>
           <BSTNodeApiDropdown value={value} handler={apiHandler} />
         </div>
       ));

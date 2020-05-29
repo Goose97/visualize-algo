@@ -236,6 +236,10 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       };
       return [left, right].map(child => {
         if (!child) return null;
+        const { visited: childVisited } = this.findNodeInTreeByKey(
+          bstModel,
+          child,
+        );
         const toNode = this.findNodeCoordinateByKey(bstModel, child);
         const to = {
           x: toNode.x + GRAPH_NODE_RADIUS,
@@ -252,7 +256,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
             {...pathAndRotation}
             key={child}
             visible={!!this.isNodeVisible(bstModel, child)}
-            visited={visited}
+            visited={visited && childVisited}
             following={nodeAboutToVisit.has(child)}
             arrowDirection='right'
           />
@@ -301,7 +305,7 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
   ) {
     // Mark the start node as visited and focus to the node which is just visited
     const visitAction: Action<BST.Method> = {
-      name: 'visit',
+      name: 'visited',
       params: [startNodeKey],
     };
     const focusAction: Action<BST.Method> = {

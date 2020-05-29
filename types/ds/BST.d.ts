@@ -11,10 +11,16 @@ export declare namespace BST {
 
   export type Model = NodeModel[];
 
-  export type Api = 'search' | 'insert' | 'delete';
+  export type Api =
+    | 'search'
+    | 'insert'
+    | 'delete'
+    | 'preorder'
+    | 'inorder'
+    | 'postorder';
 
   export type Method =
-    | 'visit'
+    | 'visited'
     | 'focus'
     | 'resetFocus'
     | 'label'

@@ -11,9 +11,10 @@ import {
 } from 'components';
 import { VisualAlgo } from 'layout';
 import { promiseSetState } from 'utils';
-import { bstInstruction, code, explanation } from 'instructions/BST';
+import { bstInstruction } from 'instructions/BST';
 import { StepInstruction, Action, ObjectType } from 'types';
 import { BST } from 'types/ds/BST';
+import { code, explanation } from 'codes/BST';
 import 'styles/main.scss';
 
 interface IState {
@@ -173,6 +174,8 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
 
   handleExecuteApi = (api: BST.Api, params: ObjectType<any>) => {
     const stepDescription = this.generateStepDescription(api, params);
+    console.log('api', api)
+    console.log('stepDescription', stepDescription)
     this.setState({ stepDescription, autoPlay: true, currentApi: api });
   };
 

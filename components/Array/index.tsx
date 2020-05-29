@@ -73,13 +73,7 @@ export class Array extends Component<IProps, IState> {
     const { arrayModel } = this.state;
     console.log('arrayModel', arrayModel);
     const arrayMemoryBlock = arrayModel.map(arrayNode => (
-      <ArrayMemoryBlock
-        {...arrayNode}
-        origin={{
-          x: 100,
-          y: 100,
-        }}
-      />
+      <ArrayMemoryBlock {...arrayNode} origin={pick(this.props, ['x', 'y'])} />
     ));
 
     console.log('arrayMemoryBlock', arrayMemoryBlock);
