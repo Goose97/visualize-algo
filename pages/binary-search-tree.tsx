@@ -10,7 +10,7 @@ import {
   InitBSTInput,
 } from 'components';
 import { VisualAlgo } from 'layout';
-import { promiseSetState } from 'utils';
+import { promiseSetState, extractInstructionFromDescription } from 'utils';
 import { bstInstruction } from 'instructions/BST';
 import { StepInstruction, Action, ObjectType } from 'types';
 import { BST } from 'types/ds/BST';
@@ -174,8 +174,8 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
 
   handleExecuteApi = (api: BST.Api, params: ObjectType<any>) => {
     const stepDescription = this.generateStepDescription(api, params);
-    console.log('api', api)
-    console.log('stepDescription', stepDescription)
+    console.log('api', api);
+    console.log('stepDescription', stepDescription);
     this.setState({ stepDescription, autoPlay: true, currentApi: api });
   };
 
@@ -199,8 +199,11 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
       { value: 'insert', label: 'Insert' },
     ];
 
-    const instructions = stepDescription.map(
-      ({ actions }) => actions || [],
+    console.log('stepDescription', stepDescription)
+
+    const bstInstruction = extractInstructionFromDescription(
+      stepDescription,
+      'bst',
     ) as Action<BST.Method>[][];
 
     return (
@@ -222,7 +225,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
             <BinarySearchTree
               x={100}
               y={50}
-              instructions={instructions}
+              instructions={bstInstruction}
               initialData={data}
               currentStep={currentStep}
               totalStep={stepDescription.length - 1}

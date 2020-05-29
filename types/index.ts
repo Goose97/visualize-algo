@@ -1,7 +1,7 @@
 export type ObjectType<T = any> = { [key: string]: T };
 
 export interface StepInstruction {
-  actions?: Action[];
+  actions?: ObjectType<Action[]>;
   codeLine?: string;
   explanationStep?: number;
   duration?: number;

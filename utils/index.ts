@@ -1,6 +1,6 @@
 import { pick } from 'lodash';
 
-import { ObjectType } from 'types';
+import { ObjectType, Action, StepInstruction } from 'types';
 
 export const classNameHelper = (object: ObjectType<string | boolean>) => {
   let baseClassName = (object.base as string) || '';
@@ -67,4 +67,15 @@ export const upcaseFirstLetter = (string: string) => {
 
 export const keyExist = (object: Object, keys: string[]) => {
   return keys.every(key => key in object);
+};
+
+export const extractInstructionFromDescription = (
+  description: StepInstruction[],
+  dsName: string,
+): Action[][] => {
+  return description.map(({ actions }) => {
+    if (!actions) return [];
+    if (!actions[dsName]) return [];
+    return actions[dsName];
+  });
 };
