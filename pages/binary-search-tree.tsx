@@ -8,6 +8,7 @@ import {
   Button,
   InitLinkedListInput,
   InitBSTInput,
+  Array as ArrayDataStructure,
 } from 'components';
 import { VisualAlgo } from 'layout';
 import { promiseSetState, extractInstructionFromDescription } from 'utils';
@@ -174,8 +175,6 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
 
   handleExecuteApi = (api: BST.Api, params: ObjectType<any>) => {
     const stepDescription = this.generateStepDescription(api, params);
-    console.log('api', api);
-    console.log('stepDescription', stepDescription);
     this.setState({ stepDescription, autoPlay: true, currentApi: api });
   };
 
@@ -199,12 +198,14 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
       { value: 'insert', label: 'Insert' },
     ];
 
-    console.log('stepDescription', stepDescription)
-
     const bstInstruction = extractInstructionFromDescription(
       stepDescription,
       'bst',
     ) as Action<BST.Method>[][];
+    const arrayInstruction = extractInstructionFromDescription(
+      stepDescription,
+      'array',
+    );
 
     return (
       <VisualAlgo
@@ -232,6 +233,16 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
               //@ts-ignore
               handleExecuteApi={this.handleExecuteApi}
               interactive
+            />
+
+            <ArrayDataStructure
+              initialData={[]}
+              blockType='block'
+              instructions={arrayInstruction}
+              x={800}
+              y={200}
+              currentStep={currentStep}
+              totalStep={stepDescription.length - 1}
             />
           </CanvasContainer>
         ) : (

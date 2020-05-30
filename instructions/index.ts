@@ -19,11 +19,11 @@ export class Instructions {
   }
 
   pushActionsAndEndStep(assign: string, actions: Action[]) {
-    this.pushAction(assign, actions);
+    this.pushActions(assign, actions);
     this.endStep();
   }
 
-  pushAction(assign: string, actions: Action[]) {
+  pushActions(assign: string, actions: Action[]) {
     const oldActionOfThisAssignee = this.buffer.actions![assign];
     if (oldActionOfThisAssignee) {
       oldActionOfThisAssignee.push(...actions);

@@ -323,11 +323,15 @@ const preorderTraversalInstruction = (data: BST.InputData) => {
 
   function preorderHelper(tree: BinaryTreeNode) {
     const { key, left, right, val } = tree;
-    instructions.pushActionsAndEndStep('bst', [
+    instructions.pushActions('array', [
+      { name: 'push', params: [val] },
+    ]);
+    instructions.pushActions('bst', [
       { name: 'resetFocus', params: [] },
       { name: 'focus', params: [key] },
       { name: 'visited', params: [currentFocusKey] },
     ]);
+    instructions.endStep();
 
     currentFocusKey = key;
 

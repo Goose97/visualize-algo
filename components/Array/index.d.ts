@@ -23,7 +23,8 @@ export type ArrayMethod =
   | 'label'
   | 'unlabel'
   | 'setValue'
-  | 'setLine';
+  | 'setLine'
+  | 'push';
 
 export interface IState {
   arrayModel: ArrayModel;

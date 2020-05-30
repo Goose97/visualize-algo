@@ -107,6 +107,13 @@ const transformArrayModel = (
       });
     }
 
+    case 'push': {
+      const [newArrayNode] = payload;
+      return produce(currentModel, draft => {
+        draft.push(newArrayNode);
+      });
+    }
+
     default:
       return currentModel;
   }

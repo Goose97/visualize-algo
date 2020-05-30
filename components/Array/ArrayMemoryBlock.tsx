@@ -89,10 +89,11 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
           {...this.initialCoordinate}
           {...this.calculateSizeBlock(blockType, value || 0)}
           value={value}
-          visible={visible}
+          visible={!!visible}
           focus={focus}
           visited={visited}
           label={label}
+          type='rectangle'
         />
         {hasLine && (
           <g>

@@ -150,9 +150,8 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
     // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
     const { bstModel } = this.state;
     const { currentStep, instructions } = this.props;
-    const actionsToMakeAtThisStep = instructions![currentStep];
+    const actionsToMakeAtThisStep = instructions![currentStep!];
     if (!actionsToMakeAtThisStep || !actionsToMakeAtThisStep.length) return;
-    console.log('actionsToMakeAtThisStep', actionsToMakeAtThisStep);
 
     // This consume pipeline have many side effect in each step. Each
     // method handle each action has their own side effect
@@ -160,7 +159,6 @@ export class BinarySearchTree extends Component<PropsWithHoc, IState> {
       actionsToMakeAtThisStep,
       bstModel,
     );
-    console.log('newBSTModel', newBSTModel);
     this.setState({ bstModel: newBSTModel });
   }
 

@@ -52,7 +52,7 @@ export class ArrayPage extends Component {
           <span>
             Thêm vào giá trị{' '}
             <Input
-              className="ml-2"
+              className='ml-2'
               onChange={this.handleChangeInput('value', convertToNumber)}
             />
           </span>
@@ -63,7 +63,7 @@ export class ArrayPage extends Component {
           <span>
             Thêm vào giá trị{' '}
             <Input
-              className="ml-2"
+              className='ml-2'
               onChange={this.handleChangeInput('value', convertToNumber)}
             />
           </span>
@@ -134,14 +134,14 @@ export class ArrayPage extends Component {
     switch (currentApi) {
       case 'init':
         return (
-          <Button type="primary" onClick={() => this.initArrayData(false)}>
+          <Button type='primary' onClick={() => this.initArrayData(false)}>
             Khởi tạo
           </Button>
         );
       default:
         return (
           <Button
-            type="primary"
+            type='primary'
             onClick={this.handleStartAlgorithm}
             disabled={isButtonDisabled}
           >
@@ -190,9 +190,9 @@ export class ArrayPage extends Component {
       arrayData = this.originalArrayData;
     } else {
       if (value && value.length) {
-        arrayData = value.split(',').map(function(item){
-          return parseInt(item, 10)
-        })
+        arrayData = value.split(',').map(function (item) {
+          return parseInt(item, 10);
+        });
       } else
         arrayData = Array(10)
           .fill(0)
@@ -206,12 +206,12 @@ export class ArrayPage extends Component {
     return new Promise(resolve =>
       this.setState({ data: undefined }, () => {
         this.setState({ data: arrayData }, () => resolve());
-      })
+      }),
     );
   };
 
   filterInstruction() {
-    instructions.filter(({ name }) => name !== 'createDeatchNode')
+    instructions.filter(({ name }) => name !== 'createDeatchNode');
   }
 
   render() {
@@ -234,7 +234,7 @@ export class ArrayPage extends Component {
     ];
     const fullState = produceFullState(
       stepDescription.map(({ state }) => state),
-      ['data', 'currentNode']
+      ['data', 'currentNode'],
     );
 
     const instructions = stepDescription.map(({ actions }) => actions || []);
@@ -263,15 +263,6 @@ export class ArrayPage extends Component {
                 totalStep={stepDescription.length - 1}
               />
             )}
-
-              {/* <ArrayDataStructure
-                blockType={blockType}
-                initialData={data}
-                currentStep={currentStep}
-                instructions={instructions}
-                totalStep={stepDescription.length - 1}
-              /> */}
-
           </CanvasContainer>
         }
       </VisualAlgo>
