@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { omit } from 'lodash';
 
 import { classNameHelper } from 'utils';
 import { IProps, IState } from './index.d';
@@ -9,8 +10,18 @@ export class PointerLink extends Component<IProps, IState> {
 
     this.state = {
       // We will use this offset to animate
-      transformList: [],
+      transformList: this.produceInitialTransformList(),
     };
+  }
+
+  produceInitialTransformList() {
+    const { transform } = this.props;
+    if (transform) {
+      const regexMatch = transform.match(/(rotate|translate)\(.+\)/g);
+      return regexMatch ? regexMatch : [];
+    } else {
+      return [];
+    }
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -40,12 +51,13 @@ export class PointerLink extends Component<IProps, IState> {
   }
 
   produceClassName() {
-    const { isDisappearing } = this.state;
+    const { isDisappearing, isFollowing } = this.state;
     const { visited } = this.props;
     return classNameHelper({
       base: 'pointer-link has-transition',
       disappearing: !!isDisappearing,
       visited: !!visited,
+      following: !!isFollowing,
     });
   }
 
@@ -72,7 +84,7 @@ export class PointerLink extends Component<IProps, IState> {
     const { isFollowing } = this.state;
     const { path, visited } = this.props;
     const regex = /^M (\d+) (\d+)/;
-    const startPoint = path.match(regex);
+    const startPoint = path?.match(regex);
     if (startPoint) {
       const className = classNameHelper({
         base: 'pointer-link__start-dot',
@@ -92,9 +104,10 @@ export class PointerLink extends Component<IProps, IState> {
 
   render() {
     const { isFollowing } = this.state;
+    const propsToOmit = ['arrowDirection', 'following', 'visited', 'visible'];
 
     return (
-      <g className={this.produceClassName()}>
+      <g className={this.produceClassName()} {...omit(this.props, propsToOmit)}>
         {isFollowing && (
           <path
             d={this.produceFullPathWithArrow()}

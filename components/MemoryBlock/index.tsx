@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
+import { pick } from 'lodash';
 
 import { classNameHelper } from 'utils';
+import withExtendClassName, {
+  WithExtendClassName,
+} from 'hocs/withExtendClassName';
 import { IProps, IState } from './index.d';
 
-export class MemoryBlock extends Component<IProps, IState> {
+type PropsWithHoc = IProps & WithExtendClassName;
+
+export class MemoryBlock extends Component<PropsWithHoc, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {};
@@ -31,16 +37,46 @@ export class MemoryBlock extends Component<IProps, IState> {
   }
 
   produceClassName() {
-    const { visible, visited, focus } = this.props;
+    const { visible, visited, focus, className } = this.props;
     const { isHiding, isShowing } = this.state;
     return classNameHelper({
-      base: 'memory-block__wrapper has-transition',
+      base: className as string,
       disappearing: !!isHiding,
       appearing: !!isShowing,
       invisible: !visible,
       visited: !!visited,
       focus: !!focus,
     });
+  }
+
+  renderMemoryBlockContainer() {
+    const { type, x, y, width, height } = this.props;
+    switch (type) {
+      case 'rectangle':
+        return (
+          <rect
+            {...pick(this.props, ['x', 'y', 'width', 'height'])}
+            className='memory-block__block'
+          ></rect>
+        );
+
+      case 'round':
+        const cx = x + width / 2;
+        const cy = y + height / 2;
+        return (
+          <circle
+            cx={cx}
+            cy={cy}
+            r={width / 2}
+            className='memory-block__block'
+          />
+
+          // <rect
+          //   {...pick(this.props, ['x', 'y', 'width', 'height'])}
+          //   className='memory-block__block'
+          // ></rect>
+        );
+    }
   }
 
   render() {
@@ -68,7 +104,7 @@ export class MemoryBlock extends Component<IProps, IState> {
       </text>
     );
 
-    const labelText = label && (
+    const labelText = label && label.length && (
       <text
         x={x + width / 2}
         y={y - height / 2}
@@ -76,19 +112,13 @@ export class MemoryBlock extends Component<IProps, IState> {
         textAnchor='middle'
         className='memory-block__text italic'
       >
-        {label}
+        {label.join(' / ')}
       </text>
     );
 
     return (
       <g className={this.produceClassName()}>
-        <rect
-          x={x}
-          y={y}
-          width={width}
-          height={height}
-          className='memory-block__block'
-        ></rect>
+        {this.renderMemoryBlockContainer()}
         {valueText}
         {labelText}
         {children}
@@ -97,4 +127,6 @@ export class MemoryBlock extends Component<IProps, IState> {
   }
 }
 
-export default MemoryBlock;
+export default withExtendClassName('memory-block__wrapper has-transition')(
+  MemoryBlock,
+);

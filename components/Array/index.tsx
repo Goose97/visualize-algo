@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 // import produce from 'immer';
-// import { pick, omit } from 'lodash';
+import { pick } from 'lodash';
 
 // import { MemoryBlock, AutoTransformGroup } from 'components';
 // import transformModel from './ModelTransformer';
@@ -8,8 +8,8 @@ import React, { Component } from 'react';
 // import LinkedListPointer from './LinkedListPointer';
 // import { promiseSetState } from 'utils';
 // import { withReverseStep } from 'hocs';
-import { IProps, IState, ArrayModel } from './index.d';
-import { Action } from 'types';
+import { IProps, IState, ArrayModel, ArrayNode } from './index.d';
+import { Action, PointCoordinate } from 'types';
 // import {
 //   LINKED_LIST_BLOCK_WIDTH,
 //   LINKED_LIST_BLOCK_HEIGHT,
@@ -17,6 +17,7 @@ import { Action } from 'types';
 import ArrayMemoryBlock from './ArrayMemoryBlock';
 import transformArrayModel from './ModelTransformer';
 import MemoryBlock from 'components/MemoryBlock';
+import PickerButton from 'antd/lib/date-picker/PickerButton';
 
 export class Array extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -89,6 +90,18 @@ export class Array extends Component<IProps, IState> {
     return newModel;
   }
 
+  push(currentModel: ArrayModel, params: [number]) {
+    const biggestKey = Math.max(...currentModel.map(({ key }) => key));
+    const newArrayNode: ArrayNode = {
+      value: params[0],
+      key: biggestKey + 1,
+      index: currentModel.length,
+      visible: true
+    }
+    const newModel = transformArrayModel(currentModel, 'push', [newArrayNode]);
+    return newModel;
+  }
+
   componentDidUpdate(prevProps: IProps) {
     // const { currentStep, reverseToStep } = this.props;
 
@@ -138,14 +151,14 @@ export class Array extends Component<IProps, IState> {
 
     const newArrayModel = this.consumeMultipleActions(
       actionsToMakeAtThisStep,
-      arrayModel
+      arrayModel,
     );
     this.setState({ arrayModel: newArrayModel });
   }
 
   consumeMultipleActions(
     actionList: Action[],
-    currentModel: ArrayModel
+    currentModel: ArrayModel,
   ): ArrayModel {
     // Treat each action as a transformation function which take a linkedListModel
     // and return a new one. Consuming multiple actions is merely chaining those
@@ -176,18 +189,17 @@ export class Array extends Component<IProps, IState> {
   render() {
     const { arrayModel } = this.state;
     const { blockType } = this.props;
-    // // console.log('arrayModel', arrayModel)
+    const origin =
+      'x' in this.props
+        ? pick(this.props, ['x', 'y']) as PointCoordinate
+        : { x: 100, y: 200 };
     const arrayMemoryBlock = arrayModel.map(arrayNode => (
       <ArrayMemoryBlock
         {...arrayNode}
-        origin={{
-          x: 100,
-          y: 200,
-        }}
+        origin={origin}
         blockType={blockType}
       />
     ));
-
 
     return (
       <g>

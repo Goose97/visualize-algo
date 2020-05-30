@@ -1,4 +1,6 @@
 .parameter-input-popover {
+  @extend .f-normal;
+
   & + div {
     .ant-popover {
       min-width: 200px;

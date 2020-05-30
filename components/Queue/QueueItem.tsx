@@ -60,6 +60,7 @@ export class QueueItem extends Component<QueueItemProps, QueueItemState> {
           {...this.initialCoordinate}
           {...pick(this.props, ['value'])}
           visible
+          type='rectangle'
         />
       </AutoTransformGroup>
     );

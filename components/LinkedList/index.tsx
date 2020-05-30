@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import produce from 'immer';
-import { pick, omit, flatMap, groupBy } from 'lodash';
+import { omit, flatMap, groupBy } from 'lodash';
 
-import { AutoTransformGroup } from 'components';
 import transformModel from './ModelTransformer';
 import HeadPointer from './HeadPointer';
 import LinkedListMemoryBlock from './LinkedListMemoryBlock';
@@ -15,6 +14,7 @@ import {
   IState,
   LinkedListNodeModel,
   LinkedListDataStructure,
+  LinkedListMethod,
 } from './index.d';
 import { Action, ActionWithStep } from 'types';
 import {
@@ -120,7 +120,7 @@ export class LinkedList extends Component<PropsWithHoc, IState>
   }
 
   consumeMultipleActions(
-    actionList: Action[],
+    actionList: Action<LinkedListMethod>[],
     currentModel: LinkedListModel,
     onlyTranformData?: boolean,
   ): LinkedListModel {
@@ -261,13 +261,13 @@ export class LinkedList extends Component<PropsWithHoc, IState>
   visit(currentModel: LinkedListModel, params: [number, number]) {
     // Nếu node không phải node đầu tiên thì ta sẽ thực thi hàm followLinkToNode
     // Hàm này chịu trách nhiệm thực hiện animation, sau khi animation hoàn thành
-    // callbackk handleFinishFollowLink sẽ được thực hiện
+    // callback handleAfterVisitAnimationFinish sẽ được thực hiện
     // Nếu node là node đầu tiên thì ta không có animation để thực hiện, focus luôn vào node
     const [nodeKeyToStart, nodeKeyToVisit] = params;
     if (nodeKeyToVisit !== 0) {
       this.followLinkToNode(nodeKeyToVisit);
       setTimeout(() => {
-        this.handleFinishFollowLink(nodeKeyToStart, nodeKeyToVisit);
+        this.handleAfterVisitAnimationFinish(nodeKeyToStart, nodeKeyToVisit);
       }, 400);
     } else {
       this.focus(currentModel, [nodeKeyToVisit, false]);
@@ -281,7 +281,7 @@ export class LinkedList extends Component<PropsWithHoc, IState>
     this.setState({ nodeAboutToVisit: linkedListModel[nodeIndex].key });
   }
 
-  handleFinishFollowLink = (
+  handleAfterVisitAnimationFinish = (
     startNodeKey: number | null,
     destinationNodeKey: number,
   ) => {
@@ -329,7 +329,7 @@ export class LinkedList extends Component<PropsWithHoc, IState>
       let newBlock = draft.find(({ key }) => key === newNodeKey);
       newBlock!.visible = false;
     });
-    // this.setState({ linkedListModel: newLinkedListModel });
+    this.setState({ linkedListModel: newLinkedListModel });
 
     this.addOrRemoveNodeAboutToAppear(newNodeKey);
     setTimeout(() => {
@@ -497,15 +497,11 @@ export class LinkedList extends Component<PropsWithHoc, IState>
   render() {
     const { linkedListModel, isVisible } = this.state;
     const listMemoryBlock = linkedListModel.map(linkedListNode => (
-      <AutoTransformGroup
-        origin={pick(linkedListNode, ['x', 'y'])}
+      <LinkedListMemoryBlock
+        {...omit(linkedListNode, ['key'])}
+        label={this.produceMemoryBlockLabel(linkedListNode)}
         key={linkedListNode.key}
-      >
-        <LinkedListMemoryBlock
-          {...omit(linkedListNode, ['key'])}
-          label={this.produceMemoryBlockLabel(linkedListNode)}
-        />
-      </AutoTransformGroup>
+      />
     ));
     const listPointerLink = linkedListModel.map((_, index) =>
       this.renderPointerLinkForMemoryBlock(index),

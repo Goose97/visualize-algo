@@ -37,6 +37,7 @@
 
 .code-container {
   background-color: #272822;
+  overflow: auto;
 
   & > pre {
     @extend .pl-12;

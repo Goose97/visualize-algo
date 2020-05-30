@@ -1,14 +1,14 @@
 export type ObjectType<T = any> = { [key: string]: T };
 
 export interface StepInstruction {
-  actions?: Action[];
+  actions?: ObjectType<Action[]>;
   codeLine?: string;
   explanationStep?: number;
   duration?: number;
 }
 
-export interface Action {
-  name: string;
+export interface Action<T = string> {
+  name: T;
   params: Array<any>;
 }
 
@@ -22,3 +22,10 @@ export interface PointCoordinate {
 }
 
 export type DataStructureMethod<T> = (model: T, params: any) => T;
+
+export interface BaseMemoryBlockProps {
+  visible?: boolean;
+  focus?: boolean;
+  value: string | number | null;
+  label?: string[];
+}

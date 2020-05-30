@@ -1,6 +1,6 @@
 import { pick } from 'lodash';
 
-import { ObjectType } from 'types';
+import { ObjectType, Action, StepInstruction } from 'types';
 
 export const classNameHelper = (object: ObjectType<string | boolean>) => {
   let baseClassName = (object.base as string) || '';
@@ -63,4 +63,19 @@ export const getProgressDirection = (
 export const upcaseFirstLetter = (string: string) => {
   if (string.length === 0) return string;
   return string[0].toUpperCase() + string.slice(1);
+};
+
+export const keyExist = (object: Object, keys: string[]) => {
+  return keys.every(key => key in object);
+};
+
+export const extractInstructionFromDescription = (
+  description: StepInstruction[],
+  dsName: string,
+): Action[][] => {
+  return description.map(({ actions }) => {
+    if (!actions) return [];
+    if (!actions[dsName]) return [];
+    return actions[dsName];
+  });
 };

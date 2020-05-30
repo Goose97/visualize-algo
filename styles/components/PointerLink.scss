@@ -27,6 +27,12 @@
     }
   }
 
+  &.following {
+    .pointer-link__line:not(.follow) {
+      opacity: 0.3;
+    }
+  }
+
   .pointer-link__arrow {
     fill: lighten($primary-text-color, 15%);
 

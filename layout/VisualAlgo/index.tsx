@@ -77,7 +77,7 @@ export class VisualAlgo extends Component<IProps, IState> {
   scheduleNextStepConsumation(wait: number) {
     this.nextStepTimeoutToken = setTimeout(
       this.increaseCurrentStep,
-      wait || DEFAULT_WAIT
+      wait || DEFAULT_WAIT,
     );
   }
 
@@ -164,8 +164,8 @@ export class VisualAlgo extends Component<IProps, IState> {
     const { codeLine, explanationStep, autoPlay } = this.state;
 
     const visualizationScreen = (
-      <div className="fx-3 fx-col visual-container shadow">
-        <div className="fx fx-between px-8 py-2">
+      <div className='fx-3 fx-col visual-container shadow'>
+        <div className='fx fx-between px-8 py-2'>
           <ApiController
             {...pick(this.props, [
               'apiList',
@@ -191,17 +191,17 @@ export class VisualAlgo extends Component<IProps, IState> {
 
     const codeAndExplanation = (
       <div
-        className="fx-row fx-2"
+        className='fx-row fx-2'
         style={{ position: 'relative', maxHeight: this.newHeight }}
       >
         <div
-          className="drag-handler"
+          className='drag-handler'
           onMouseDown={this.handleStartResize}
         ></div>
-        <div className="fx-3 code-container">
+        <div className='fx-3 code-container'>
           <CodeBlock code={code} highlightLine={codeLine} />
         </div>
-        <div className="fx-2">
+        <div className='fx-2'>
           <ExplanationBlock
             explanation={explanation}
             currentStep={explanationStep}
@@ -211,7 +211,7 @@ export class VisualAlgo extends Component<IProps, IState> {
     );
 
     return (
-      <div className="fx-col vh-100">
+      <div className='fx-col vh-100'>
         {visualizationScreen}
         {codeAndExplanation}
       </div>

@@ -18,8 +18,11 @@ import {
 } from 'instructions/LinkedList';
 import 'styles/main.scss';
 import { LinkedListOperation } from 'instructions/LinkedList/index.d';
-import { LinkedListModel } from 'components/LinkedList/index.d';
-import { StepInstruction } from 'types';
+import {
+  LinkedListModel,
+  LinkedListMethod,
+} from 'components/LinkedList/index.d';
+import { StepInstruction, Action } from 'types';
 
 interface IState {
   data?: number[];
@@ -279,7 +282,9 @@ export class LinkedListPage extends Component<IProps, IState> {
       { value: 'detectCycle', label: 'Detect Cycle' },
     ];
 
-    const instructions = stepDescription.map(({ actions }) => actions || []);
+    const instructions = stepDescription.map(
+      ({ actions }) => actions || [],
+    ) as Action<LinkedListMethod>[][];
 
     return (
       <VisualAlgo

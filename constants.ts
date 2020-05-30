@@ -19,4 +19,9 @@ export const STACK_BLOCK_HEIGHT = 40;
 export const STACK_BLOCK_GAP = 10;
 export const STACK_BOUNDARY_GAP = 15;
 
+export const GRAPH_NODE_RADIUS = 25;
+
+export const BST_CHILD_DISTANCE_FROM_PARENT = 50;
+export const TREE_LIKE_LEVEL_GAP = 100;
+
 export const LINE_HEIGHT = 30;

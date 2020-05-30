@@ -2,8 +2,8 @@
   .memory-block__block {
     @extend .default-stroke;
     @extend .has-transition;
+    @extend .stroke-2;
     fill: $background-light;
-    stroke-width: 1px;
   }
 
   .memory-block__text {
@@ -23,7 +23,7 @@
     }
 
     .memory-block__text {
-      fill: $disable-text-color;
+      fill: $disable-text-color !important;
     }
   }
 
@@ -37,5 +37,21 @@
     .memory-block__text {
       fill: $primary-color;
     }
+  }
+
+  &.focus-to-delete {
+    .memory-block__block,
+    .memory-block__separate-line {
+      fill: lighten($destructive-color, 30%);
+      stroke: $destructive-color;
+    }
+
+    .memory-block__text {
+      fill: $white-text-color;
+    }
+  }
+
+  &.appearing {
+    animation: fadeIn 0.65s ease;
   }
 }
