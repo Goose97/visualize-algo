@@ -8,7 +8,7 @@ import LinkedListHTML from './LinkedListHTML';
 import LinkedListMemoryBlock from './LinkedListMemoryBlock';
 import LinkedListPointer from './LinkedListPointer';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
-import { getProgressDirection } from 'utils';
+import { getProgressDirection, keyExist } from 'utils';
 import { IProps, IState } from './index.d';
 import { Action, ActionWithStep, ObjectType } from 'types';
 import { LinkedList } from 'types/ds/LinkedList';
@@ -131,39 +131,29 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
     } = this.props;
     const { linkedListModel } = this.state;
 
-    switch (
-      getProgressDirection(currentStep, prevProps.currentStep, totalStep)
-    ) {
-      case 'forward':
-        this.checkIfHTMLNeedToRerender(prevProps.currentStep);
-        saveStepSnapshots(linkedListModel, currentStep);
-        this.handleForward();
-        break;
+    // Update according to algorithm progression
+    if (keyExist(this.props, ['currentStep', 'totalStep', 'instructions'])) {
+      switch (
+        getProgressDirection(currentStep!, prevProps.currentStep!, totalStep!)
+      ) {
+        case 'forward':
+          this.checkIfHTMLNeedToRerender(prevProps.currentStep!);
+          saveStepSnapshots(linkedListModel, currentStep!);
+          this.handleForward();
+          break;
 
-      case 'backward':
-        reverseToStep(currentStep);
-        break;
+        case 'backward':
+          reverseToStep(currentStep!);
+          break;
 
-      case 'fastForward':
-        this.handleFastForward();
-        break;
+        case 'fastForward':
+          this.handleFastForward();
+          break;
 
-      case 'fastBackward':
-        this.handleFastBackward();
-        break;
-    }
-  }
-
-  getProgressDirection(previousStep: number) {
-    const { totalStep, currentStep } = this.props;
-    if (previousStep === undefined) return 'forward';
-    if (currentStep === previousStep) return 'stay';
-    if (currentStep > previousStep) {
-      if (currentStep - previousStep === 1) return 'forward';
-      else if (currentStep === totalStep) return 'fastForward';
-    } else {
-      if (previousStep - currentStep === 1) return 'backward';
-      else if (currentStep === 0) return 'fastBackward';
+        case 'fastBackward':
+          this.handleFastBackward();
+          break;
+      }
     }
   }
 
@@ -174,7 +164,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
     // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
     const { linkedListModel } = this.state;
     const { currentStep, instructions } = this.props;
-    const actionsToMakeAtThisStep = instructions[currentStep];
+    const actionsToMakeAtThisStep = instructions[currentStep!];
     if (!actionsToMakeAtThisStep || !actionsToMakeAtThisStep.length) return;
 
     // This consume pipeline have many side effect in each step. Each

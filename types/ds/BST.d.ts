@@ -20,6 +20,7 @@ export declare namespace BST {
     | 'postorder';
 
   export type Method =
+    | 'visit'
     | 'visited'
     | 'focus'
     | 'resetFocus'

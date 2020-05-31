@@ -343,6 +343,7 @@ const preorderTraversalInstruction = (data: BST.InputData) => {
     { name: 'resetFocus', params: [] },
     { name: 'visited', params: [currentFocusKey] },
   ]);
+  
   instructions.pushActionsAndEndStep('bst', [{ name: 'resetAll', params: [] }]);
 
   return instructions.get();
@@ -357,6 +358,7 @@ const inorderTraversalInstruction = (data: BST.InputData) => {
     const { key, left, right, val } = tree;
     if (left) inorderHelper(left);
 
+    instructions.pushActions('array', [{ name: 'push', params: [val] }]);
     instructions.pushActionsAndEndStep('bst', [
       { name: 'resetFocus', params: [] },
       { name: 'focus', params: [key] },
@@ -390,6 +392,7 @@ const postorderTraversalInstruction = (data: BST.InputData) => {
     if (left) postorderHelper(left);
     if (right) postorderHelper(right);
 
+    instructions.pushActions('array', [{ name: 'push', params: [val] }]);
     instructions.pushActionsAndEndStep('bst', [
       { name: 'resetFocus', params: [] },
       { name: 'focus', params: [key] },

@@ -1,18 +1,25 @@
-const env = require("./env-config.js");
+const env = require('./env-config.js');
 
 module.exports = {
-  presets: ["next/babel"],
+  presets: ['next/babel'],
   plugins: [
-    ["transform-define", env],
+    ['transform-define', env],
     [
-      "module-resolver",
+      'module-resolver',
       {
-        root: ["."],
+        root: ['.'],
         alias: {
-          styles: "./styles"
+          styles: './styles',
         },
-        cwd: "babelrc"
-      }
-    ]
-  ]
+        cwd: 'babelrc',
+      },
+    ],
+    ['lodash'],
+    [
+      'import',
+      {
+        libraryName: 'antd',
+      },
+    ],
+  ],
 };

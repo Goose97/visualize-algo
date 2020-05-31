@@ -68,7 +68,7 @@ const deleteCode = `function delete(value) {
   parentOfPredecessor.right = null;
 }`;
 
-export const code = {
+export const code: Record<BST.Api, string[]> = {
   search: searchCode,
   insert: insertCode,
   delete: deleteCode,
