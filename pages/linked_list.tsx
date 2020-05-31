@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import { LinkedListDS, CanvasContainer, InitLinkedListInput } from 'components';
-import LinkedListHTML from 'components/LinkedList/LinkedListHTML';
 import { VisualAlgo } from 'layout';
 import { extractInstructionFromDescription } from 'utils';
 import { linkedListInstruction } from 'instructions/LinkedList';

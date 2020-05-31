@@ -36,3 +36,13 @@ export interface HTMLRendererParams<T = {}> {
   coordinate: PointCoordinate;
   apiHandler?: (apiName: string, params?: ObjectType<any>) => void;
 }
+
+export interface BaseDSProps {
+  x: number;
+  y: number;
+  currentStep?: number;
+  totalStep?: number;
+  interactive?: boolean;
+  controlled?: boolean;
+  handleExecuteApi?: (apiName: string, params?: ObjectType<any>) => void;
+}

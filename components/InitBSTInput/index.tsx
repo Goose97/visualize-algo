@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Input } from 'antd';
 
-import { Button, CustomModal, BinarySearchTree } from 'components';
+import { Button, CustomModal, BinarySearchTreeDS } from 'components';
 import withExtendClassName, {
   WithExtendClassName,
 } from 'hocs/withExtendClassName';
@@ -79,11 +79,11 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
       <div className='init-bst-modal__preview fx-7'>
         <svg className='h-full w-full'>
           {!!input.length && (
-            <BinarySearchTree
+            <BinarySearchTreeDS
               x={10}
               y={50}
               initialData={input}
-              updateWhenDataChanges
+              controlled
             />
           )}
         </svg>

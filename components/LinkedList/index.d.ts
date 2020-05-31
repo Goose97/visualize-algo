@@ -1,17 +1,16 @@
-import { Action, DataStructureMethod, BaseMemoryBlockProps } from 'types';
+import {
+  Action,
+  DataStructureMethod,
+  BaseMemoryBlockProps,
+  BaseDSProps,
+} from 'types';
 import { LinkedList } from 'types/ds/LinkedList';
 import { WithReverseStep } from '../../hocs/withReverseStep';
 import { IProps as PointerLinkProps } from 'components/PointerLink/index.d';
 
-export interface IProps {
-  x: number;
-  y: number;
-  currentStep: number;
-  totalStep: number;
+export interface IProps extends BaseDSProps {
   instructions: Action<LinkedList.Method>[][];
   initialData: number[];
-  interactive?: boolean;
-  handleExecuteApi?: (apiName: string, params?: ObjectType<any>) => void;
 }
 
 export interface IState {
