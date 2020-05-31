@@ -179,10 +179,6 @@ const deleteInstruction = (
 
   instructions.setCodeLine(codeLines.complete);
   instructions.pushActionsAndEndStep('linkedList', [
-    { name: 'focus', params: [null] },
-  ]);
-
-  instructions.pushActionsAndEndStep('linkedList', [
     { name: 'resetAll', params: [] },
   ]);
 

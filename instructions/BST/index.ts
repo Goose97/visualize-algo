@@ -1,5 +1,5 @@
 import { initBinaryTree, BinaryTreeNode } from './helper';
-import { StepInstruction, ObjectType } from 'types';
+import { ObjectType } from 'types';
 import { BST } from 'types/ds/BST';
 import { Instructions } from 'instructions';
 
@@ -323,9 +323,7 @@ const preorderTraversalInstruction = (data: BST.InputData) => {
 
   function preorderHelper(tree: BinaryTreeNode) {
     const { key, left, right, val } = tree;
-    instructions.pushActions('array', [
-      { name: 'push', params: [val] },
-    ]);
+    instructions.pushActions('array', [{ name: 'push', params: [val] }]);
     instructions.pushActions('bst', [
       { name: 'resetFocus', params: [] },
       { name: 'focus', params: [key] },

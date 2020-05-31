@@ -2,7 +2,7 @@ import React from 'react';
 
 import { HTMLRenderer, DropdownWithParamsInput } from 'components';
 import BSTNodeApiDropdown from './BSTNodeApiDropdown';
-import { ObjectType, PointCoordinate } from 'types';
+import { HTMLRendererParams } from 'types';
 import { BST } from 'types/ds/BST';
 
 const options: Array<{ label: string; value: string }> = [
@@ -44,22 +44,18 @@ const requiredParams = {
   },
 };
 
-interface BinarySearchTreeHTMLParams {
-  model: BST.Model;
-  wrapperElement: SVGGElement | null;
-  coordinate: PointCoordinate;
-  apiHandler?: (apiName: string, params?: ObjectType<any>) => void;
-}
-
 export class BinarySearchTreeHTML {
-  static renderToView(params: BinarySearchTreeHTMLParams) {
+  static renderToView(params: HTMLRendererParams<BST.Model>) {
     const { wrapperElement, coordinate, apiHandler, model } = params;
     if (wrapperElement) {
       const { width, height } = wrapperElement.getBoundingClientRect();
-      const dropdownForEachTreeNode = model.map(({ value, x, y }) => (
-        <div style={{ position: 'absolute', top: y, left: x }} key={value}>
-          <BSTNodeApiDropdown value={value} handler={apiHandler} />
-        </div>
+      const dropdownForEachTreeNode = model.map(({ value, x, y, key }) => (
+        <BSTNodeApiDropdown
+          value={value}
+          handler={apiHandler}
+          coordinate={{ x, y }}
+          key={key}
+        />
       ));
 
       const elementToRender = (

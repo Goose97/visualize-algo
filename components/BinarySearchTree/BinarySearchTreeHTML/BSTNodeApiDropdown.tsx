@@ -68,10 +68,15 @@ export class BSTNodeApiDropdown extends Component<
 
   render() {
     const { isMenuVisible } = this.state;
-    const style = {
+    const { coordinate } = this.props;
+    const style: React.CSSProperties = {
       width: 2 * GRAPH_NODE_RADIUS + 30,
       height: 2 * GRAPH_NODE_RADIUS + 20,
+      position: 'absolute',
+      top: coordinate.y,
+      left: coordinate.x,
     };
+
     return (
       <div style={style} className={this.produceClassName()}>
         <CustomDropDown

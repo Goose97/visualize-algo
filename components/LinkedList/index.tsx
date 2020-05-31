@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import produce from 'immer';
-import { omit, flatMap, groupBy } from 'lodash';
+import { omit, flatMap, groupBy, pick, isFunction } from 'lodash';
 
 import transformLinkedListModel from 'transformers/LinkedList';
 import HeadPointer from './HeadPointer';
+import LinkedListHTML from './LinkedListHTML';
 import LinkedListMemoryBlock from './LinkedListMemoryBlock';
 import LinkedListPointer from './LinkedListPointer';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { getProgressDirection } from 'utils';
 import { IProps, IState } from './index.d';
-import { Action, ActionWithStep } from 'types';
+import { Action, ActionWithStep, ObjectType } from 'types';
 import { LinkedList } from 'types/ds/LinkedList';
 import {
   LINKED_LIST_BLOCK_WIDTH,
@@ -20,7 +21,7 @@ type PropsWithHoc = IProps & WithReverseStep<LinkedList.Model>;
 
 export class LinkedListDS extends Component<PropsWithHoc, IState> {
   private initialLinkedListModel: LinkedList.Model;
-  private wrapperRef: React.RefObject<SVGGElement>;
+  private wrapperRef: React.RefObject<SVGUseElement>;
 
   constructor(props: PropsWithHoc) {
     super(props);
@@ -49,15 +50,77 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
   }
 
   componentDidMount() {
-    this.injectHTMLIntoCanvas();
+    const { interactive } = this.props;
+    if (interactive) this.injectHTMLIntoCanvas();
   }
 
   injectHTMLIntoCanvas() {
-    const { renderHtmlElements } = this.props;
     const { linkedListModel } = this.state;
-    renderHtmlElements &&
-      renderHtmlElements(linkedListModel, this.wrapperRef.current);
+    const { handleExecuteApi } = this.props;
+    setTimeout(() => {
+      LinkedListHTML.renderToView({
+        model: linkedListModel,
+        wrapperElement: this.wrapperRef.current,
+        coordinate: pick(this.props, ['x', 'y']),
+        apiHandler: (apiName: string, params?: ObjectType<any>) => {
+          if (!isFunction(handleExecuteApi)) return;
+          const paramsToInvoke = this.produceParametersToExecuteApi(
+            apiName,
+            params,
+          );
+          handleExecuteApi(apiName, paramsToInvoke);
+        },
+      });
+    }, 0);
   }
+
+  produceParametersToExecuteApi = (
+    apiName: string,
+    params?: ObjectType<any>,
+  ) => {
+    const { linkedListModel } = this.state;
+    switch (apiName) {
+      case 'search': {
+        //@ts-ignore
+        const { key, value } = params;
+        let valueToSearch = value;
+        if (valueToSearch == null) {
+          const nodeToSearch = linkedListModel.find(
+            ({ key: nodeKey }) => nodeKey === key,
+          );
+          valueToSearch = nodeToSearch && nodeToSearch.value;
+        }
+
+        return { value: valueToSearch };
+      }
+
+      case 'insert': {
+        //@ts-ignore
+        const { key, value, index } = params;
+        let indexToInsert = index;
+        if (indexToInsert == null) {
+          indexToInsert = linkedListModel.findIndex(
+            ({ key: nodeKey }) => nodeKey === key,
+          );
+        }
+
+        return { index: indexToInsert, value };
+      }
+
+      case 'delete': {
+        //@ts-ignore
+        const { key, index } = params;
+        let indexToDelete = index;
+        if (indexToDelete == null) {
+          indexToDelete = linkedListModel.findIndex(
+            ({ key: nodeKey }) => nodeKey === key,
+          );
+        }
+
+        return { index: indexToDelete };
+      }
+    }
+  };
 
   componentDidUpdate(prevProps: IProps) {
     const {
@@ -157,7 +220,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
     // of the svg. Then we must rerender the html
     if (
       actionMadeAtPreviousStep.some(({ name }) =>
-        ['add', 'remove'].includes(name),
+        ['insert', 'remove'].includes(name),
       )
     ) {
       this.injectHTMLIntoCanvas();
@@ -171,8 +234,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
   }
 
   caculateBlockCoordinate(nodeIndex: number) {
-    const { x: baseX, y: baseY } = this.props;
-    return { x: baseX + nodeIndex * (2 * LINKED_LIST_BLOCK_WIDTH), y: baseY };
+    return { x: nodeIndex * (2 * LINKED_LIST_BLOCK_WIDTH), y: 0 };
   }
 
   visit = (currentModel: LinkedList.Model, params: [number, number]) => {
@@ -444,11 +506,20 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
 
     return (
       isVisible && (
-        <g ref={this.wrapperRef}>
-          <HeadPointer headBlock={this.findNextBlock(-1)} />
-          {listMemoryBlock}
-          {listPointerLink}
-        </g>
+        <>
+          <use
+            href='#linked-list'
+            {...pick(this.props, ['x', 'y'])}
+            ref={this.wrapperRef}
+          />
+          <defs>
+            <g id='linked-list'>
+              <HeadPointer headBlock={this.findNextBlock(-1)} />
+              {listMemoryBlock}
+              {listPointerLink}
+            </g>
+          </defs>
+        </>
       )
     );
   }

@@ -1,18 +1,11 @@
+import { PointCoordinate } from "types";
+
 export interface BSTNodeApiDropdownProps {
-  value: number | string;
+  value: number | string | null;
   handler?: (apiName: string, params: ObjectType<any>) => void;
+  coordinate: PointCoordinate;
 }
 
 export interface BSTNodeApiDropdownState {
-  isMenuVisible: boolean;
-}
-
-export interface BSTApiDropdownProps {
-  onSearch: (params: ObjectType<any>) => void;
-  onInsert: (params: ObjectType<any>) => void;
-  onDelete: (params: ObjectType<any>) => void;
-}
-
-export interface BSTApiDropdownState {
   isMenuVisible: boolean;
 }
