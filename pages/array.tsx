@@ -2,20 +2,37 @@ import React, { Component, cloneElement } from 'react';
 import produce from 'immer';
 
 import {
-  LinkedList,
   CanvasContainer,
   Input,
   Button,
-  InitLinkedListInput,
-  Array as ArrayDataStructure,
+  ArrayDS as ArrayDataStructure,
 } from 'components';
-import { VisualAlgo } from 'layout';
-import { produceFullState, promiseSetState } from 'utils';
-import { arrayInstruction, code, explanation } from 'instructions/Array';
-import 'styles/main.scss';
 
-export class ArrayPage extends Component {
-  constructor(props) {
+import { VisualAlgo } from 'layout';
+import {
+  produceFullState,
+  promiseSetState,
+  extractInstructionFromDescription,
+} from 'utils';
+import { arrayInstruction } from 'instructions/Array';
+import { code, explanation } from 'codes/Array';
+import 'styles/main.scss';
+import { StepInstruction, Action } from 'types';
+import { Array } from 'types/ds/Array.d';
+
+interface IState {
+  data?: number[];
+  currentStep?: number;
+  currentApi?: Array.Api;
+  stepDescription: StepInstruction[];
+  autoPlay: boolean;
+  parameters: any;
+}
+
+interface IProps {}
+
+export class ArrayPage extends Component<IProps, IState> {
+  constructor(props: IProps) {
     super(props);
 
     this.state = {
@@ -52,7 +69,7 @@ export class ArrayPage extends Component {
           <span>
             Thêm vào giá trị{' '}
             <Input
-              className='ml-2'
+              className="ml-2"
               onChange={this.handleChangeInput('value', convertToNumber)}
             />
           </span>
@@ -63,7 +80,7 @@ export class ArrayPage extends Component {
           <span>
             Thêm vào giá trị{' '}
             <Input
-              className='ml-2'
+              className="ml-2"
               onChange={this.handleChangeInput('value', convertToNumber)}
             />
           </span>
@@ -134,14 +151,14 @@ export class ArrayPage extends Component {
     switch (currentApi) {
       case 'init':
         return (
-          <Button type='primary' onClick={() => this.initArrayData(false)}>
+          <Button type="primary" onClick={() => this.initArrayData(false)}>
             Khởi tạo
           </Button>
         );
       default:
         return (
           <Button
-            type='primary'
+            type="primary"
             onClick={this.handleStartAlgorithm}
             disabled={isButtonDisabled}
           >
@@ -194,7 +211,8 @@ export class ArrayPage extends Component {
           return parseInt(item, 10);
         });
       } else
-        arrayData = Array(10)
+        arrayData = window
+          .Array(10)
           .fill(0)
           .map(() => Math.round(Math.random() * 10));
 
@@ -206,7 +224,7 @@ export class ArrayPage extends Component {
     return new Promise(resolve =>
       this.setState({ data: undefined }, () => {
         this.setState({ data: arrayData }, () => resolve());
-      }),
+      })
     );
   };
 
@@ -234,8 +252,12 @@ export class ArrayPage extends Component {
     ];
     const fullState = produceFullState(
       stepDescription.map(({ state }) => state),
-      ['data', 'currentNode'],
+      ['data', 'currentNode']
     );
+    const arrayInstruction = extractInstructionFromDescription(
+      stepDescription,
+      'array'
+    ) as Action<Array.Method>[][];
 
     const instructions = stepDescription.map(({ actions }) => actions || []);
     return (
@@ -259,7 +281,7 @@ export class ArrayPage extends Component {
                 blockType={blockType}
                 initialData={data}
                 currentStep={currentStep}
-                instructions={instructions}
+                instructions={arrayInstruction}
                 totalStep={stepDescription.length - 1}
               />
             )}

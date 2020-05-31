@@ -10,7 +10,7 @@ export { default as Input } from './Input';
 export { default as Button } from './Button';
 export { default as InitLinkedListInput } from './InitLinkedListInput';
 export { default as AutoTransformGroup } from './AutoTransformGroup';
-export { default as Array } from './Array';
+export { default as ArrayDS } from './ArrayDS';
 export { default as Queue } from './Queue';
 export { default as Stack } from './Stack';
 export { default as BinarySearchTreeDS } from './BinarySearchTree';

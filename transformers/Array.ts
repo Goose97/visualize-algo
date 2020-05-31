@@ -1,14 +1,14 @@
 import produce from 'immer';
 
-import { ArrayModel, ArrayMethod } from './index.d';
+import { Array } from 'types/ds/Array';
 
 // Nhận vào trạng thái hiện tại của data structure
 // và operation tương ứng. Trả về trạng thái mới
 const transformArrayModel = (
-  currentModel: ArrayModel,
-  operation: ArrayMethod,
+  currentModel: Array.Model,
+  operation: Array.Method,
   payload: any[]
-): ArrayModel => {
+): Array.Model => {
   switch (operation) {
     case 'swap': {
       const [from, to] = payload;
