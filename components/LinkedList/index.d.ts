@@ -10,10 +10,8 @@ export interface IProps {
   totalStep: number;
   instructions: Action<LinkedList.Method>[][];
   initialData: number[];
-  renderHtmlElements?: (
-    model: LinkedList.Model,
-    wrapperElement: SVGGElement | null,
-  ) => void;
+  interactive?: boolean;
+  handleExecuteApi?: (apiName: string, params?: ObjectType<any>) => void;
 }
 
 export interface IState {

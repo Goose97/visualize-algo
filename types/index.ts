@@ -29,3 +29,10 @@ export interface BaseMemoryBlockProps {
   value: string | number | null;
   label?: string[];
 }
+
+export interface HTMLRendererParams<T = {}> {
+  model: T;
+  wrapperElement: SVGGElement | null;
+  coordinate: PointCoordinate;
+  apiHandler?: (apiName: string, params?: ObjectType<any>) => void;
+}

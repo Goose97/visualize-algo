@@ -1,21 +1,14 @@
 import React, { Component } from 'react';
-import produce from 'immer';
 
-import {
-  LinkedListDS,
-  CanvasContainer,
-  Input,
-  Button,
-  InitLinkedListInput,
-} from 'components';
+import { LinkedListDS, CanvasContainer, InitLinkedListInput } from 'components';
 import LinkedListHTML from 'components/LinkedList/LinkedListHTML';
 import { VisualAlgo } from 'layout';
-import { promiseSetState, extractInstructionFromDescription } from 'utils';
+import { extractInstructionFromDescription } from 'utils';
 import { linkedListInstruction } from 'instructions/LinkedList';
 import 'styles/main.scss';
 import { LinkedList } from 'types/ds/LinkedList';
 import { code, explanation } from 'codes/LinkedList';
-import { StepInstruction, Action } from 'types';
+import { StepInstruction, Action, ObjectType } from 'types';
 
 interface IState {
   data?: number[];
@@ -29,7 +22,6 @@ interface IState {
 interface IProps {}
 
 export class LinkedListPage extends Component<IProps, IState> {
-  private originalLinkedListData: number[] | null;
   private ref: React.RefObject<any>;
 
   constructor(props: IProps) {
@@ -40,7 +32,6 @@ export class LinkedListPage extends Component<IProps, IState> {
       stepDescription: [],
       autoPlay: false,
     };
-    this.originalLinkedListData = null;
     this.ref = React.createRef();
   }
 
@@ -92,47 +83,10 @@ export class LinkedListPage extends Component<IProps, IState> {
   //   );
   // };
 
-  renderHtmlElements = (
-    model: LinkedList.Model,
-    wrapperElement: SVGGElement | null,
-  ) => {
-    // Lỗi liên quan đến việc svg element chưa đc render đúng vị trí
-    // setTimeout somehow fixed it!!
-    setTimeout(() => {
-      LinkedListHTML.renderToView({
-        wrapperElement,
-        model: model,
-        onSearch: ({ key: nodeKey, value }) => {
-          let valueToFind = value;
-          if (valueToFind === undefined) {
-            const node = model.find(({ key }) => key === nodeKey);
-            valueToFind = node?.value;
-          }
-
-          this.handleExecuteApi('search', { value: valueToFind });
-        },
-        onInsert: ({ key: nodeKey, value, index }) => {
-          let indexToInsert = index;
-          if (indexToInsert === undefined)
-            indexToInsert = model.findIndex(({ key }) => key === nodeKey);
-
-          this.handleExecuteApi('insert', { value, index: indexToInsert });
-        },
-        onDelete: ({ key: nodeKey, index }) => {
-          let nodeIndexToDelete = index;
-          if (nodeIndexToDelete === undefined)
-            nodeIndexToDelete = model.findIndex(({ key }) => key === nodeKey);
-
-          this.handleExecuteApi('delete', { index: nodeIndexToDelete });
-        },
-      });
-    }, 0);
-  };
-
-  handleExecuteApi(api: LinkedList.Api, params: any) {
+  handleExecuteApi = (api: LinkedList.Api, params: ObjectType<any>) => {
     const stepDescription = this.generateStepDescription(api, params);
-    this.setState({ stepDescription, autoPlay: true });
-  }
+    this.setState({ stepDescription, autoPlay: true, currentApi: api });
+  };
 
   generateStepDescription(currentApi: LinkedList.Api, parameters: any) {
     const { data } = this.state;
@@ -176,7 +130,9 @@ export class LinkedListPage extends Component<IProps, IState> {
               totalStep={stepDescription.length - 1}
               instructions={linkedListInstruction}
               initialData={data}
-              renderHtmlElements={this.renderHtmlElements}
+              //@ts-ignore
+              handleExecuteApi={this.handleExecuteApi}
+              interactive
             />
           </CanvasContainer>
         ) : (

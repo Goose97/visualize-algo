@@ -44,10 +44,12 @@ export class LinkedListNodeApiDropdown extends Component<
   }
 
   handleSelectApi(api: LinkedList.Api, params: Object) {
-    const method = `on${upcaseFirstLetter(api)}`;
-    //@ts-ignore
-    const handler = this.props[method];
-    handler && handler(params);
+    const { handler } = this.props;
+    // const method = `on${upcaseFirstLetter(api)}`;
+    // //@ts-ignore
+    // const handler = this.props[method];
+    // handler && handler(params);
+    handler && handler(api, params);
     this.setState({ isMenuVisible: false });
   }
 
@@ -109,10 +111,15 @@ export class LinkedListNodeApiDropdown extends Component<
 
   render() {
     const { isMenuVisible } = this.state;
-    const style = {
+    const { coordinate } = this.props;
+    const style: React.CSSProperties = {
       width: LINKED_LIST_BLOCK_WIDTH + 40,
       height: LINKED_LIST_BLOCK_HEIGHT + 30,
+      position: 'absolute',
+      top: coordinate.y,
+      left: coordinate.x,
     };
+
     return (
       <div style={style} className={this.produceClassName()}>
         <CustomDropDown

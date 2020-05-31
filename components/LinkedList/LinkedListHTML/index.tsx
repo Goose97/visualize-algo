@@ -1,82 +1,69 @@
 import React from 'react';
-import { pick } from 'lodash';
 
-import { HTMLRenderer } from 'components';
-import { LinkedListModel } from '../index.d';
-
+import { HTMLRenderer, DropdownWithParamsInput } from 'components';
 import LinkedListNodeApiDropdown from './LinkedListNodeApiDropdown';
-import LinkedListApiDropdown from './LinkedListApiDropdown';
-import { ObjectType, PointCoordinate } from 'types';
+import { HTMLRendererParams } from 'types';
+import { LinkedList } from 'types/ds/LinkedList';
 
-interface LinkedListHTMLParams {
-  wrapperElement: SVGGElement | null;
-  model: LinkedListModel;
-  onSearch: (params: ObjectType<any>) => void;
-  onInsert: (params: ObjectType<any>) => void;
-  onDelete: (params: ObjectType<any>) => void;
-}
+const options: Array<{ label: string; value: string }> = [
+  {
+    label: 'Search',
+    value: 'search',
+  },
+  {
+    label: 'Insert',
+    value: 'insert',
+  },
+  {
+    label: 'Delete',
+    value: 'delete',
+  },
+];
+
+const requiredParams = {
+  search: {
+    value: 'number',
+  },
+  delete: {
+    index: 'number',
+  },
+  insert: {
+    value: 'number',
+    index: 'number',
+  },
+};
 
 export class LinkedListHTML {
-  static renderToView(params: LinkedListHTMLParams) {
-    const { wrapperElement } = params;
-    wrapperElement && LinkedListHTML.renderApiDropDown(wrapperElement, params);
-    LinkedListHTML.renderActionDropdownForEachNode(params);
-  }
-
-  static renderApiDropDown = (() => {
-    let originalCoordinate: PointCoordinate | undefined;
-
-    // Here is the real function
-    return (wrapperElement: SVGGElement, params: LinkedListHTMLParams) => {
-      let dropdownCoordinate;
-      const dropdownToSelectApi = (
-        <LinkedListApiDropdown
-          {...pick(params, ['onSearch', 'onInsert', 'onDelete'])}
-        />
-      );
-      const htmlOverlayPosition = HTMLRenderer.getHTMLOverlayPosition();
-
-      if (!htmlOverlayPosition) return;
-      if (originalCoordinate) {
-        const { width } = wrapperElement.getBoundingClientRect();
-        dropdownCoordinate = {
-          x: originalCoordinate.x + width + 50,
-          y: originalCoordinate.y - htmlOverlayPosition.y - 20,
-        };
-      } else {
-        const { x, y, width } = wrapperElement.getBoundingClientRect();
-        originalCoordinate = { x, y };
-        dropdownCoordinate = {
-          x: x + width + 50,
-          y: y - htmlOverlayPosition.y - 20,
-        };
-      }
-
-      HTMLRenderer.inject(
-        dropdownToSelectApi,
-        dropdownCoordinate,
-        'linked-list-dropdown',
-      );
-    };
-  })();
-
-  static renderActionDropdownForEachNode(params: LinkedListHTMLParams) {
-    const { model } = params;
-    model.forEach(({ x, y, key }) => {
-      const elementToRender = (
+  static renderToView(params: HTMLRendererParams<LinkedList.Model>) {
+    const { wrapperElement, coordinate, model, apiHandler } = params;
+    if (wrapperElement) {
+      const { width, height } = wrapperElement.getBoundingClientRect();
+      const dropdownForEachTreeNode = model.map(({ x, y, key }) => (
         <LinkedListNodeApiDropdown
-          {...pick(params, ['onSearch', 'onInsert', 'onDelete'])}
           nodeKey={key}
+          handler={apiHandler}
+          coordinate={{ x, y }}
+          key={key}
         />
+      ));
+
+      const elementToRender = (
+        <div style={{ width, height }} className='linked-list-html__wrapper'>
+          <DropdownWithParamsInput
+            options={options}
+            requiredApiParams={requiredParams}
+            handler={apiHandler}
+          />
+          {dropdownForEachTreeNode}
+        </div>
       );
-      const coordinate = { x, y };
 
       HTMLRenderer.inject(
         elementToRender,
         coordinate,
-        `linked-list-node-dropdown__${key}`,
+        `linked-list-html__wrapper`,
       );
-    });
+    }
   }
 }
 
