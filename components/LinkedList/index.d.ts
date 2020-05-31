@@ -1,61 +1,38 @@
 import { Action, DataStructureMethod, BaseMemoryBlockProps } from 'types';
+import { LinkedList } from 'types/ds/LinkedList';
 import { WithReverseStep } from '../../hocs/withReverseStep';
 import { IProps as PointerLinkProps } from 'components/PointerLink/index.d';
-
-export type LinkedListModel = LinkedListNodeModel[];
-export interface LinkedListNodeModel extends BaseMemoryBlockProps {
-  x: number;
-  y: number;
-  index: number;
-  key: number;
-  visited: boolean;
-  pointer: number | null; // pointer to the next node
-}
 
 export interface IProps {
   x: number;
   y: number;
   currentStep: number;
   totalStep: number;
-  instructions: Action<LinkedListMethod>[][];
+  instructions: Action<LinkedList.Method>[][];
   initialData: number[];
   renderHtmlElements?: (
-    model: LinkedListModel,
+    model: LinkedList.Model,
     wrapperElement: SVGGElement | null,
   ) => void;
-};
+}
 
 export interface IState {
-  linkedListModel: LinkedListModel;
+  linkedListModel: LinkedList.Model;
   nodeAboutToAppear: Set<number>;
   nodeAboutToVisit?: number;
   isVisible: boolean;
 }
 
-export type LinkedListNormalMethod =
-  | 'add'
-  | 'remove'
-  | 'visit'
-  | 'focus'
-  | 'label'
-  | 'changePointer';
-export type LinkedListReverseMethod =
-  | 'reverseAdd'
-  | 'reverseRemove'
-  | 'reverseVisit'
-  | 'reverseFocus';
-export type LinkedListMethod = LinkedListNormalMethod | LinkedListReverseMethod;
-
 export type LinkedListDataStructure = Record<
   LinkedListNormalMethod,
-  DataStructureMethod<LinkedListModel>
+  DataStructureMethod<LinkedList.Model>
 >;
 
 export type LinkedListPointerProps = Pick<
   PointerLinkProps,
   'following' | 'visited' | 'visible' | 'arrowDirection'
 > & {
-  linkedListModel: LinkedListModel;
+  linkedListModel: LinkedList.Model;
   nodeAboutToAppear: Set<number>;
   from: number;
   to: number | null;
@@ -65,11 +42,10 @@ export interface LinkedListMemoryBlockProps extends BaseMemoryBlockProps {
   x: number;
   y: number;
   visited?: boolean;
-  label?: string;
   isNew?: boolean;
 }
 
 export interface LinkedListHTMLProps {
   wrapperElement: SVGGElement;
-  linkedListModel: LinkedListModel;
+  linkedListModel: LinkedList.Model;
 }

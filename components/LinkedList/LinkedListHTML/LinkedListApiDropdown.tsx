@@ -6,11 +6,11 @@ import {
   LinkedListApiDropdownProps,
   LinkedListApiDropdownState,
 } from './index.d';
-import { LinkedListOperation } from '../../../instructions/LinkedList/index.d';
+import { LinkedList } from 'types/ds/LinkedList';
 import { classNameHelper, upcaseFirstLetter } from 'utils';
 import { ObjectType } from 'types';
 
-const options: Array<{ label: string; value: LinkedListOperation }> = [
+const options: Array<{ label: string; value: LinkedList.Api }> = [
   {
     label: 'Search',
     value: 'search',
@@ -37,7 +37,7 @@ export class LinkedListApiDropdown extends Component<
     };
   }
 
-  handleSelectApi(api: LinkedListOperation, params: Object) {
+  handleSelectApi(api: LinkedList.Api, params: Object) {
     const paramsAfterTypeConversion = this.convertTypeForParameters(
       params,
       api,
@@ -49,10 +49,7 @@ export class LinkedListApiDropdown extends Component<
     this.setState({ isMenuVisible: false });
   }
 
-  convertTypeForParameters(
-    params: ObjectType<any>,
-    apiName: LinkedListOperation,
-  ) {
+  convertTypeForParameters(params: ObjectType<any>, apiName: LinkedList.Api) {
     const paramsType = this.getApiRequiredParams(apiName);
     let newParams: ObjectType<number | string> = {};
     Object.entries(params).forEach(([name, value]) => {
@@ -99,7 +96,7 @@ export class LinkedListApiDropdown extends Component<
   }
 
   getApiRequiredParams(
-    apiName: LinkedListOperation,
+    apiName: LinkedList.Api,
   ): ObjectType<'number' | 'string'> {
     switch (apiName) {
       case 'search':
