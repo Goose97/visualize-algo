@@ -2,24 +2,13 @@ import React, { Component } from 'react';
 // import produce from 'immer';
 import { pick } from 'lodash';
 
-// import { MemoryBlock, AutoTransformGroup } from 'components';
-// import transformModel from './ModelTransformer';
-// import HeadPointer from './HeadPointer';
-// import LinkedListPointer from './LinkedListPointer';
-// import { promiseSetState } from 'utils';
-// import { withReverseStep } from 'hocs';
-import { IProps, IState, ArrayModel, ArrayNode } from './index.d';
+import { IProps, IState } from './index.d';
 import { Action, PointCoordinate } from 'types';
-// import {
-//   LINKED_LIST_BLOCK_WIDTH,
-//   LINKED_LIST_BLOCK_HEIGHT,
-// } from '../../constants';
 import ArrayMemoryBlock from './ArrayMemoryBlock';
-import transformArrayModel from './ModelTransformer';
-import MemoryBlock from 'components/MemoryBlock';
-import PickerButton from 'antd/lib/date-picker/PickerButton';
+import transformArrayModel from 'transformers/Array';
+import {Array} from 'types/ds/Array';
 
-export class Array extends Component<IProps, IState> {
+export class ArrayDS extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
@@ -40,7 +29,7 @@ export class Array extends Component<IProps, IState> {
     }));
   }
 
-  swap(currentModel: ArrayModel, params: [number, number]) {
+  swap(currentModel: Array.Model, params: [number, number]) {
     // console.log('from', from)
     // console.log('to', to)
     const newModel = transformArrayModel(currentModel, 'swap', params);
@@ -48,51 +37,51 @@ export class Array extends Component<IProps, IState> {
     return newModel;
   }
 
-  label(currentModel: ArrayModel, params: [number]) {
+  label(currentModel: Array.Model, params: [number]) {
     const newModel = transformArrayModel(currentModel, 'label', params);
     return newModel;
   }
 
-  unlabel(currentModel: ArrayModel, params: [number]) {
+  unlabel(currentModel: Array.Model, params: [number]) {
     const newModel = transformArrayModel(currentModel, 'unlabel', params);
     return newModel;
   }
 
-  resetFocus(currentModel: ArrayModel, params: [number, number]) {
+  resetFocus(currentModel: Array.Model, params: [number, number]) {
     const newModel = transformArrayModel(currentModel, 'resetFocus', params);
     return newModel;
   }
 
-  resetFocusAll(currentModel: ArrayModel, params: []) {
+  resetFocusAll(currentModel: Array.Model, params: []) {
     const newModel = transformArrayModel(currentModel, 'resetFocusAll', params);
     return newModel;
   }
 
-  focus(currentModel: ArrayModel, params: [number]) {
+  focus(currentModel: Array.Model, params: [number]) {
     const newModel = transformArrayModel(currentModel, 'focus', params);
 
     return newModel;
   }
 
-  complete(currentModel: ArrayModel, params: []) {
+  complete(currentModel: Array.Model, params: []) {
     const newModel = transformArrayModel(currentModel, 'complete', params);
 
     return newModel;
   }
 
-  setValue(currentModel: ArrayModel, params: []) {
+  setValue(currentModel: Array.Model, params: []) {
     const newModel = transformArrayModel(currentModel, 'setValue', params);
     return newModel;
   }
 
-  setLine(currentModel: ArrayModel, params: []) {
+  setLine(currentModel: Array.Model, params: []) {
     const newModel = transformArrayModel(currentModel, 'setLine', params);
     return newModel;
   }
 
-  push(currentModel: ArrayModel, params: [number]) {
+  push(currentModel: Array.Model, params: [number]) {
     const biggestKey = Math.max(...currentModel.map(({ key }) => key));
-    const newArrayNode: ArrayNode = {
+    const newArrayNode: Array.Node = {
       value: params[0],
       key: biggestKey + 1,
       index: currentModel.length,
@@ -158,8 +147,8 @@ export class Array extends Component<IProps, IState> {
 
   consumeMultipleActions(
     actionList: Action[],
-    currentModel: ArrayModel,
-  ): ArrayModel {
+    currentModel: Array.Model,
+  ): Array.Model {
     // Treat each action as a transformation function which take a linkedListModel
     // and return a new one. Consuming multiple actions is merely chaining those
     // transformations together
@@ -210,4 +199,4 @@ export class Array extends Component<IProps, IState> {
   }
 }
 
-export default Array;
+export default ArrayDS;
