@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import produce from 'immer';
 
 import {
-  LinkedList,
+  LinkedListDS,
   CanvasContainer,
   Input,
   Button,
@@ -10,24 +10,21 @@ import {
 } from 'components';
 import LinkedListHTML from 'components/LinkedList/LinkedListHTML';
 import { VisualAlgo } from 'layout';
-import { promiseSetState } from 'utils';
-import {
-  linkedListInstruction,
-  code,
-  explanation,
-} from 'instructions/LinkedList';
+import { promiseSetState, extractInstructionFromDescription } from 'utils';
+import { linkedListInstruction } from 'instructions/LinkedList';
 import 'styles/main.scss';
-import { LinkedListOperation } from 'instructions/LinkedList/index.d';
+import { LinkedList } from 'types/ds/LinkedList';
 import {
   LinkedListModel,
   LinkedListMethod,
 } from 'components/LinkedList/index.d';
+import { code, explanation } from 'codes/BST';
 import { StepInstruction, Action } from 'types';
 
 interface IState {
   data?: number[];
   currentStep?: number;
-  currentApi?: LinkedListOperation;
+  currentApi?: LinkedList.Api;
   stepDescription: StepInstruction[];
   autoPlay: boolean;
   parameters: any;
@@ -250,7 +247,7 @@ export class LinkedListPage extends Component<IProps, IState> {
     }, 0);
   };
 
-  handleExecuteApi(api: LinkedListOperation, params: any) {
+  handleExecuteApi(api: LinkedList.Api, params: any) {
     const stepDescription = this.generateStepDescription(api, params);
     this.setState({ stepDescription, autoPlay: true });
   }
@@ -260,7 +257,7 @@ export class LinkedListPage extends Component<IProps, IState> {
     this.setState({ autoPlay: newPlayingState });
   };
 
-  generateStepDescription(currentApi: LinkedListOperation, parameters: any) {
+  generateStepDescription(currentApi: LinkedList.Api, parameters: any) {
     const { data } = this.state;
     if (!currentApi) return [];
     return linkedListInstruction(data!, currentApi, parameters);
@@ -282,9 +279,10 @@ export class LinkedListPage extends Component<IProps, IState> {
       { value: 'detectCycle', label: 'Detect Cycle' },
     ];
 
-    const instructions = stepDescription.map(
-      ({ actions }) => actions || [],
-    ) as Action<LinkedListMethod>[][];
+    const linkedListInstruction = extractInstructionFromDescription(
+      stepDescription,
+      'linkedList',
+    ) as Action<LinkedList.Method>[][];
 
     return (
       <VisualAlgo
@@ -302,12 +300,12 @@ export class LinkedListPage extends Component<IProps, IState> {
       >
         {data ? (
           <CanvasContainer>
-            <LinkedList
+            <LinkedListDS
               x={100}
               y={200}
               currentStep={currentStep!}
               totalStep={stepDescription.length - 1}
-              instructions={instructions}
+              instructions={linkedListInstruction}
               initialData={data}
               renderHtmlElements={this.renderHtmlElements}
             />

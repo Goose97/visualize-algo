@@ -12,7 +12,7 @@ export interface Action<T = string> {
   params: Array<any>;
 }
 
-export interface ActionWithStep extends Action {
+export interface ActionWithStep<T = string> extends Action<T> {
   step: number;
 }
 

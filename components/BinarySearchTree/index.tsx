@@ -5,7 +5,7 @@ import { GraphMemoryBlock, PointerLink } from 'components';
 import BinarySearchTreeHTML from './BinarySearchTreeHTML';
 import { IProps, IState, LevelOrderTraversalQueue } from './index.d';
 import { BST } from 'types/ds/BST';
-import transformBSTModel from './ModelTransformer';
+import transformBSTModel from 'transformers/BST';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { getProgressDirection, keyExist } from 'utils';
 import {

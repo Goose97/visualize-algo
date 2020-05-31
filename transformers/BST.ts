@@ -13,7 +13,6 @@ const transformBSTModel = (
   switch (operation) {
     case 'visited': {
       const [nodeKeyToVisit] = payload;
-      console.log('nodeKeyToVisit', nodeKeyToVisit)
       return produce(currentModel, draft => {
         const treeNode = draft.find(({ key }) => key === nodeKeyToVisit);
         if (treeNode) treeNode.visited = true;
@@ -39,7 +38,7 @@ const transformBSTModel = (
       return produce(currentModel, draft => {
         const parentNode = draft.find(({ key }) => key === parentKey);
         if (parentNode) {
-          if (newNode.value > parentNode.value) {
+          if (newNode.value > parentNode.value!) {
             parentNode.right = newNode.key;
           } else {
             parentNode.left = newNode.key;

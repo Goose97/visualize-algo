@@ -10,12 +10,12 @@ import {
   LINKED_LIST_BLOCK_WIDTH,
   LINKED_LIST_BLOCK_HEIGHT,
 } from '../../../constants';
-import { LinkedListOperation } from '../../../instructions/LinkedList/index.d';
+import { LinkedList } from 'types/ds/LinkedList';
 import { classNameHelper, upcaseFirstLetter } from 'utils';
 
 const options: Array<{
   label: string;
-  value: LinkedListOperation;
+  value: LinkedList.Api;
 }> = [
   {
     label: 'Search',
@@ -43,7 +43,7 @@ export class LinkedListNodeApiDropdown extends Component<
     };
   }
 
-  handleSelectApi(api: LinkedListOperation, params: Object) {
+  handleSelectApi(api: LinkedList.Api, params: Object) {
     const method = `on${upcaseFirstLetter(api)}`;
     //@ts-ignore
     const handler = this.props[method];
