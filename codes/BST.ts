@@ -1,3 +1,5 @@
+import { BST } from 'types/ds/BST';
+
 const searchCode = `function search(data) {
   let current = this.root;
   while (current !== null) {
@@ -72,7 +74,7 @@ export const code = {
   delete: deleteCode,
 };
 
-export const explanation = {
+export const explanation: Record<BST.Api, string[]> = {
   search: [
     'Khởi tạo biến lưu node hiện tại với giá trị ban đầu là root của binary search tree',
     'So sánh giá trị đang tìm kiếm với giá trị của node hiện tại',

@@ -1,3 +1,5 @@
+import { LinkedList } from 'types/ds/LinkedList';
+
 const searchCode = `function search(value) {
   let current = this.list;
   let index = 0;
@@ -89,7 +91,7 @@ export const code = {
   detectCycle: detectCycleCode,
 };
 
-export const explanation = {
+export const explanation: Record<LinkedList.Api, string[]> = {
   search: [
     'Khởi tạo biến lưu giá trị node hiện tại là head của linked list và giá trị index bằng 0',
     'So sánh giá trị của node hiện tại với giá trị đang tìm kiếm',

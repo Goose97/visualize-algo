@@ -14,11 +14,7 @@ import { promiseSetState, extractInstructionFromDescription } from 'utils';
 import { linkedListInstruction } from 'instructions/LinkedList';
 import 'styles/main.scss';
 import { LinkedList } from 'types/ds/LinkedList';
-import {
-  LinkedListModel,
-  LinkedListMethod,
-} from 'components/LinkedList/index.d';
-import { code, explanation } from 'codes/BST';
+import { code, explanation } from 'codes/LinkedList';
 import { StepInstruction, Action } from 'types';
 
 interface IState {
@@ -48,170 +44,56 @@ export class LinkedListPage extends Component<IProps, IState> {
     this.ref = React.createRef();
   }
 
-  handleStepChange = stepIndex => {
+  handleStepChange = (stepIndex: number) => {
     this.setState({ currentStep: stepIndex });
   };
 
-  handleApiChange = newApi => {
-    this.setState({ currentApi: newApi, parameters: {} });
-  };
+  // handleStartAlgorithm = async () => {
+  //   try {
+  //     const visualAlgo = this.ref.current;
+  //     // Effectively reset the state
+  //     await visualAlgo.resetState();
+  //     await promiseSetState.call(this, {
+  //       data: undefined,
+  //       currentNode: undefined,
+  //       currentStep: undefined,
+  //     });
+  //     await this.initLinkedListData(true);
+  //     await this.handlePlayingChange(true);
+  //   } catch (error) {
+  //     console.log('error', error);
+  //     setTimeout(this.handleStartAlgorithm, 50);
+  //   }
+  // };
 
-  renderParameterInput() {
-    const { currentApi } = this.state;
-    const convertToNumber = value => parseInt(value);
-    switch (currentApi) {
-      case 'init':
-        return (
-          <span>
-            Nhập giá trị của linked list{' '}
-            <InitLinkedListInput onChange={this.handleChangeInput('value')} />
-          </span>
-        );
+  // initLinkedListData = (useOldData: boolean) => {
+  //   const {
+  //     parameters: { value },
+  //   } = this.state;
+  //   let linkedListData: number[];
+  //   if (useOldData && this.originalLinkedListData) {
+  //     linkedListData = this.originalLinkedListData;
+  //   } else {
+  //     if (value && value.length) linkedListData = value;
+  //     else
+  //       linkedListData = Array(5)
+  //         .fill(0)
+  //         .map(() => Math.round(Math.random() * 10));
 
-      case 'search':
-        return (
-          <span>
-            Tìm kiếm giá trị{' '}
-            <Input
-              className='ml-2'
-              onChange={this.handleChangeInput('value', convertToNumber)}
-            />
-          </span>
-        );
+  //     this.originalLinkedListData = linkedListData;
+  //   }
 
-      case 'delete':
-        return (
-          <span>
-            Xoá giá trị{' '}
-            <Input
-              className='ml-2'
-              onChange={this.handleChangeInput('index', convertToNumber)}
-            />
-          </span>
-        );
-
-      case 'reverse':
-        return null;
-
-      case 'insert':
-        return (
-          <div className='il-bl'>
-            <span>
-              Thêm giá trị{' '}
-              <Input
-                className='mx-2'
-                onChange={this.handleChangeInput('value', convertToNumber)}
-              />
-            </span>
-            <span>
-              tại index{' '}
-              <Input
-                className='ml-2'
-                onChange={this.handleChangeInput('index', convertToNumber)}
-              />
-            </span>
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  }
-
-  handleChangeInput = (parameterName, formatter) => value => {
-    const { parameters } = this.state;
-    const newParameters = produce(parameters, draft => {
-      draft[parameterName] = formatter ? formatter(value) : value;
-    });
-    this.setState({ parameters: newParameters });
-  };
-
-  renderActionButton() {
-    const {
-      currentApi,
-      parameters: { value, index },
-    } = this.state;
-    let isButtonDisabled;
-    switch (currentApi) {
-      case 'search':
-        isButtonDisabled = value === undefined;
-        break;
-      case 'add':
-        isButtonDisabled = value === undefined || index === undefined;
-        break;
-      case 'delete':
-        isButtonDisabled = index === undefined;
-        break;
-    }
-
-    switch (currentApi) {
-      case 'init':
-        return (
-          <Button type='primary' onClick={() => this.initLinkedListData(false)}>
-            Khởi tạo
-          </Button>
-        );
-      case undefined:
-        return null;
-      default:
-        return (
-          <Button
-            type='primary'
-            onClick={this.handleStartAlgorithm}
-            disabled={isButtonDisabled}
-          >
-            Bắt đầu
-          </Button>
-        );
-    }
-  }
-
-  handleStartAlgorithm = async () => {
-    try {
-      const visualAlgo = this.ref.current;
-      // Effectively reset the state
-      await visualAlgo.resetState();
-      await promiseSetState.call(this, {
-        data: undefined,
-        currentNode: undefined,
-        currentStep: undefined,
-      });
-      await this.initLinkedListData(true);
-      await this.handlePlayingChange(true);
-    } catch (error) {
-      console.log('error', error);
-      setTimeout(this.handleStartAlgorithm, 50);
-    }
-  };
-
-  initLinkedListData = (useOldData: boolean) => {
-    const {
-      parameters: { value },
-    } = this.state;
-    let linkedListData: number[];
-    if (useOldData && this.originalLinkedListData) {
-      linkedListData = this.originalLinkedListData;
-    } else {
-      if (value && value.length) linkedListData = value;
-      else
-        linkedListData = Array(5)
-          .fill(0)
-          .map(() => Math.round(Math.random() * 10));
-
-      this.originalLinkedListData = linkedListData;
-    }
-
-    // Phải làm thế này để buộc component linked list unmount
-    // Linked list chỉ khởi tạo state của nó 1 lần trong constructor
-    return new Promise(resolve =>
-      this.setState({ data: undefined }, () => {
-        this.setState({ data: linkedListData }, () => resolve());
-      }),
-    );
-  };
+  //   // Phải làm thế này để buộc component linked list unmount
+  //   // Linked list chỉ khởi tạo state của nó 1 lần trong constructor
+  //   return new Promise(resolve =>
+  //     this.setState({ data: undefined }, () => {
+  //       this.setState({ data: linkedListData }, () => resolve());
+  //     }),
+  //   );
+  // };
 
   renderHtmlElements = (
-    model: LinkedListModel,
+    model: LinkedList.Model,
     wrapperElement: SVGGElement | null,
   ) => {
     // Lỗi liên quan đến việc svg element chưa đc render đúng vị trí
@@ -252,16 +134,15 @@ export class LinkedListPage extends Component<IProps, IState> {
     this.setState({ stepDescription, autoPlay: true });
   }
 
-  handlePlayingChange = newPlayingState => {
-    // if (newPlayingState) this.generateStepDescription();
-    this.setState({ autoPlay: newPlayingState });
-  };
-
   generateStepDescription(currentApi: LinkedList.Api, parameters: any) {
     const { data } = this.state;
     if (!currentApi) return [];
     return linkedListInstruction(data!, currentApi, parameters);
   }
+
+  handlePlayingChange = (newPlayingState: boolean) => {
+    this.setState({ autoPlay: newPlayingState });
+  };
 
   render() {
     const {
@@ -271,14 +152,6 @@ export class LinkedListPage extends Component<IProps, IState> {
       stepDescription,
       autoPlay,
     } = this.state;
-    const apiList = [
-      { value: 'search', label: 'Search' },
-      { value: 'insert', label: 'Insert' },
-      { value: 'delete', label: 'Delete' },
-      { value: 'reverse', label: 'Reverse' },
-      { value: 'detectCycle', label: 'Detect Cycle' },
-    ];
-
     const linkedListInstruction = extractInstructionFromDescription(
       stepDescription,
       'linkedList',
@@ -286,14 +159,10 @@ export class LinkedListPage extends Component<IProps, IState> {
 
     return (
       <VisualAlgo
-        code={currentApi ? code[currentApi] : undefined}
-        explanation={currentApi ? explanation[currentApi] : undefined}
+        code={currentApi && code[currentApi]}
+        explanation={currentApi && explanation[currentApi]}
         stepDescription={stepDescription}
         onStepChange={this.handleStepChange}
-        // apiList={apiList}
-        // onApiChange={this.handleApiChange}
-        // parameterInput={this.renderParameterInput()}
-        // actionButton={this.renderActionButton()}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
         ref={this.ref}
