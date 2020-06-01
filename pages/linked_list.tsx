@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 
-import { LinkedListDS, CanvasContainer, InitLinkedListInput } from 'components';
+import { LinkedListDS, CanvasContainer, InitArrayInput } from 'components';
 import { VisualAlgo } from 'layout';
 import { extractInstructionFromDescription } from 'utils';
 import { linkedListInstruction } from 'instructions/LinkedList';
-import 'styles/main.scss';
 import { LinkedList } from 'types/ds/LinkedList';
 import { code, explanation } from 'codes/LinkedList';
 import { StepInstruction, Action, ObjectType } from 'types';
@@ -136,10 +135,11 @@ export class LinkedListPage extends Component<IProps, IState> {
           </CanvasContainer>
         ) : (
           <div className='h-full fx-center linked-list-page__init-button'>
-            <InitLinkedListInput
+            <InitArrayInput
               onSubmit={linkedListData =>
                 this.setState({ data: linkedListData })
               }
+              text='Create new linked list'
             />
           </div>
         )}

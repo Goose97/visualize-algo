@@ -1,22 +1,17 @@
-import React, { Component, cloneElement } from 'react';
+import React, { Component } from 'react';
 import produce from 'immer';
 
 import {
   CanvasContainer,
   Input,
   Button,
-  ArrayDS as ArrayDataStructure,
+  ArrayDS,
+  InitArrayInput,
 } from 'components';
-
 import { VisualAlgo } from 'layout';
-import {
-  produceFullState,
-  promiseSetState,
-  extractInstructionFromDescription,
-} from 'utils';
+import { promiseSetState, extractInstructionFromDescription } from 'utils';
 import { arrayInstruction } from 'instructions/Array';
 import { code, explanation } from 'codes/Array';
-import 'styles/main.scss';
 import { StepInstruction, Action } from 'types';
 import { Array } from 'types/ds/Array.d';
 
@@ -69,7 +64,7 @@ export class ArrayPage extends Component<IProps, IState> {
           <span>
             Thêm vào giá trị{' '}
             <Input
-              className="ml-2"
+              className='ml-2'
               onChange={this.handleChangeInput('value', convertToNumber)}
             />
           </span>
@@ -80,7 +75,7 @@ export class ArrayPage extends Component<IProps, IState> {
           <span>
             Thêm vào giá trị{' '}
             <Input
-              className="ml-2"
+              className='ml-2'
               onChange={this.handleChangeInput('value', convertToNumber)}
             />
           </span>
@@ -151,14 +146,14 @@ export class ArrayPage extends Component<IProps, IState> {
     switch (currentApi) {
       case 'init':
         return (
-          <Button type="primary" onClick={() => this.initArrayData(false)}>
+          <Button type='primary' onClick={() => this.initArrayData(false)}>
             Khởi tạo
           </Button>
         );
       default:
         return (
           <Button
-            type="primary"
+            type='primary'
             onClick={this.handleStartAlgorithm}
             disabled={isButtonDisabled}
           >
@@ -224,18 +219,13 @@ export class ArrayPage extends Component<IProps, IState> {
     return new Promise(resolve =>
       this.setState({ data: undefined }, () => {
         this.setState({ data: arrayData }, () => resolve());
-      })
+      }),
     );
   };
-
-  filterInstruction() {
-    instructions.filter(({ name }) => name !== 'createDeatchNode');
-  }
 
   render() {
     const {
       data,
-      currentNode,
       currentStep,
       currentApi,
       stepDescription,
@@ -250,20 +240,16 @@ export class ArrayPage extends Component<IProps, IState> {
       // { value: 'insert', label: 'Insert' },
       // { value: 'delete', label: 'Delete' },
     ];
-    const fullState = produceFullState(
-      stepDescription.map(({ state }) => state),
-      ['data', 'currentNode']
-    );
+
     const arrayInstruction = extractInstructionFromDescription(
       stepDescription,
-      'array'
+      'array',
     ) as Action<Array.Method>[][];
 
-    const instructions = stepDescription.map(({ actions }) => actions || []);
     return (
       <VisualAlgo
-        code={code[currentApi]}
-        explanation={explanation[currentApi]}
+        code={currentApi && code[currentApi]}
+        explanation={currentApi && explanation[currentApi]}
         stepDescription={stepDescription}
         onStepChange={this.handleStepChange}
         apiList={apiList}
@@ -274,19 +260,26 @@ export class ArrayPage extends Component<IProps, IState> {
         onPlayingChange={this.handlePlayingChange}
         ref={this.ref}
       >
-        {
+        {data ? (
           <CanvasContainer>
-            {data && (
-              <ArrayDataStructure
-                blockType={blockType}
-                initialData={data}
-                currentStep={currentStep}
-                instructions={arrayInstruction}
-                totalStep={stepDescription.length - 1}
-              />
-            )}
+            <ArrayDS
+              x={100}
+              y={200}
+              blockType={blockType}
+              initialData={data}
+              currentStep={currentStep}
+              instructions={arrayInstruction}
+              totalStep={stepDescription.length - 1}
+            />
           </CanvasContainer>
-        }
+        ) : (
+          <div className='h-full fx-center linked-list-page__init-button'>
+            <InitArrayInput
+              onSubmit={arrayData => this.setState({ data: arrayData })}
+              text='Create new array'
+            />
+          </div>
+        )}
       </VisualAlgo>
     );
   }

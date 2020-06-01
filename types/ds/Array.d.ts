@@ -1,15 +1,11 @@
 // import { IProps as MemoryBlockProps } from '../MemoryBlock';
-import { PointCoordinate } from 'types';
+import { PointCoordinate, BaseMemoryBlockProps } from 'types';
 
 export declare namespace Array {
-  export interface Node {
-    value: number | null;
+  export interface Node extends BaseMemoryBlockProps {
     key: number;
     index: number;
-    focus?: boolean;
     visited?: boolean;
-    visible: boolean;
-    label?: string[];
     hasLine?: boolean;
   }
 

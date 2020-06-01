@@ -20,18 +20,20 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   }
 
   calculatePosition() {
-    const { index, origin, blockType, value } = this.props;
-    const { height } = this.calculateSizeBlock(blockType, value || 0);
-    let xPosition = origin.x;
-    let yPosition = origin.y;
+    const { index, blockType, value } = this.props;
+    const { height } = this.calculateSizeBlock(
+      blockType,
+      this.parseValueToNumber(value),
+    );
+    let xPosition = 0;
+    let yPosition = 0;
     switch (blockType) {
       case 'block':
-        xPosition = xPosition + ARRAY_BLOCK_WIDTH * index;
-        yPosition = yPosition;
+        xPosition = ARRAY_BLOCK_WIDTH * index;
         break;
       case 'column':
-        xPosition = xPosition + (ARRAY_BLOCK_WIDTH + ARRAY_COLUMN_GAP) * index;
-        yPosition = yPosition - height;
+        xPosition = (ARRAY_BLOCK_WIDTH + ARRAY_COLUMN_GAP) * index;
+        yPosition = -height;
         break;
     }
     return {
@@ -40,13 +42,19 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
     };
   }
 
+  parseValueToNumber(value: number | string | null) {
+    if (!value) return 0;
+    if (typeof value === 'string') return parseInt(value);
+    return value;
+  }
+
   calculateLine() {
-    const { index, origin } = this.props;
+    const { index } = this.props;
     let x1, y1, x2, y2;
-    x1 = origin.x + ARRAY_BLOCK_WIDTH * (index + 1);
-    y1 = origin.y + ARRAY_BLOCK_HEIGHT + LINE_HEIGHT;
+    x1 = ARRAY_BLOCK_WIDTH * (index + 1);
+    y1 = ARRAY_BLOCK_HEIGHT + LINE_HEIGHT;
     x2 = x1;
-    y2 = origin.y - LINE_HEIGHT;
+    y2 = -LINE_HEIGHT;
     return {
       x1: x1,
       y1: y1,
@@ -79,7 +87,6 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
       visited,
       label,
       blockType,
-      origin,
       hasLine,
     } = this.props;
     const { x1, y1, x2, y2 } = this.calculateLine();
@@ -87,7 +94,10 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
       <AutoTransformGroup origin={this.calculatePosition()}>
         <MemoryBlock
           {...this.initialCoordinate}
-          {...this.calculateSizeBlock(blockType, value || 0)}
+          {...this.calculateSizeBlock(
+            blockType,
+            this.parseValueToNumber(value),
+          )}
           value={value}
           visible={!!visible}
           focus={focus}
@@ -97,7 +107,7 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
         />
         {hasLine && (
           <g>
-            <text x={x2 - 80} y={y2}>
+            <text x={x2 - 90} y={y2}>
               Đã sắp xếp
             </text>
             <Line x1={x1} x2={x2} y1={y1} y2={y2} />

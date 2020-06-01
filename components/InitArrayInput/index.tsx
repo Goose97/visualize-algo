@@ -10,7 +10,7 @@ import { IProps, IState } from './index.d';
 
 type PropsWithHoc = IProps & WithExtendClassName;
 
-export class InitLinkedListInput extends Component<PropsWithHoc, IState> {
+export class InitArrayInput extends Component<PropsWithHoc, IState> {
   private inputRef: React.RefObject<HTMLInputElement>;
   constructor(props: IProps) {
     super(props);
@@ -82,11 +82,11 @@ export class InitLinkedListInput extends Component<PropsWithHoc, IState> {
 
   render() {
     const { isTyping } = this.state;
-    const { className } = this.props;
+    const { className, text } = this.props;
     return (
       <div className={this.produceClassName()}>
         <Button type='primary' className={className} onClick={this.handleClick}>
-          {isTyping ? 'Initialize' : 'Create new linked list'}
+          {isTyping ? 'Initialize' : text}
           <Input
             ref={this.inputRef}
             onChange={this.handleChange}
@@ -99,4 +99,4 @@ export class InitLinkedListInput extends Component<PropsWithHoc, IState> {
   }
 }
 
-export default withExtendClassName('f-big-2 px-6 py-2')(InitLinkedListInput);
+export default withExtendClassName('f-big-2 px-6 py-2')(InitArrayInput);

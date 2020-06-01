@@ -6,12 +6,11 @@ import {
   CanvasContainer,
   Input,
   Button,
-  InitLinkedListInput,
+  InitArrayInput,
 } from 'components';
 import { VisualAlgo } from 'layout';
 import { promiseSetState } from 'utils';
 import { queueInstruction, code, explanation } from 'instructions/Queue';
-import 'styles/main.scss';
 
 export class QueuePage extends Component {
   constructor(props) {
@@ -42,7 +41,7 @@ export class QueuePage extends Component {
         return (
           <span>
             Nhập giá trị của linked list{' '}
-            <InitLinkedListInput onChange={this.handleChangeInput('value')} />
+            <InitArrayInput onChange={this.handleChangeInput('value')} />
           </span>
         );
 

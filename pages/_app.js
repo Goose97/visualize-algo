@@ -1,5 +1,5 @@
 // import App from 'next/app'
-import { Fragment } from 'react';
+import 'styles/main.scss';
 
 function CustomApp({ Component, pageProps }) {
   return <Component {...pageProps} />;
