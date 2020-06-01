@@ -4,7 +4,7 @@ import { BST } from 'types/ds/BST';
 import { Instructions } from 'instructions';
 
 export const bstInstruction = (
-  data: number[],
+  data: Array<number | null>,
   operation: BST.Api,
   parameters: any,
 ) => {

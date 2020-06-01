@@ -41,6 +41,7 @@ const selectionSort = `function selectionSort(arr){
 export const code = {
   bubbleSort: bubbleSort,
   selectionSort: selectionSort,
+  insertionSort: '',
 };
 
 export const explanation = {
@@ -59,4 +60,5 @@ export const explanation = {
     'Nếu phần tử  j nhỏ hơn min, đặt min bằng phần tử  j',
     'Sau lần duyệt thứ i, nếu min không phải phần tử thứ i, đổi chỗ  min, i',
   ],
+  insertionSort: [],
 };

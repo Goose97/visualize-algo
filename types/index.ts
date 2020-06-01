@@ -46,3 +46,9 @@ export interface BaseDSProps {
   controlled?: boolean;
   handleExecuteApi?: (apiName: string, params?: ObjectType<any>) => void;
 }
+
+export interface BaseDSPageState {
+  currentStep?: number;
+  stepDescription: StepInstruction[];
+  autoPlay: boolean;
+}

@@ -6,6 +6,7 @@ import { getProgressDirection, keyExist } from 'utils';
 import { IProps, IState } from './index.d';
 import { Action } from 'types';
 import ArrayMemoryBlock from './ArrayMemoryBlock';
+import ArrayHTML from './ArrayHTML';
 import transformArrayModel from 'transformers/Array';
 import { Array } from 'types/ds/Array';
 
@@ -160,6 +161,24 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     this.setState({ arrayModel: newLinkedListModel, isVisible: false }, () =>
       this.setState({ isVisible: true }),
     );
+  }
+
+  componentDidMount() {
+    const { interactive } = this.props;
+    if (interactive) this.injectHTMLIntoCanvas();
+  }
+
+  injectHTMLIntoCanvas() {
+    const { arrayModel } = this.state;
+    const { handleExecuteApi } = this.props;
+    setTimeout(() => {
+      ArrayHTML.renderToView({
+        model: arrayModel,
+        wrapperElement: this.wrapperRef.current,
+        coordinate: pick(this.props, ['x', 'y']),
+        apiHandler: handleExecuteApi,
+      });
+    }, 0);
   }
 
   render() {
