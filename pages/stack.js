@@ -6,12 +6,11 @@ import {
   CanvasContainer,
   Input,
   Button,
-  InitLinkedListInput,
+  InitArrayInput,
 } from 'components';
 import { VisualAlgo } from 'layout';
 import { promiseSetState } from 'utils';
 import { stackInstruction, code, explanation } from 'instructions/Stack';
-import 'styles/main.scss';
 
 export class StackPage extends Component {
   constructor(props) {
@@ -42,7 +41,7 @@ export class StackPage extends Component {
         return (
           <span>
             Nhập giá trị của linked list{' '}
-            <InitLinkedListInput onChange={this.handleChangeInput('value')} />
+            <InitArrayInput onChange={this.handleChangeInput('value')} />
           </span>
         );
 

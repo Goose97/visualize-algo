@@ -35,7 +35,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
     this.wrapperRef = React.createRef();
   }
 
-  initiateMemoryLinkedListModel(props: IProps): LinkedList.Model {
+  initiateMemoryLinkedListModel(props: PropsWithHoc): LinkedList.Model {
     const { initialData } = props;
     return initialData.map((value, index) => ({
       ...this.caculateBlockCoordinate(index),

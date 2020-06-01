@@ -1,4 +1,5 @@
 import produce from 'immer';
+import { uniq } from 'lodash';
 
 import { Array } from 'types/ds/Array';
 
@@ -7,7 +8,7 @@ import { Array } from 'types/ds/Array';
 const transformArrayModel = (
   currentModel: Array.Model,
   operation: Array.Method,
-  payload: any[]
+  payload: any[],
 ): Array.Model => {
   switch (operation) {
     case 'swap': {
@@ -37,7 +38,7 @@ const transformArrayModel = (
       const [keyToResetFocus] = payload;
       return produce(currentModel, draft => {
         const nodeToResetFocus = draft.find(
-          ({ key }) => key === keyToResetFocus
+          ({ key }) => key === keyToResetFocus,
         );
         if (nodeToResetFocus) {
           nodeToResetFocus.focus = false;
@@ -64,11 +65,21 @@ const transformArrayModel = (
     }
 
     case 'label': {
-      const [keyToLabel, label] = payload;
+      const [nodeKeyToLabel, label, removeThisLabelInOtherNode] = payload;
       return produce(currentModel, draft => {
-        const nodeToLabel = draft.find(({ key }) => key === keyToLabel);
+        if (removeThisLabelInOtherNode) {
+          draft.forEach(node => {
+            const oldLabel = node.label;
+            const newLabel =
+              oldLabel && oldLabel.filter(item => item !== label);
+            node.label = newLabel;
+          });
+        }
+
+        const nodeToLabel = draft.find(({ key }) => key === nodeKeyToLabel);
         if (nodeToLabel) {
-          nodeToLabel.label = label;
+          const oldLabel = nodeToLabel.label || [];
+          nodeToLabel.label = uniq(oldLabel.concat(label));
         }
       });
     }
@@ -87,12 +98,9 @@ const transformArrayModel = (
       const [keyToResetValue, value] = payload;
       return produce(currentModel, draft => {
         const nodeToResetValue = draft.find(
-          ({ key }) => key === keyToResetValue
+          ({ key }) => key === keyToResetValue,
         );
-        if (nodeToResetValue) {
-          nodeToResetValue.value = value;
-          // nodeToValue.value = 0;
-        }
+        if (nodeToResetValue) nodeToResetValue.value = value;
       });
     }
 

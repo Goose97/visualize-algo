@@ -4,7 +4,7 @@ import {
   BinarySearchTreeDS,
   CanvasContainer,
   InitBSTInput,
-  Array as ArrayDataStructure,
+  ArrayDS,
 } from 'components';
 import { VisualAlgo } from 'layout';
 import { extractInstructionFromDescription } from 'utils';
@@ -12,10 +12,9 @@ import { bstInstruction } from 'instructions/BST';
 import { StepInstruction, Action, ObjectType } from 'types';
 import { BST } from 'types/ds/BST';
 import { code, explanation } from 'codes/BST';
-import 'styles/main.scss';
 
 interface IState {
-  data?: number[];
+  data?: Array<number | null>;
   currentStep?: number;
   currentApi?: BST.Api;
   stepDescription: StepInstruction[];
@@ -140,7 +139,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
               interactive
             />
 
-            <ArrayDataStructure
+            <ArrayDS
               initialData={[]}
               blockType='block'
               instructions={arrayInstruction}
