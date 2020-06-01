@@ -6,15 +6,11 @@ import { extractInstructionFromDescription } from 'utils';
 import { linkedListInstruction } from 'instructions/LinkedList';
 import { LinkedList } from 'types/ds/LinkedList';
 import { code, explanation } from 'codes/LinkedList';
-import { StepInstruction, Action, ObjectType } from 'types';
+import { Action, ObjectType, BaseDSPageState } from 'types';
 
-interface IState {
+interface IState extends BaseDSPageState {
   data?: number[];
-  currentStep?: number;
   currentApi?: LinkedList.Api;
-  stepDescription: StepInstruction[];
-  autoPlay: boolean;
-  parameters: any;
 }
 
 interface IProps {}
@@ -26,7 +22,6 @@ export class LinkedListPage extends Component<IProps, IState> {
     super(props);
 
     this.state = {
-      parameters: {},
       stepDescription: [],
       autoPlay: false,
     };
@@ -36,50 +31,6 @@ export class LinkedListPage extends Component<IProps, IState> {
   handleStepChange = (stepIndex: number) => {
     this.setState({ currentStep: stepIndex });
   };
-
-  // handleStartAlgorithm = async () => {
-  //   try {
-  //     const visualAlgo = this.ref.current;
-  //     // Effectively reset the state
-  //     await visualAlgo.resetState();
-  //     await promiseSetState.call(this, {
-  //       data: undefined,
-  //       currentNode: undefined,
-  //       currentStep: undefined,
-  //     });
-  //     await this.initLinkedListData(true);
-  //     await this.handlePlayingChange(true);
-  //   } catch (error) {
-  //     console.log('error', error);
-  //     setTimeout(this.handleStartAlgorithm, 50);
-  //   }
-  // };
-
-  // initLinkedListData = (useOldData: boolean) => {
-  //   const {
-  //     parameters: { value },
-  //   } = this.state;
-  //   let linkedListData: number[];
-  //   if (useOldData && this.originalLinkedListData) {
-  //     linkedListData = this.originalLinkedListData;
-  //   } else {
-  //     if (value && value.length) linkedListData = value;
-  //     else
-  //       linkedListData = Array(5)
-  //         .fill(0)
-  //         .map(() => Math.round(Math.random() * 10));
-
-  //     this.originalLinkedListData = linkedListData;
-  //   }
-
-  //   // Phải làm thế này để buộc component linked list unmount
-  //   // Linked list chỉ khởi tạo state của nó 1 lần trong constructor
-  //   return new Promise(resolve =>
-  //     this.setState({ data: undefined }, () => {
-  //       this.setState({ data: linkedListData }, () => resolve());
-  //     }),
-  //   );
-  // };
 
   handleExecuteApi = (api: LinkedList.Api, params: ObjectType<any>) => {
     const stepDescription = this.generateStepDescription(api, params);
