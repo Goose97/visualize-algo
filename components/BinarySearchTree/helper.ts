@@ -92,54 +92,6 @@ export const caculateChildCoordinate = (
   };
 };
 
-export const caculatePointerPathFromTwoNodeCenter = (
-  nodeACenter: PointCoordinate,
-  nodeBCenter: PointCoordinate,
-  radius: number,
-) => {
-  const angle = caculateAngleOfLine(nodeACenter, nodeBCenter);
-  const contactPointWithA = {
-    x: nodeACenter.x + Math.cos(angle) * radius,
-    y: nodeACenter.y + Math.sin(angle) * radius,
-  };
-
-  // const contactPointWithB = {
-  //   x: nodeBCenter.x - Math.cos(angle) * radius,
-  //   y: nodeBCenter.y - Math.sin(angle) * radius,
-  // };
-
-  const length =
-    caculateLength(nodeACenter, nodeBCenter) - 2 * GRAPH_NODE_RADIUS;
-  const offsetForArrow = 6;
-  const path = `M ${contactPointWithA.x} ${contactPointWithA.y} h ${
-    length - offsetForArrow
-  }`;
-  const transform = `rotate(${(angle / Math.PI) * 180} ${contactPointWithA.x} ${
-    contactPointWithA.y
-  })`;
-  return { path, transform };
-};
-
-const caculateLength = (pointA: PointCoordinate, pointB: PointCoordinate) => {
-  return Math.sqrt((pointA.x - pointB.x) ** 2 + (pointA.y - pointB.y) ** 2);
-};
-
-const caculateAngleOfLine = (
-  start: PointCoordinate,
-  finish: PointCoordinate,
-) => {
-  const deltaX = finish.x - start.x;
-  const deltaY = finish.y - start.y;
-  let tan = deltaY / deltaX;
-  if (finish.x >= start.x) {
-    return Math.atan(tan);
-  } else {
-    return Math.atan(tan) > 0
-      ? Math.atan(tan) - Math.PI
-      : Math.atan(tan) + Math.PI;
-  }
-};
-
 export const produceInitialBSTData = (
   array: Array<number | null> | Array<string | null>,
 ): Omit<BST.NodeModel, 'x' | 'y'>[] => {

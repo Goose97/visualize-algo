@@ -1,13 +1,12 @@
 import { Instructions } from 'instructions';
-import { initArray } from "./helper";
+import { initArray } from './helper';
 import { ObjectType } from 'types';
 import { Array } from 'types/ds/Array';
-import { StepInstruction } from '../../types';
 
 export const arrayInstruction = (
   data: number[],
   operation: Array.Api,
-  parameters: any
+  parameters: any,
 ) => {
   switch (operation) {
     case 'bubbleSort':
@@ -35,27 +34,27 @@ const selectionSortInstruction = (data: number[], params: Array.SortParams) => {
   instructions.setCodeLine(codeLines.init);
 
   for (i = 0; i < len; i++) {
-    instructions.setCodeLine(codeLines.iteration)
+    instructions.setCodeLine(codeLines.iteration);
     min = i;
     instructions.pushActionsAndEndStep('array', [
-      { name: 'label', params: [array[i].key, 'current'] }
-    ])
+      { name: 'label', params: [array[i].key, 'current'] },
+    ]);
     for (j = i + 1; j < len; j++) {
       instructions.pushActionsAndEndStep('array', [
         { name: 'resetFocusAll', params: [] },
         { name: 'focus', params: [array[min].key] },
         { name: 'focus', params: [array[j].key] },
-      ])
+      ]);
       instructions.setCodeLine(codeLines.findMin);
       instructions.setCodeLine(codeLines.compare);
-      
+
       if (array[min].val > array[j].val) {
         instructions.pushActionsAndEndStep('array', [
           { name: 'resetFocus', params: [array[min].key] },
-            { name: 'unlabel', params: [array[min].key] },
-            { name: 'label', params: [array[j].key, 'min'] },
-            { name: 'label', params: [array[i].key, 'current'] },
-        ])
+          { name: 'unlabel', params: [array[min].key] },
+          { name: 'label', params: [array[j].key, 'min'] },
+          { name: 'label', params: [array[i].key, 'current'] },
+        ]);
         instructions.setCodeLine(codeLines.updateMin);
         min = j;
       }
@@ -66,8 +65,8 @@ const selectionSortInstruction = (data: number[], params: Array.SortParams) => {
         { name: 'resetFocusAll', params: [] },
         { name: 'unlabel', params: [array[min].key] },
         { name: 'unlabel', params: [array[i].key] },
-      ])
-      instructions.setCodeLine(codeLines.swap)
+      ]);
+      instructions.setCodeLine(codeLines.swap);
       let tmp = array[i];
       array[i] = array[min];
       array[min] = tmp;
@@ -76,7 +75,7 @@ const selectionSortInstruction = (data: number[], params: Array.SortParams) => {
       { name: 'complete', params: [array[i].key] },
       { name: 'resetFocusAll', params: [] },
       { name: 'unlabel', params: [array[min].key] },
-    ])
+    ]);
   }
 
   return instructions.get();
@@ -88,54 +87,52 @@ const bubbleSortInstruction = (data: number[], params: Array.SortParams) => {
   let array = initArray(data);
   const codeLines = getCodeLine('bubbleSort');
 
-
   // Start make instruction
   let len = array.length;
   let i, j, stop;
-  instructions.setCodeLine(codeLines.init)
+  instructions.setCodeLine(codeLines.init);
   for (i = 0; i < len; i++) {
-    instructions.setCodeLine(codeLines.iteration)
+    instructions.setCodeLine(codeLines.iteration);
     for (j = 0, stop = len - i - 1; j < stop; j++) {
       instructions.pushActionsAndEndStep('array', [
         { name: 'resetFocusAll', params: [] },
         { name: 'focus', params: [array[j].key] },
         { name: 'focus', params: [array[j + 1].key] },
-      ])
+      ]);
 
-      instructions.setCodeLine(codeLines.compare)
+      instructions.setCodeLine(codeLines.compare);
       if (array[j].val > array[j + 1].val) {
         instructions.pushActionsAndEndStep('array', [
-          { name: 'swap', params: [array[j].key, array[j + 1].key] }
-        ])
-        instructions.setCodeLine(codeLines.swap)
+          { name: 'swap', params: [array[j].key, array[j + 1].key] },
+        ]);
+        instructions.setCodeLine(codeLines.swap);
         let temp = array[j];
         array[j] = array[j + 1];
         array[j + 1] = temp;
       }
-      instructions.setCodeLine(codeLines.step)
+      instructions.setCodeLine(codeLines.step);
 
       if (j + 1 === stop) {
         instructions.pushActionsAndEndStep('array', [
-          { name: 'complete', params: [array[j + 1].key] }
-        ])
+          { name: 'complete', params: [array[j + 1].key] },
+        ]);
       }
     }
   }
 
   instructions.pushActionsAndEndStep('array', [
     { name: 'complete', params: [array[0].key] },
-      { name: 'resetFocusAll', params: [] },
-  ])
+    { name: 'resetFocusAll', params: [] },
+  ]);
 
   return instructions.get();
 };
 
-const insertionSortInstruction = (data: number[], params: SortParams) => {
+const insertionSortInstruction = (data: number[], params: Array.SortParams) => {
   let instructions = new Instructions();
   instructions.setDuration(1000);
   let array = initArray(data);
   const codeLines = getCodeLine('insertionSort');
-
 
   // Start make instruction
 
@@ -143,8 +140,8 @@ const insertionSortInstruction = (data: number[], params: SortParams) => {
   let i, j, keyValue;
   for (i = 1; i < len; i++) {
     instructions.pushActionsAndEndStep('array', [
-      { name: 'setLine', params: [array[i].key] }
-    ])
+      { name: 'setLine', params: [array[i].key] },
+    ]);
     keyValue = array[i].val;
     j = i - 1;
     /* Move elements of arr[0..i-1], that are 
@@ -153,22 +150,20 @@ const insertionSortInstruction = (data: number[], params: SortParams) => {
     for (j = i - 1; j >= 0 && array[j].val > keyValue; j--) {
       instructions.pushActionsAndEndStep('array', [
         { name: 'setValue', params: [array[j + 1].key, array[j].val] },
-          { name: 'setValue', params: [array[j].key, null] },
-      ])
+        { name: 'setValue', params: [array[j].key, null] },
+      ]);
       array[j + 1].val = array[j].val;
     }
     instructions.pushActionsAndEndStep('array', [
-      { name: 'setValue', params: [array[j + 1].key, keyValue] }
-    ])
+      { name: 'setValue', params: [array[j + 1].key, keyValue] },
+    ]);
     array[j + 1].val = keyValue;
   }
 
   return instructions.get();
 };
 
-const getCodeLine = (
-  operation: Array.Api
-): ObjectType<string> => {
+const getCodeLine = (operation: Array.Api): ObjectType<string> => {
   switch (operation) {
     case 'bubbleSort':
       return {
@@ -176,47 +171,19 @@ const getCodeLine = (
         compare: '14',
         swap: '15',
         iteration: '12',
-        step: '13'
-      }
-      // switch (operation) {
-      //   case 'init':
-      //     return { codeLine: '12-18', explanationStep: 1 };
-      //   case 'compare':
-      //     return { codeLine: '14', explanationStep: 3 };
-      //   case 'swap':
-      //     return { codeLine: '15', explanationStep: 4 };
-      //   case 'iteration':
-      //     return { codeLine: '12', explanationStep: 2 };
-      //   case 'step':
-      //     return { codeLine: '13', explanationStep: 5 };
-      //   default:
-      //     return {};
-      // }
+        step: '13',
+      };
+    
     case 'selectionSort':
-      return{
+      return {
         init: '1',
         swap: '10-14',
         iteration: '3',
         findMin: '5',
         updateMin: '6-7',
-        compare: '6'
-      }
-      // switch (subOperation) {
-      //   case 'init':
-      //     return { codeLine: '1', explanationStep: 1 };
-      //   case 'swap':
-      //     return { codeLine: '10-14', explanationStep: 5 };
-      //   case 'iteration':
-      //     return { codeLine: '3', explanationStep: 2 };
-      //   case 'findMin':
-      //     return { codeLine: '5', explanationStep: 3 };
-      //   case 'updateMin':
-      //     return { codeLine: '6-7', explanationStep: 4 };
-      //   case 'compare':
-      //     return { codeLine: '6', explanationStep: 4 };
-      //   default:
-      //     return {};
-      // }
+        compare: '6',
+      };
+    
     case 'insertionSort':
       return {
         init: '1',
@@ -224,26 +191,10 @@ const getCodeLine = (
         iteration: '3',
         findMin: '5',
         updateMin: '6-7',
-        compare: '6'
-      }
-      // switch (subOperation) {
-      //   case 'init':
-      //     return { codeLine: '1', explanationStep: 1 };
-      //   case 'swap':
-      //     return { codeLine: '10-14', explanationStep: 5 };
-      //   case 'iteration':
-      //     return { codeLine: '3', explanationStep: 2 };
-      //   case 'findMin':
-      //     return { codeLine: '5', explanationStep: 3 };
-      //   case 'updateMin':
-      //     return { codeLine: '6-7', explanationStep: 4 };
-      //   case 'compare':
-      //     return { codeLine: '6', explanationStep: 4 };
-      //   default:
-      //     return {};
-      // }
+        compare: '6',
+      };
+    
     default:
       return {};
   }
 };
-

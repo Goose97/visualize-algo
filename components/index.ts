@@ -22,3 +22,5 @@ export { default as CustomModal } from './CustomModal';
 export { default as InitBSTInput } from './InitBSTInput';
 export { default as DropdownWithParamsInput } from './DropdownWithParamsInput';
 export { default as Line } from './Line';
+export { default as GraphDS } from './Graph';
+export { default as GraphLikeEdges } from './GraphLikeEdges';

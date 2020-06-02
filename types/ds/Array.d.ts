@@ -13,8 +13,6 @@ export declare namespace Array {
 
   export type Api = 'bubbleSort' | 'selectionSort' | 'insertionSort';
 
-  export interface SortParams {};
-
   export type Method =
     | 'swap'
     | 'focus'
@@ -26,4 +24,6 @@ export declare namespace Array {
     | 'setValue'
     | 'setLine'
     | 'push';
+
+  export interface SortParams {}
 }

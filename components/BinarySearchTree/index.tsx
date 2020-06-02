@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { flatMap, pick, isEqual, groupBy } from 'lodash';
 
-import { GraphMemoryBlock, PointerLink } from 'components';
+import { GraphMemoryBlock, GraphLikeEdges } from 'components';
 import BinarySearchTreeHTML from './BinarySearchTreeHTML';
 import { IProps, IState, LevelOrderTraversalQueue } from './index.d';
 import { BST } from 'types/ds/BST';
@@ -11,12 +11,10 @@ import { getProgressDirection, keyExist } from 'utils';
 import {
   caculateTreeHeight,
   caculateChildCoordinate,
-  caculatePointerPathFromTwoNodeCenter,
   isNodeCoordinateCollideWithOtherNode,
   produceInitialBSTData,
 } from './helper';
 import { ObjectType, PointCoordinate, Action, ActionWithStep } from 'types';
-import { GRAPH_NODE_RADIUS } from '../../constants';
 
 type PropsWithHoc = IProps & WithReverseStep<BST.Model>;
 
@@ -357,41 +355,17 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
     );
   }
 
-  renderTree() {
-    const { isVisible } = this.state;
-    return (
-      isVisible && (
-        <>
-          <use
-            href='#binary-search-tree'
-            {...pick(this.props, ['x', 'y'])}
-            ref={this.wrapperRef}
-          />
-          <defs>
-            <g id='binary-search-tree' x='0' y='0'>
-              {this.renderTreeNode()}
-              {this.renderPointerLinkForNode()}
-            </g>
-          </defs>
-        </>
-      )
-    );
-  }
-
-  renderTreeNode() {
+  renderNodes() {
     const { bstModel } = this.state;
     return bstModel.map(node => <GraphMemoryBlock {...node} />);
   }
 
-  renderPointerLinkForNode() {
+  renderPointerLinks() {
     const { bstModel, nodeAboutToVisit } = this.state;
     return flatMap(bstModel, node => {
       const { left, right, key, visited } = node;
       const fromNode = this.findNodeCoordinateByKey(bstModel, key);
-      const from = {
-        x: fromNode.x + GRAPH_NODE_RADIUS,
-        y: fromNode.y + GRAPH_NODE_RADIUS,
-      };
+
       return [left, right].map(child => {
         if (!child) return null;
         const { visited: childVisited } = this.findNodeInTreeByKey(
@@ -399,19 +373,12 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
           child,
         );
         const toNode = this.findNodeCoordinateByKey(bstModel, child);
-        const to = {
-          x: toNode.x + GRAPH_NODE_RADIUS,
-          y: toNode.y + GRAPH_NODE_RADIUS,
-        };
-        const pathAndRotation = caculatePointerPathFromTwoNodeCenter(
-          from,
-          to,
-          GRAPH_NODE_RADIUS,
-        );
 
         return (
-          <PointerLink
-            {...pathAndRotation}
+          <GraphLikeEdges
+            // {...pathAndRotation}
+            from={pick(fromNode, ['x', 'y'])}
+            to={pick(toNode, ['x', 'y'])}
             key={child}
             visible={!!this.isNodeVisible(bstModel, child)}
             visited={visited && childVisited}
@@ -454,7 +421,24 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
   }
 
   render() {
-    return this.renderTree();
+    const { isVisible } = this.state;
+    return (
+      isVisible && (
+        <>
+          <use
+            href='#binary-search-tree'
+            {...pick(this.props, ['x', 'y'])}
+            ref={this.wrapperRef}
+          />
+          <defs>
+            <g id='binary-search-tree' x='0' y='0'>
+              {this.renderNodes()}
+              {this.renderPointerLinks()}
+            </g>
+          </defs>
+        </>
+      )
+    );
   }
 }
 
