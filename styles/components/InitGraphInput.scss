@@ -1,0 +1,49 @@
+// .init-bst-modal__wrapper {
+//   min-height: 60vh;
+
+//   .init-bst-modal__input {
+//     display: flex;
+//     flex-direction: column;
+//     align-items: flex-end;
+//     & > * {
+//       @extend .mb-4;
+//     }
+//   }
+// }
+
+.init-graph-canvas__wrapper {
+  .init-graph-canvas__ghost-node {
+    circle {
+      stroke: $success-color;
+      @extend .stroke-2;
+      fill: none;
+      stroke-dasharray: 8px;
+    }
+
+    text {
+      font-size: 28px;
+      fill: $success-color;
+      user-select: none;
+    }
+  }
+
+  .init-graph-canvas__ghost-edge {
+    @extend .has-transition;
+    opacity: 0;
+
+    & > path:first-child {
+      @extend .stroke-30;
+      stroke: transparent;
+    }
+
+    & > path:last-child {
+      @extend .stroke-2;
+      stroke: $success-color;
+      stroke-dasharray: 8px;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

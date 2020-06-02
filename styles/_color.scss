@@ -1,10 +1,10 @@
-$primary-color: rgb(0, 82, 204);
+$primary-color: #5facff;
+// $primary-color: rgb(0, 82, 204);
 $primary-color-1: lighten($primary-color, 10%);
 $primary-color-2: lighten($primary-color, 20%);
 $primary-color-3: lighten($primary-color, 30%);
 $primary-color-4: lighten($primary-color, 40%);
 $primary-color-5: lighten($primary-color, 50%);
-
 
 $background-light: rgb(255, 255, 255);
 $background-dark-1: rgb(235, 235, 235);

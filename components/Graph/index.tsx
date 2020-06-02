@@ -184,9 +184,14 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
     );
   }
 
-  renderVertices() {
+  getGraphModel() {
+    const { data, controlled } = this.props;
     const { graphModel } = this.state;
-    return graphModel.map(node => <GraphMemoryBlock {...node} />);
+    return controlled ? data! : graphModel;
+  }
+
+  renderVertices() {
+    return this.getGraphModel().map(node => <GraphMemoryBlock {...node} />);
   }
 
   renderEdges() {
@@ -217,9 +222,8 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
   }
 
   getAllEdgesToRender() {
-    const { graphModel } = this.state;
     let allEdgesToRender: Set<string> = new Set([]);
-    graphModel.forEach(({ key, adjacentNodes }) => {
+    this.getGraphModel().forEach(({ key, adjacentNodes }) => {
       adjacentNodes.forEach(adjacentKey => {
         const edgeKey = [key, adjacentKey].sort().join('-');
         allEdgesToRender.add(edgeKey);

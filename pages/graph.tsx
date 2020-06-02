@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { GraphDS, CanvasContainer, InitBSTInput } from 'components';
+import { GraphDS, CanvasContainer, InitGraphInput } from 'components';
 import { VisualAlgo } from 'layout';
 import { extractInstructionFromDescription } from 'utils';
 import { bstInstruction } from 'instructions/BST';
@@ -67,7 +67,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
         onPlayingChange={this.handlePlayingChange}
         // ref={this.ref}
       >
-        {true ? (
+        {false ? (
           <CanvasContainer>
             <GraphDS
               x={100}
@@ -83,7 +83,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
           </CanvasContainer>
         ) : (
           <div className='h-full fx-center linked-list-page__init-button'>
-            <InitBSTInput
+            <InitGraphInput
               onSubmit={bstData => this.setState({ data: bstData })}
             />
           </div>

@@ -85,6 +85,7 @@ export const caculatePointerPathFromTwoNodeCenter = (
   nodeACenter: PointCoordinate,
   nodeBCenter: PointCoordinate,
   radius: number,
+  noArrow?: boolean,
 ) => {
   const angle = caculateAngleOfLine(nodeACenter, nodeBCenter);
   const contactPointWithA = {
@@ -94,7 +95,7 @@ export const caculatePointerPathFromTwoNodeCenter = (
 
   const length =
     caculateLength(nodeACenter, nodeBCenter) - 2 * GRAPH_NODE_RADIUS;
-  const offsetForArrow = 6;
+  const offsetForArrow = noArrow ? 0 : 6;
   const path = `M ${contactPointWithA.x} ${contactPointWithA.y} h ${
     length - offsetForArrow
   }`;
