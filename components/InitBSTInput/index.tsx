@@ -79,12 +79,7 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
       <div className='init-bst-modal__preview fx-7'>
         <svg className='h-full w-full'>
           {!!input.length && (
-            <BinarySearchTreeDS
-              x={10}
-              y={50}
-              initialData={input}
-              controlled
-            />
+            <BinarySearchTreeDS x={10} y={50} initialData={input} controlled />
           )}
         </svg>
       </div>

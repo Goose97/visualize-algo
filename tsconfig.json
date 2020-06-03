@@ -10,6 +10,8 @@
     "paths": {
       "utils/*": ["./utils/*"],
       "hocs/*": ["./hocs/*"],
+      "types/*": ["./types/*"],
+      "components/*": ["./components/*"],
     },
     "module": "esnext",
     "moduleResolution": "node",

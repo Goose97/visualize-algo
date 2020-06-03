@@ -20,11 +20,6 @@ export interface IState {
   isVisible: boolean;
 }
 
-export type LinkedListDataStructure = Record<
-  LinkedListNormalMethod,
-  DataStructureMethod<LinkedList.Model>
->;
-
 export type LinkedListPointerProps = Pick<
   PointerLinkProps,
   'following' | 'visited' | 'visible' | 'arrowDirection'

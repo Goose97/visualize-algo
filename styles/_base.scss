@@ -88,6 +88,10 @@ $border-style: 1px solid #cfcfcf;
   .mb-#{$i} {
     margin-bottom: #{$i * 0.25}rem;
   }
+
+  .stroke-#{$i} {
+    stroke-width: #{$i}px;
+  }
 }
 
 @for $i from 0 through 10 {
@@ -113,10 +117,6 @@ $border-style: 1px solid #cfcfcf;
 
   .max-h-#{$i} {
     max-height: #{$i * 10%};
-  }
-
-  .stroke-#{$i} {
-    stroke-width: #{$i}px;
   }
 }
 
