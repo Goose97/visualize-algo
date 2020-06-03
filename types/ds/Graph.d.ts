@@ -12,5 +12,5 @@ export declare namespace Graph {
 
   export type Api = '';
 
-  export type Method = '';
+  export type Method = 'addEdge';
 }

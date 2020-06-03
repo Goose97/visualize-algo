@@ -8,7 +8,7 @@ import { IProps } from './index.d';
 
 export class GraphLikeEdges extends PureComponent<IProps> {
   render() {
-    const { from, to } = this.props;
+    const { from, to, arrowDirection } = this.props;
     const fromCenter = {
       x: from.x + GRAPH_NODE_RADIUS,
       y: from.y + GRAPH_NODE_RADIUS,
@@ -21,6 +21,7 @@ export class GraphLikeEdges extends PureComponent<IProps> {
       fromCenter,
       toCenter,
       GRAPH_NODE_RADIUS,
+      !arrowDirection,
     );
 
     return (

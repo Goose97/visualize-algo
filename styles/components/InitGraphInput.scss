@@ -29,20 +29,19 @@
 
   .init-graph-canvas__ghost-edge {
     @extend .has-transition;
+    z-index: 10;
     opacity: 0;
 
-    & > path:first-child {
-      @extend .stroke-30;
+    & > .init-graph-canvas__ghost-edge-hover-area {
       stroke: transparent;
     }
 
     & > path:last-child {
-      @extend .stroke-2;
       stroke: $success-color;
       stroke-dasharray: 8px;
     }
 
-    &:hover {
+    &.show {
       opacity: 1;
     }
   }

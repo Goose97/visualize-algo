@@ -9,7 +9,7 @@ import { Graph } from 'types/ds/Graph';
 import { code, explanation } from 'codes/BST';
 
 interface IState extends BaseDSPageState {
-  data?: Array<number | null>;
+  data?: Graph.Model;
   currentApi?: Graph.Api;
 }
 
@@ -67,11 +67,11 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
         onPlayingChange={this.handlePlayingChange}
         // ref={this.ref}
       >
-        {false ? (
+        {data ? (
           <CanvasContainer>
             <GraphDS
-              x={100}
-              y={50}
+              x={0}
+              y={0}
               instructions={bstInstruction}
               initialData={data}
               currentStep={currentStep}
@@ -84,7 +84,9 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
         ) : (
           <div className='h-full fx-center linked-list-page__init-button'>
             <InitGraphInput
-              onSubmit={bstData => this.setState({ data: bstData })}
+              onSubmit={graphModel => {
+                this.setState({ data: graphModel });
+              }}
             />
           </div>
         )}

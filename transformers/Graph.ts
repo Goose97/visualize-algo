@@ -1,5 +1,4 @@
 import produce from 'immer';
-import { compose } from 'lodash/fp';
 
 import { Graph } from 'types/ds/Graph';
 
@@ -11,6 +10,17 @@ const transformGraphModel = (
   payload: any[],
 ): Graph.Model => {
   switch (operation) {
+    case 'addEdge': {
+      const [nodeAKey, nodeBKey] = payload;
+      return produce(currentModel, draft => {
+        const nodeA = draft.find(({ key }) => key === nodeAKey);
+        const nodeB = draft.find(({ key }) => key === nodeBKey);
+        if (!nodeA || !nodeB) return;
+        nodeA.adjacentNodes.push(nodeBKey);
+        nodeB.adjacentNodes.push(nodeAKey);
+      });
+    }
+
     default:
       return currentModel;
   }

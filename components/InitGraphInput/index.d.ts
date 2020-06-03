@@ -3,7 +3,7 @@ import { Graph } from 'types/ds/Graph';
 
 export interface IProps {
   onChange?: (value: number[]) => void;
-  onSubmit: (value: Array<number | null>) => void;
+  onSubmit: (model: Graph.Model) => void;
 }
 
 export interface IState {

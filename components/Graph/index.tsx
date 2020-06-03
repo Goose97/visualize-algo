@@ -18,39 +18,10 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
     super(props);
 
     this.state = {
-      graphModel: this.initGraphModel(),
+      graphModel: props.initialData!,
       isVisible: true,
     };
     this.wrapperRef = React.createRef();
-  }
-
-  initGraphModel() {
-    return [
-      {
-        key: 1,
-        value: 1,
-        x: 100,
-        y: 100,
-        adjacentNodes: [2, 3],
-        visible: true,
-      },
-      {
-        key: 2,
-        value: 2,
-        x: 200,
-        y: 200,
-        adjacentNodes: [1, 3],
-        visible: true,
-      },
-      {
-        key: 3,
-        value: 3,
-        x: 150,
-        y: 300,
-        adjacentNodes: [1, 2],
-        visible: true,
-      },
-    ];
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -195,12 +166,11 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
   }
 
   renderEdges() {
-    const { graphModel } = this.state;
     let allEdgesToRender = this.getAllEdgesToRender();
     return allEdgesToRender.map(vertexPair => {
       const [from, to] = vertexPair
         .split('-')
-        .map(key => this.findNodeByKey(graphModel, +key));
+        .map(key => this.findNodeByKey(this.getGraphModel(), +key));
 
       if (from && to) {
         return (
@@ -212,7 +182,6 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
             visible
             // visited={visited && childVisited}
             // following={nodeAboutToVisit.has(child)}
-            arrowDirection='right'
           />
         );
       } else {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, MouseEvent } from 'react';
 import ReactDOM from 'react-dom';
 import { Input } from 'antd';
 
@@ -7,6 +7,7 @@ import withExtendClassName, {
   WithExtendClassName,
 } from 'hocs/withExtendClassName';
 import { caculatePointerPathFromTwoNodeCenter } from 'utils';
+import transformGraphModel from 'transformers/Graph';
 import { IProps, IState } from './index.d';
 import { GRAPH_NODE_RADIUS } from '../../constants';
 import { PointCoordinate } from 'types';
@@ -18,6 +19,8 @@ type PropsWithHoc = IProps & WithExtendClassName;
 
 export class InitGraphInput extends Component<PropsWithHoc, IState> {
   private inputRef: React.RefObject<HTMLInputElement>;
+  private svgWrapper?: SVGElement;
+  private currentlyHoverOnEdges: SVGPathElement[];
   constructor(props: IProps) {
     super(props);
 
@@ -28,6 +31,7 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
       graphData: [],
     };
     this.inputRef = React.createRef();
+    this.currentlyHoverOnEdges = [];
   }
 
   handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -94,27 +98,80 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
   handleMouseEnter = (e: React.MouseEvent) => {
     const svgElement = e.currentTarget as SVGElement | null;
     if (svgElement) {
-      svgElement.addEventListener('mousemove', e =>
-        this.handleMouseMove(e, svgElement),
-      );
-
-      svgElement.addEventListener('mouseleave', e =>
-        this.handleMouseLeave(svgElement),
-      );
+      this.svgWrapper = svgElement;
+      svgElement.addEventListener('mousemove', e => this.handleMouseMove(e));
+      svgElement.addEventListener('mouseleave', () => this.handleMouseLeave());
     }
   };
 
-  handleMouseMove = (e: MouseEvent, wrapper: SVGElement) => {
-    const { left, top } = wrapper.getBoundingClientRect();
-    const offsetLeft = e.clientX - left;
-    const offsetTop = e.clientY - top;
-    const ghostNode = wrapper.querySelector('.init-graph-canvas__ghost-node');
-    const transformString = `translate(${offsetLeft}, ${offsetTop})`;
-    ghostNode && ghostNode.setAttribute('transform', transformString);
+  handleMouseMove = (e: MouseEvent) => {
+    const ghostNode = this.svgWrapper!.querySelector(
+      '.init-graph-canvas__ghost-node',
+    );
+    if (!ghostNode) return;
+
+    const mousePosition = this.getRelativeMousePositionWithSvg(e);
+    // Make ghost node follow mouse position
+    const transformString = `translate(${mousePosition.x}, ${mousePosition.y})`;
+    ghostNode.setAttribute('transform', transformString);
+
+    // Hide ghost node if currently hover on ghost edge
+    const ghostEdgesMouseCurrentlyHover = this.getGhostEdgesMouseCurrentlyHover(
+      e,
+    );
+    ghostNode.setAttribute(
+      'opacity',
+      ghostEdgesMouseCurrentlyHover.length ? '0' : '1',
+    );
+
+    // Hide ghost edges which are not currently hover on
+    // Show those got hovered
+    this.showAndHideGhostEdges(ghostEdgesMouseCurrentlyHover);
+
+    // Save current hovered edges
+    this.currentlyHoverOnEdges = ghostEdgesMouseCurrentlyHover;
   };
 
-  handleMouseLeave = (wrapper: SVGElement) => {
-    const ghostNode = wrapper.querySelector('.init-graph-canvas__ghost-node');
+  showAndHideGhostEdges(currentHoverOnEdges: SVGPathElement[]) {
+    currentHoverOnEdges.forEach(edge => {
+      (edge.parentNode as SVGGElement).classList.add('show');
+    });
+    const allGhostEdges = this.svgWrapper!.querySelectorAll<SVGPathElement>(
+      '.init-graph-canvas__ghost-edge-hover-area',
+    );
+    Array.from(allGhostEdges).forEach(edge => {
+      if (!currentHoverOnEdges.includes(edge))
+        (edge.parentNode as SVGGElement).classList.remove('show');
+    });
+  }
+
+  getRelativeMousePositionWithSvg(e: MouseEvent) {
+    const { left, top } = this.svgWrapper!.getBoundingClientRect();
+    const offsetLeft = e.clientX - left;
+    const offsetTop = e.clientY - top;
+    return {
+      x: offsetLeft,
+      y: offsetTop,
+    };
+  }
+
+  getGhostEdgesMouseCurrentlyHover(mouseEvent: MouseEvent) {
+    const allGhostEdges = this.svgWrapper!.querySelectorAll<SVGPathElement>(
+      '.init-graph-canvas__ghost-edge > .init-graph-canvas__ghost-edge-hover-area',
+    );
+    const mouseX = mouseEvent.clientX;
+    const mouseY = mouseEvent.clientY;
+    if (!allGhostEdges) return [];
+    return Array.from(allGhostEdges).filter(item => {
+      const { top, bottom, left, right } = item.getBoundingClientRect();
+      return mouseX > left && mouseX < right && mouseY > top && mouseY < bottom;
+    });
+  }
+
+  handleMouseLeave = () => {
+    const ghostNode = this.svgWrapper!.querySelector(
+      '.init-graph-canvas__ghost-node',
+    );
     const transformString = `translate(-100, -100)`;
     ghostNode && ghostNode.setAttribute('transform', transformString);
   };
@@ -132,9 +189,32 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
         x: +match[1],
         y: +match[2],
       };
-      this.addNewNode(currentMouseCoordinate);
+
+      if (this.currentlyHoverOnEdges.length) {
+        this.addNewEdges(this.currentlyHoverOnEdges);
+      } else {
+        this.addNewNode(currentMouseCoordinate);
+      }
     } catch (error) {}
   };
+
+  addNewEdges(edgesPathElement: SVGPathElement[]) {
+    const { graphData } = this.state;
+    const addOneEdge = (data: Graph.Model, edgeElement: SVGPathElement) => {
+      const edgeKey = (edgeElement.parentNode as SVGGElement).getAttribute(
+        'edgekey',
+      );
+      if (!edgeKey) return data;
+      const [nodeA, nodeB] = edgeKey.split('-').map(item => parseInt(item));
+      return transformGraphModel(data, 'addEdge', [nodeA, nodeB]);
+    };
+
+    const graphDataAfterAddEdges = edgesPathElement.reduce(
+      (finalState, edgeElement) => addOneEdge(finalState, edgeElement),
+      graphData,
+    );
+    this.setState({ graphData: graphDataAfterAddEdges });
+  }
 
   addNewNode(coordinate: PointCoordinate) {
     const { graphData } = this.state;
@@ -183,19 +263,24 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
     const key = `${nodeA.key}-${nodeB.key}`;
 
     return (
-      <g className='init-graph-canvas__ghost-edge' key={key}>
-        <path {...pathAndRotation} d={pathAndRotation.path} />
+      //@ts-ignore
+      <g className='init-graph-canvas__ghost-edge' key={key} edgekey={key}>
         <path
           {...pathAndRotation}
           d={pathAndRotation.path}
-          className='default-stroke'
+          className='init-graph-canvas__ghost-edge-hover-area stroke-8'
+        />
+        <path
+          {...pathAndRotation}
+          d={pathAndRotation.path}
+          className='default-stroke stroke-2'
         />
       </g>
     );
   }
 
   render() {
-    const { isModalVisible, input, textInput, graphData } = this.state;
+    const { isModalVisible, textInput, graphData } = this.state;
     const { className, onSubmit } = this.props;
     const previewWindow = (
       <div className='init-bst-modal__preview fx-7'>
@@ -235,7 +320,7 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
           visible={isModalVisible}
           title='Construct new BST'
           onCancel={() => this.setState({ isModalVisible: false })}
-          onOk={() => onSubmit(input)}
+          onOk={() => onSubmit(graphData)}
         >
           <div className='init-bst-modal__wrapper fx'>
             {previewWindow}
