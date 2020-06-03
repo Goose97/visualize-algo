@@ -13,6 +13,7 @@ export { default as AutoTransformGroup } from './AutoTransformGroup';
 export { default as ArrayDS } from './Array';
 export { default as Queue } from './Queue';
 export { default as Stack } from './Stack';
+export { default as HashMapDS } from './HashMap';
 export { default as BinarySearchTreeDS } from './BinarySearchTree';
 export { default as GraphMemoryBlock } from './GraphMemoryBlock';
 export { default as HTMLRenderer } from './HTMLRenderer';

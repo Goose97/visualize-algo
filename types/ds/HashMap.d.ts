@@ -1,0 +1,29 @@
+// import { IProps as MemoryBlockProps } from '../MemoryBlock';
+import { PointCoordinate, BaseMemoryBlockProps } from 'types';
+
+export declare namespace HashMap {
+  export interface Node extends BaseMemoryBlockProps {
+    key: number;
+    index: number;
+    visited?: boolean;
+    hasLine?: boolean;
+  }
+
+  export type Model = Node[];
+
+  export type Api = 'bubbleSort' | 'selectionSort' | 'insertionSort';
+
+  export type Method =
+    | 'swap'
+    | 'focus'
+    | 'resetFocus'
+    | 'resetFocusAll'
+    | 'complete'
+    | 'label'
+    | 'unlabel'
+    | 'setValue'
+    | 'setLine'
+    | 'push';
+
+  export interface SortParams {}
+}
