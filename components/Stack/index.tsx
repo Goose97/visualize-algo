@@ -13,7 +13,7 @@ import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { Action } from 'types';
 import { Stack } from 'types/ds/Stack';
 import transformStackModel from 'transformers/Stack';
-import { getProgressDirection } from 'utils';
+import { getProgressDirection, keyExist } from 'utils';
 
 type PropsWithHoc = IProps & WithReverseStep<Stack.Model>;
 
@@ -39,27 +39,30 @@ export class StackDS extends Component<PropsWithHoc, IState> {
   componentDidUpdate(prevProps: IProps) {
     const { currentStep, reverseToStep, totalStep } = this.props;
 
-    switch (
-      getProgressDirection(currentStep, prevProps.currentStep, totalStep)
-    ) {
-      case 'forward':
-        this.saveModelSnapshotAtCurrentStep();
-        this.handleForward();
-        break;
+    // Update according to algorithm progression
+    if (keyExist(this.props, ['currentStep', 'totalStep', 'instructions'])) {
+      switch (
+        getProgressDirection(currentStep!, prevProps.currentStep!, totalStep!)
+      ) {
+        case 'forward':
+          this.saveModelSnapshotAtCurrentStep();
+          this.handleForward();
+          break;
 
-      case 'backward':
-        reverseToStep(currentStep);
-        break;
+        case 'backward':
+          reverseToStep(currentStep!);
+          break;
 
-      case 'fastForward':
-        console.log('fastForward');
-        this.handleFastForward();
-        break;
+        // case 'fastForward':
+        //   console.log('fastForward');
+        //   this.handleFastForward();
+        //   break;
 
-      case 'fastBackward':
-        console.log('fastBackward');
-        this.handleFastBackward();
-        break;
+        // case 'fastBackward':
+        //   console.log('fastBackward');
+        //   this.handleFastBackward();
+        //   break;
+      }
     }
   }
 
@@ -119,21 +122,25 @@ export class StackDS extends Component<PropsWithHoc, IState> {
     params: [number],
     onlyTranformData?: boolean,
   ) {
-    const itemOnTop = last(currentModel);
+    const itemOnTop = last(currentModel.filter(({ visible }) => !!visible));
+    const newKey = currentModel.length ? last(currentModel)!.key + 1 : 0;
     const stackItemToPush: Stack.ItemModel = {
       value: params[0],
       visible: true,
       offsetFromFront: itemOnTop ? itemOnTop.offsetFromFront + 1 : 0,
-      key: itemOnTop ? itemOnTop.key + 1 : 0,
+      key: newKey,
       isNew: true,
     };
     return transformStackModel(currentModel, 'push', [stackItemToPush]);
   }
 
+  handleReverse = (stateOfPreviousStep: Stack.Model) => {
+    this.setState({ stackModel: stateOfPreviousStep });
+  };
+
   renderBoundary() {
-    const { x, y } = this.props;
-    const moveToCenterPoint = `M ${x + STACK_BLOCK_WIDTH / 2} ${
-      y + STACK_BLOCK_HEIGHT + 10
+    const moveToCenterPoint = `M ${STACK_BLOCK_WIDTH / 2} ${
+      STACK_BLOCK_HEIGHT + 10
     }`;
     const goUpToTop = `v ${-this.caculateStackHeight() - 20}`;
     return (
@@ -156,14 +163,18 @@ export class StackDS extends Component<PropsWithHoc, IState> {
 
   render() {
     const { stackModel } = this.state;
-    const listStackItem = stackModel.map(item => (
-      <StackItem {...item} origin={pick(this.props, ['x', 'y'])} />
-    ));
+    const listStackItem = stackModel.map(item => <StackItem {...item} />);
+
     return (
-      <g className='queue__wrapper'>
-        {listStackItem}
-        {this.renderBoundary()}
-      </g>
+      <>
+        <use href='#stack' {...pick(this.props, ['x', 'y'])} />
+        <defs>
+          <g id='stack' className='queue__wrapper'>
+            {listStackItem}
+            {this.renderBoundary()}
+          </g>
+        </defs>
+      </>
     );
   }
 }

@@ -7,11 +7,10 @@ export interface IProps extends BaseDSProps {
 }
 
 export interface IState {
-  stackModel: StackModel;
+  stackModel: Stack.Model;
 }
 
 export interface StackItemProps extends Stack.ItemModel {
-  origin: PointCoordinate;
   isNew?: boolean;
 }
 

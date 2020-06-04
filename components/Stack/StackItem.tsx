@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { pick } from 'lodash';
 
 import { MemoryBlock, AutoTransformGroup } from 'components';
 import {
@@ -21,13 +20,10 @@ export class StackItem extends Component<StackItemProps, StackItemState> {
   }
 
   caculateItemCoordinate() {
-    const {
-      origin: { x, y },
-      offsetFromFront,
-    } = this.props;
+    const { offsetFromFront } = this.props;
     return {
-      x: x,
-      y: y - offsetFromFront * (STACK_BLOCK_HEIGHT + STACK_BLOCK_GAP),
+      x: 0,
+      y: 0 - offsetFromFront * (STACK_BLOCK_HEIGHT + STACK_BLOCK_GAP),
     };
   }
 

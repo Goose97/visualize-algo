@@ -35,10 +35,14 @@ const dfsInstruction = (
     const currentNodeKey = stack.pop();
     instructions.pushActions('stack', [{ name: 'pop', params: [] }]);
 
-    if (currentFocusNode)
+    if (currentFocusNode) {
+      instructions.pushActions('array', [
+        { name: 'push', params: [currentFocusNode] },
+      ]);
       instructions.pushActions('graph', [
         { name: 'visited', params: [currentFocusNode] },
       ]);
+    }
     visited.add(currentNodeKey!);
 
     instructions.pushActionsAndEndStep('graph', [
@@ -57,6 +61,16 @@ const dfsInstruction = (
           { name: 'push', params: [key] },
         ]);
       });
+  }
+
+  if (currentFocusNode) {
+    instructions.pushActions('array', [
+      { name: 'push', params: [currentFocusNode] },
+    ]);
+    instructions.pushActionsAndEndStep('graph', [
+      { name: 'resetFocus', params: [] },
+      { name: 'visited', params: [currentFocusNode] },
+    ]);
   }
 
   instructions.pushActionsAndEndStep('graph', [

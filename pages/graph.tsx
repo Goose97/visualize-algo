@@ -1,11 +1,19 @@
 import React, { Component } from 'react';
 
-import { GraphDS, StackDS, CanvasContainer, InitGraphInput } from 'components';
+import {
+  GraphDS,
+  StackDS,
+  ArrayDS,
+  CanvasContainer,
+  InitGraphInput,
+} from 'components';
 import { VisualAlgo } from 'layout';
 import { extractInstructionFromDescription } from 'utils';
 import { graphInstruction } from 'instructions/Graph';
 import { BaseDSPageState, Action, ObjectType } from 'types';
 import { Graph } from 'types/ds/Graph';
+import { Stack } from 'types/ds/Stack';
+import { Array } from 'types/ds/Array';
 import { code, explanation } from 'codes/BST';
 
 interface IState extends BaseDSPageState {
@@ -44,6 +52,51 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
     this.setState({ autoPlay: newPlayingState });
   };
 
+  getWidthOfGraph(graphModel?: Graph.Model) {
+    if (!graphModel) return 0;
+    return Math.max(...graphModel.map(({ x }) => x));
+  }
+  renderExtraDSForApi() {
+    const { currentApi, data, stepDescription, currentStep } = this.state;
+    switch (currentApi) {
+      case 'dfs': {
+        const stackInstruction = extractInstructionFromDescription(
+          stepDescription,
+          'stack',
+        ) as Action<Stack.Method>[][];
+        const arrayInstruction = extractInstructionFromDescription(
+          stepDescription,
+          'array',
+        ) as Action<Array.Method>[][];
+
+        const baseProps = {
+          initialData: [],
+          currentStep,
+          totalStep: stepDescription.length - 1,
+        };
+
+        return (
+          <>
+            <StackDS
+              x={this.getWidthOfGraph(data) + 400}
+              y={300}
+              instructions={stackInstruction}
+              {...baseProps}
+            />
+
+            <ArrayDS
+              x={this.getWidthOfGraph(data) + 400}
+              y={450}
+              instructions={arrayInstruction}
+              blockType='block'
+              {...baseProps}
+            />
+          </>
+        );
+      }
+    }
+  }
+
   render() {
     const {
       data,
@@ -55,10 +108,6 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
     const graphInstruction = extractInstructionFromDescription(
       stepDescription,
       'graph',
-    ) as Action<Graph.Method>[][];
-    const stackInstruction = extractInstructionFromDescription(
-      stepDescription,
-      'stack',
     ) as Action<Graph.Method>[][];
 
     return (
@@ -85,17 +134,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
               interactive
             />
 
-            <StackDS
-              x={500}
-              y={200}
-              instructions={stackInstruction}
-              initialData={[]}
-              currentStep={currentStep}
-              totalStep={stepDescription.length - 1}
-              //@ts-ignore
-              handleExecuteApi={this.handleExecuteApi}
-              interactive
-            />
+            {this.renderExtraDSForApi()}
           </CanvasContainer>
         ) : (
           <div className='h-full fx-center linked-list-page__init-button'>
