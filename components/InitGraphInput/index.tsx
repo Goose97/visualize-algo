@@ -6,7 +6,10 @@ import { Button, CustomModal, GraphDS } from 'components';
 import withExtendClassName, {
   WithExtendClassName,
 } from 'hocs/withExtendClassName';
-import { caculatePointerPathFromTwoNodeCenter } from 'utils';
+import {
+  caculatePointerPathFromTwoNodeCenter,
+  caculateDistanceToALine,
+} from 'utils';
 import transformGraphModel from 'transformers/Graph';
 import { IProps, IState } from './index.d';
 import { GRAPH_NODE_RADIUS } from '../../constants';
@@ -159,12 +162,31 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
     const allGhostEdges = this.svgWrapper!.querySelectorAll<SVGPathElement>(
       '.init-graph-canvas__ghost-edge > .init-graph-canvas__ghost-edge-hover-area',
     );
-    const mouseX = mouseEvent.clientX;
-    const mouseY = mouseEvent.clientY;
+    const { x: mouseX, y: mouseY } = this.getRelativeMousePositionWithSvg(
+      mouseEvent,
+    );
+
     if (!allGhostEdges) return [];
     return Array.from(allGhostEdges).filter(item => {
-      const { top, bottom, left, right } = item.getBoundingClientRect();
-      return mouseX > left && mouseX < right && mouseY > top && mouseY < bottom;
+      // We consider point which stay in range of the line
+      // and also have distance to the line smaller than 10
+      const [startX, startY, endX, endY] = [
+        'start-x',
+        'start-y',
+        'end-x',
+        'end-y',
+      ].map(attrs => {
+        const value = item.getAttribute(attrs);
+        return value != null ? parseInt(value) : 0;
+      });
+
+      const inRangeOfLine = (mouseY - startY) * (mouseY - endY) < 0;
+      const distance = caculateDistanceToALine(
+        { x: mouseX, y: mouseY },
+        { x: startX, y: startY },
+        { x: endX, y: endY },
+      );
+      return inRangeOfLine && distance < 25;
     });
   }
 
@@ -266,9 +288,13 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
       //@ts-ignore
       <g className='init-graph-canvas__ghost-edge' key={key} edgekey={key}>
         <path
-          {...pathAndRotation}
+          transform={pathAndRotation.transform}
           d={pathAndRotation.path}
-          className='init-graph-canvas__ghost-edge-hover-area stroke-8'
+          start-x={nodeACenter.x}
+          start-y={nodeACenter.y}
+          end-x={nodeBCenter.x}
+          end-y={nodeBCenter.y}
+          className='init-graph-canvas__ghost-edge-hover-area stroke-1'
         />
         <path
           {...pathAndRotation}
@@ -279,9 +305,23 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
     );
   }
 
+  handleOk = () => {
+    const { onSubmit } = this.props;
+    const { graphData } = this.state;
+    // Shift all node to left and top some amount so the whole DS start at 0 and 0
+    const amountToShiftLeft = Math.min(...graphData.map(({ x }) => x));
+    const amountToShiftTop = Math.min(...graphData.map(({ y }) => y));
+    const shiftedGraphData = graphData.map(node => ({
+      ...node,
+      x: node.x - amountToShiftLeft,
+      y: node.y - amountToShiftTop,
+    }));
+    onSubmit(shiftedGraphData);
+  };
+
   render() {
     const { isModalVisible, textInput, graphData } = this.state;
-    const { className, onSubmit } = this.props;
+    const { className } = this.props;
     const previewWindow = (
       <div className='init-bst-modal__preview fx-7'>
         <svg
@@ -320,7 +360,7 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
           visible={isModalVisible}
           title='Construct new BST'
           onCancel={() => this.setState({ isModalVisible: false })}
-          onOk={() => onSubmit(graphData)}
+          onOk={this.handleOk}
         >
           <div className='init-bst-modal__wrapper fx'>
             {previewWindow}

@@ -185,7 +185,7 @@ export class VisualAlgo extends Component<IProps, IState> {
             progress={this.caculateProgress()}
           />
         </div>
-        {children}
+        <div className='fx-1'>{children}</div>
       </div>
     );
 
@@ -213,7 +213,7 @@ export class VisualAlgo extends Component<IProps, IState> {
     return (
       <div className='fx-col vh-100'>
         {visualizationScreen}
-        {codeAndExplanation}
+        {/* {codeAndExplanation} */}
       </div>
     );
   }

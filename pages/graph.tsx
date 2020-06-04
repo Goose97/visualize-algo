@@ -30,8 +30,10 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
   };
 
   handleExecuteApi = (api: Graph.Api, params: ObjectType<any>) => {
-    const stepDescription = this.generateStepDescription(api, params);
-    this.setState({ stepDescription, autoPlay: true, currentApi: api });
+    console.log('api', api)
+    console.log('params', params)
+    // const stepDescription = this.generateStepDescription(api, params);
+    // this.setState({ stepDescription, autoPlay: true, currentApi: api });
   };
 
   generateStepDescription(currentApi: Graph.Api, params: any) {
@@ -70,8 +72,8 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
         {data ? (
           <CanvasContainer>
             <GraphDS
-              x={0}
-              y={0}
+              x={200}
+              y={200}
               instructions={bstInstruction}
               initialData={data}
               currentStep={currentStep}

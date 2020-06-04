@@ -124,3 +124,19 @@ const caculateAngleOfLine = (
       : Math.atan(tan) + Math.PI;
   }
 };
+
+export const caculateDistanceToALine = (
+  pointA: PointCoordinate,
+  pointB: PointCoordinate,
+  pointC: PointCoordinate,
+) => {
+  // Distance from A to BC
+  const ab = caculateLength(pointA, pointB);
+  const bc = caculateLength(pointB, pointC);
+  const ca = caculateLength(pointC, pointA);
+
+  // Caculate triangle area use Heron's formula
+  const s = (ab + bc + ca) / 2;
+  const area = Math.sqrt(s * (s - ab) * (s - bc) * (s - ca));
+  return (area * 2) / bc;
+};
