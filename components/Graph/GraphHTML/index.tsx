@@ -17,14 +17,11 @@ const options: Array<{ label: string; value: string }> = [
 ];
 
 const requiredParams = {
-  search: {
-    value: 'number',
+  dfs: {
+    'startAt': 'number',
   },
-  delete: {
-    value: 'number',
-  },
-  insert: {
-    value: 'number',
+  bfs: {
+    'startAt': 'number',
   },
 };
 
@@ -46,7 +43,7 @@ export class GraphHTML {
         <div style={{ width, height }} className='graph-html__wrapper'>
           <DropdownWithParamsInput
             options={options}
-            // requiredApiParams={requiredParams}
+            requiredApiParams={requiredParams}
             handler={apiHandler}
           />
           {/* {dropdownForEachTreeNode} */}

@@ -1,15 +1,15 @@
 import produce from 'immer';
 import { last } from 'lodash';
 
-import { StackModel, StackMethod } from './index.d';
+import { Stack } from 'types/ds/Stack';
 
 // Nhận vào trạng thái hiện tại của data structure
 // và operation tương ứng. Trả về trạng thái mới
-const transformModel = (
-  currentModel: StackModel,
-  operation: StackMethod,
+const transformStackModel = (
+  currentModel: Stack.Model,
+  operation: Stack.Method,
   payload: any[],
-): StackModel => {
+): Stack.Model => {
   switch (operation) {
     case 'push': {
       const [itemToPush] = payload;
@@ -30,4 +30,4 @@ const transformModel = (
   }
 };
 
-export default transformModel;
+export default transformStackModel;

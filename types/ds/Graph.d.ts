@@ -10,7 +10,18 @@ export declare namespace Graph {
 
   export type Model = NodeModel[];
 
-  export type Api = '';
+  export type Api = 'dfs' | 'bfs';
 
-  export type Method = 'addEdge';
+  export type Method =
+    | 'addEdge'
+    | 'focus'
+    | 'visited'
+    | 'resetAll'
+    | 'resetFocus'
+    | 'resetLabel'
+    | 'resetVisited';
+
+  export interface TraversalParams {
+    startAt: number;
+  }
 }

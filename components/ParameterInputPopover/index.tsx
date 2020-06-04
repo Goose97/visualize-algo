@@ -3,7 +3,7 @@ import { Popover, Row, Col } from 'antd';
 import { isFunction } from 'lodash';
 
 import { Input, Button } from 'components';
-import { upcaseFirstLetter } from 'utils';
+import { upcaseFirstLetterAndSplit } from 'utils';
 import { IProps, IState } from './index.d';
 
 export class ParameterInputPopover extends Component<IProps, IState> {
@@ -20,9 +20,9 @@ export class ParameterInputPopover extends Component<IProps, IState> {
     if (parameters) {
       const listInputParams = Object.entries(parameters).map(
         ([paramName, type]) => (
-          <Row key={paramName} className='fx-center mb-2'>
-            <Col span={8}>{upcaseFirstLetter(paramName)}:</Col>
-            <Col span={16}>
+          <Row key={paramName} className='fx-center mb-2' style={{ minWidth: 250 }}>
+            <Col span={12}>{upcaseFirstLetterAndSplit(paramName)}:</Col>
+            <Col span={12}>
               <Input onChange={this.handleInputChange.bind(null, paramName)} />
             </Col>
           </Row>

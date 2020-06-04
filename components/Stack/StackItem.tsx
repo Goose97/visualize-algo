@@ -58,8 +58,9 @@ export class StackItem extends Component<StackItemProps, StackItemState> {
           width={STACK_BLOCK_WIDTH}
           height={STACK_BLOCK_HEIGHT}
           {...this.initialCoordinate}
-          {...pick(this.props, ['value'])}
+          value={this.props.value}
           visible
+          type='rectangle'
         />
       </AutoTransformGroup>
     );

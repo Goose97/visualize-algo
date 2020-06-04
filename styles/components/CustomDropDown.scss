@@ -1,42 +1,11 @@
 .dropdown__trigger {
   @extend .shadow-1;
   @extend .interactive;
+  background-color: $background-light;
   padding: 2px 8px;
   line-height: 0;
   border-radius: 4px;
 }
-
-// .cakecloud-dropdown {
-//   @extend .flex-center;
-//   @extend .flex-gap-5;
-//   @extend .hover-pointer;
-//   @extend .hover-interactive;
-//   background-color: $neutral-color;
-//   height: 36px;
-//   padding: 0 15px;
-//   transition: $transition-style;
-
-//   &.active {
-//     background-color: $background-hover-color;
-//     border-color: $primary-color;
-//   }
-
-//   &.transparent {
-//     background-color: unset;
-//   }
-
-//   &.disabled {
-//     cursor: not-allowed;
-//     color: lighten($primary-text-color, 40%);
-//     &:hover {
-//       background-color: $neutral-color;
-//     }
-
-//     path {
-//       fill: lighten($primary-text-color, 40%);
-//     }
-//   }
-// }
 
 .dropdown__overlay {
   background-color: white;

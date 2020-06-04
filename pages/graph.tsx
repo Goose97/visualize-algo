@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import { GraphDS, CanvasContainer, InitGraphInput } from 'components';
+import { GraphDS, StackDS, CanvasContainer, InitGraphInput } from 'components';
 import { VisualAlgo } from 'layout';
 import { extractInstructionFromDescription } from 'utils';
-import { bstInstruction } from 'instructions/BST';
+import { graphInstruction } from 'instructions/Graph';
 import { BaseDSPageState, Action, ObjectType } from 'types';
 import { Graph } from 'types/ds/Graph';
 import { code, explanation } from 'codes/BST';
@@ -30,16 +30,14 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
   };
 
   handleExecuteApi = (api: Graph.Api, params: ObjectType<any>) => {
-    console.log('api', api)
-    console.log('params', params)
-    // const stepDescription = this.generateStepDescription(api, params);
-    // this.setState({ stepDescription, autoPlay: true, currentApi: api });
+    const stepDescription = this.generateStepDescription(api, params);
+    this.setState({ stepDescription, autoPlay: true, currentApi: api });
   };
 
   generateStepDescription(currentApi: Graph.Api, params: any) {
     const { data } = this.state;
     if (!currentApi) return [];
-    return bstInstruction(data!, currentApi, params);
+    return graphInstruction(data!, currentApi, params);
   }
 
   handlePlayingChange = (newPlayingState: boolean) => {
@@ -54,9 +52,13 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
       stepDescription,
       autoPlay,
     } = this.state;
-    const bstInstruction = extractInstructionFromDescription(
+    const graphInstruction = extractInstructionFromDescription(
       stepDescription,
-      'bst',
+      'graph',
+    ) as Action<Graph.Method>[][];
+    const stackInstruction = extractInstructionFromDescription(
+      stepDescription,
+      'stack',
     ) as Action<Graph.Method>[][];
 
     return (
@@ -74,8 +76,20 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
             <GraphDS
               x={200}
               y={200}
-              instructions={bstInstruction}
+              instructions={graphInstruction}
               initialData={data}
+              currentStep={currentStep}
+              totalStep={stepDescription.length - 1}
+              //@ts-ignore
+              handleExecuteApi={this.handleExecuteApi}
+              interactive
+            />
+
+            <StackDS
+              x={500}
+              y={200}
+              instructions={stackInstruction}
+              initialData={[]}
               currentStep={currentStep}
               totalStep={stepDescription.length - 1}
               //@ts-ignore

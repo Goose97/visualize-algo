@@ -8,15 +8,16 @@ import {
   STACK_BLOCK_GAP,
   STACK_BOUNDARY_GAP,
 } from '../../constants';
-import { StackModel, IState, IProps, StackItemModel } from './index.d';
+import { IState, IProps } from './index.d';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { Action } from 'types';
-import transformModel from './ModelTransformer';
+import { Stack } from 'types/ds/Stack';
+import transformStackModel from 'transformers/Stack';
 import { getProgressDirection } from 'utils';
 
-type PropsWithHoc = IProps & WithReverseStep<StackModel>;
+type PropsWithHoc = IProps & WithReverseStep<Stack.Model>;
 
-export class Stack extends Component<PropsWithHoc, IState> {
+export class StackDS extends Component<PropsWithHoc, IState> {
   constructor(props: PropsWithHoc) {
     super(props);
 
@@ -89,37 +90,44 @@ export class Stack extends Component<PropsWithHoc, IState> {
   }
 
   consumeMultipleActions(
-    actionList: Action[],
-    currentModel: StackModel,
-  ): StackModel {
+    actionList: Action<Stack.Method>[],
+    currentModel: Stack.Model,
+    onlyTranformData?: boolean,
+  ): Stack.Model {
     // Treat each action as a transformation function which take a linkedListModel
     // and return a new one. Consuming multiple actions is merely chaining those
     // transformations together
     // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
-    let finalStackModel = currentModel;
-    actionList.forEach(({ name, params }) => {
+    return actionList.reduce<Stack.Model>((finalModel, action) => {
+      // the main function of a handler is doing side effect before transform model
+      // a handler must also return a new model
+      // if no handler is specify, just transform model right away
+      const { name, params } = action;
       //@ts-ignore
-      finalStackModel = this[name](finalStackModel, params);
-    });
+      const customHandler = this[name];
 
-    return finalStackModel;
+      if (typeof customHandler === 'function') {
+        return customHandler(finalModel, params, onlyTranformData);
+      } else {
+        return transformStackModel(finalModel, name, params);
+      }
+    }, currentModel);
   }
 
-  pop(currentModel: StackModel, params: []) {
-    const newModel = transformModel(currentModel, 'pop', params);
-    return newModel;
-  }
-
-  push(currentModel: StackModel, params: [number]) {
-    const stackItemToPush: StackItemModel = {
+  push(
+    currentModel: Stack.Model,
+    params: [number],
+    onlyTranformData?: boolean,
+  ) {
+    const itemOnTop = last(currentModel);
+    const stackItemToPush: Stack.ItemModel = {
       value: params[0],
       visible: true,
-      offsetFromFront: last(currentModel)!.offsetFromFront + 1,
-      key: last(currentModel)!.key + 1,
+      offsetFromFront: itemOnTop ? itemOnTop.offsetFromFront + 1 : 0,
+      key: itemOnTop ? itemOnTop.key + 1 : 0,
       isNew: true,
     };
-    const newModel = transformModel(currentModel, 'push', [stackItemToPush]);
-    return newModel;
+    return transformStackModel(currentModel, 'push', [stackItemToPush]);
   }
 
   renderBoundary() {
@@ -160,4 +168,4 @@ export class Stack extends Component<PropsWithHoc, IState> {
   }
 }
 
-export default withReverseStep<StackModel, PropsWithHoc>(Stack);
+export default withReverseStep<Stack.Model, PropsWithHoc>(StackDS);

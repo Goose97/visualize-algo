@@ -98,7 +98,7 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
         y={y + height / 2}
         dominantBaseline='middle'
         textAnchor='middle'
-        className='memory-block__text'
+        className='memory-block__text value-text'
       >
         {value}
       </text>
