@@ -1,8 +1,6 @@
 import { Instructions } from 'instructions';
-import { initLinkedList } from './helper';
 import { ObjectType } from 'types';
 import { Graph } from 'types/ds/Graph';
-import { LinkedListNode } from './helper';
 
 export const graphInstruction = (
   data: Graph.Model,
@@ -12,6 +10,9 @@ export const graphInstruction = (
   switch (operation) {
     case 'dfs':
       return dfsInstruction(data, parameters);
+
+    case 'bfs':
+      return bfsInstruction(data, parameters);
 
     default:
       return [];
@@ -59,6 +60,68 @@ const dfsInstruction = (
         stack.push(key);
         instructions.pushActionsAndEndStep('stack', [
           { name: 'push', params: [key] },
+        ]);
+      });
+  }
+
+  if (currentFocusNode) {
+    instructions.pushActions('array', [
+      { name: 'push', params: [currentFocusNode] },
+    ]);
+    instructions.pushActionsAndEndStep('graph', [
+      { name: 'resetFocus', params: [] },
+      { name: 'visited', params: [currentFocusNode] },
+    ]);
+  }
+
+  instructions.pushActionsAndEndStep('graph', [
+    { name: 'resetAll', params: [] },
+  ]);
+
+  return instructions.get();
+};
+
+const bfsInstruction = (
+  data: Graph.Model,
+  { startAt }: Graph.TraversalParams,
+) => {
+  let instructions = new Instructions();
+  const codeLines = getCodeLine('bfs');
+
+  // Start make instruction
+  let queue: number[] = [];
+  let visited: Set<number> = new Set([]);
+  let currentFocusNode: number | undefined;
+  queue.push(startAt);
+
+  while (queue.length) {
+    const currentNodeKey = queue.shift();
+    instructions.pushActions('queue', [{ name: 'dequeue', params: [] }]);
+
+    if (currentFocusNode) {
+      instructions.pushActions('array', [
+        { name: 'push', params: [currentFocusNode] },
+      ]);
+      instructions.pushActions('graph', [
+        { name: 'visited', params: [currentFocusNode] },
+      ]);
+    }
+    visited.add(currentNodeKey!);
+
+    instructions.pushActionsAndEndStep('graph', [
+      { name: 'focus', params: [currentNodeKey] },
+    ]);
+    currentFocusNode = currentNodeKey;
+
+    const currentNode = data.find(({ key }) => key === currentNodeKey);
+    const adjacentNodes = currentNode ? currentNode.adjacentNodes : [];
+
+    adjacentNodes
+      .filter(key => !visited.has(key) && !queue.includes(key))
+      .forEach(key => {
+        queue.push(key);
+        instructions.pushActionsAndEndStep('queue', [
+          { name: 'enqueue', params: [key] },
         ]);
       });
   }

@@ -11,7 +11,7 @@ export { default as Button } from './Button';
 export { default as InitArrayInput } from './InitArrayInput';
 export { default as AutoTransformGroup } from './AutoTransformGroup';
 export { default as ArrayDS } from './Array';
-export { default as Queue } from './Queue';
+export { default as QueueDS } from './Queue';
 export { default as StackDS } from './Stack';
 export { default as BinarySearchTreeDS } from './BinarySearchTree';
 export { default as GraphMemoryBlock } from './GraphMemoryBlock';

@@ -4,6 +4,7 @@ import {
   GraphDS,
   StackDS,
   ArrayDS,
+  QueueDS,
   CanvasContainer,
   InitGraphInput,
 } from 'components';
@@ -14,7 +15,9 @@ import { BaseDSPageState, Action, ObjectType } from 'types';
 import { Graph } from 'types/ds/Graph';
 import { Stack } from 'types/ds/Stack';
 import { Array } from 'types/ds/Array';
+import { Queue } from 'types/ds/Queue';
 import { code, explanation } from 'codes/BST';
+import { QUEUE_BLOCK_WIDTH } from '../constants';
 
 interface IState extends BaseDSPageState {
   data?: Graph.Model;
@@ -52,10 +55,23 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
     this.setState({ autoPlay: newPlayingState });
   };
 
-  getWidthOfGraph(graphModel?: Graph.Model) {
-    if (!graphModel) return 0;
-    return Math.max(...graphModel.map(({ x }) => x));
+  getWidthOfDS(
+    graphModel: Graph.Model | undefined,
+    dataStructure: 'graph' | 'queue',
+  ) {
+    switch (dataStructure) {
+      case 'graph': {
+        if (!graphModel) return 0;
+        return Math.max(...graphModel.map(({ x }) => x));
+      }
+
+      case 'queue': {
+        if (!graphModel) return 0;
+        return graphModel.length * QUEUE_BLOCK_WIDTH + 50;
+      }
+    }
   }
+
   renderExtraDSForApi() {
     const { currentApi, data, stepDescription, currentStep } = this.state;
     switch (currentApi) {
@@ -69,6 +85,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
           'array',
         ) as Action<Array.Method>[][];
 
+        const widthOfGraph = this.getWidthOfDS(data, 'graph');
         const baseProps = {
           initialData: [],
           currentStep,
@@ -78,14 +95,14 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
         return (
           <>
             <StackDS
-              x={this.getWidthOfGraph(data) + 400}
+              x={widthOfGraph + 400}
               y={300}
               instructions={stackInstruction}
               {...baseProps}
             />
 
             <ArrayDS
-              x={this.getWidthOfGraph(data) + 400}
+              x={widthOfGraph + 400}
               y={450}
               instructions={arrayInstruction}
               blockType='block'
@@ -94,6 +111,43 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
           </>
         );
       }
+
+      case 'bfs':
+        const queueInstruction = extractInstructionFromDescription(
+          stepDescription,
+          'queue',
+        ) as Action<Queue.Method>[][];
+        const arrayInstruction = extractInstructionFromDescription(
+          stepDescription,
+          'array',
+        ) as Action<Array.Method>[][];
+
+        const widthOfGraph = this.getWidthOfDS(data, 'graph');
+        const widthOfQueue = this.getWidthOfDS(data, 'queue');
+        const baseProps = {
+          initialData: [],
+          currentStep,
+          totalStep: stepDescription.length - 1,
+        };
+
+        return (
+          <>
+            <QueueDS
+              x={widthOfGraph + widthOfQueue / 3 + 400}
+              y={300}
+              instructions={queueInstruction}
+              {...baseProps}
+            />
+
+            <ArrayDS
+              x={widthOfGraph + 400}
+              y={450}
+              instructions={arrayInstruction}
+              blockType='block'
+              {...baseProps}
+            />
+          </>
+        );
     }
   }
 
