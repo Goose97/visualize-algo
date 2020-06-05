@@ -1,4 +1,5 @@
 import produce from 'immer';
+import { uniq } from 'lodash';
 import { compose } from 'lodash/fp';
 
 import { Graph } from 'types/ds/Graph';
@@ -18,7 +19,9 @@ const transformGraphModel = (
         const nodeB = draft.find(({ key }) => key === nodeBKey);
         if (!nodeA || !nodeB) return;
         nodeA.adjacentNodes.push(nodeBKey);
+        nodeA.adjacentNodes = uniq(nodeA.adjacentNodes);
         nodeB.adjacentNodes.push(nodeAKey);
+        nodeB.adjacentNodes = uniq(nodeB.adjacentNodes);
       });
     }
 

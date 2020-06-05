@@ -1,3 +1,5 @@
+import { last } from 'lodash';
+
 import { Instructions } from 'instructions';
 import { ObjectType } from 'types';
 import { Graph } from 'types/ds/Graph';
@@ -29,49 +31,40 @@ const dfsInstruction = (
   // Start make instruction
   let stack: number[] = [];
   let visited: Set<number> = new Set([]);
-  let currentFocusNode: number | undefined;
   stack.push(startAt);
+  instructions.pushActionsAndEndStep('stack', [
+    { name: 'push', params: [startAt] },
+  ]);
 
   while (stack.length) {
-    const currentNodeKey = stack.pop();
-    instructions.pushActions('stack', [{ name: 'pop', params: [] }]);
-
-    if (currentFocusNode) {
-      instructions.pushActions('array', [
-        { name: 'push', params: [currentFocusNode] },
-      ]);
-      instructions.pushActions('graph', [
-        { name: 'visited', params: [currentFocusNode] },
-      ]);
-    }
-    visited.add(currentNodeKey!);
-
+    const lastNodeKey = last(stack);
     instructions.pushActionsAndEndStep('graph', [
-      { name: 'focus', params: [currentNodeKey] },
+      { name: 'focus', params: [lastNodeKey, true] },
     ]);
-    currentFocusNode = currentNodeKey;
+    const adjacentNodesWhichNotVisited = data
+      .find(({ key }) => key === lastNodeKey)!
+      .adjacentNodes.filter(key => !visited.has(key) && !stack.includes(key));
 
-    const currentNode = data.find(({ key }) => key === currentNodeKey);
-    const adjacentNodes = currentNode ? currentNode.adjacentNodes : [];
-
-    adjacentNodes
-      .filter(key => !visited.has(key) && !stack.includes(key))
-      .forEach(key => {
+    if (adjacentNodesWhichNotVisited.length) {
+      // Still has node to push to stack
+      adjacentNodesWhichNotVisited.forEach(key => {
         stack.push(key);
         instructions.pushActionsAndEndStep('stack', [
           { name: 'push', params: [key] },
         ]);
       });
-  }
-
-  if (currentFocusNode) {
-    instructions.pushActions('array', [
-      { name: 'push', params: [currentFocusNode] },
-    ]);
-    instructions.pushActionsAndEndStep('graph', [
-      { name: 'resetFocus', params: [] },
-      { name: 'visited', params: [currentFocusNode] },
-    ]);
+    } else {
+      // Reach leaf node, pop it out
+      const nodeKeyToPop = stack.pop();
+      visited.add(nodeKeyToPop!);
+      instructions.pushActions('stack', [{ name: 'pop', params: [] }]);
+      instructions.pushActions('array', [
+        { name: 'push', params: [nodeKeyToPop] },
+      ]);
+      instructions.pushActionsAndEndStep('graph', [
+        { name: 'visited', params: [nodeKeyToPop] },
+      ]);
+    }
   }
 
   instructions.pushActionsAndEndStep('graph', [
