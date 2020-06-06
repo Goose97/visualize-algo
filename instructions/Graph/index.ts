@@ -49,6 +49,9 @@ const dfsInstruction = (
       // Still has node to push to stack
       adjacentNodesWhichNotVisited.forEach(key => {
         stack.push(key);
+        instructions.pushActions('graph', [
+          { name: 'highlight', params: [key] },
+        ]);
         instructions.pushActionsAndEndStep('stack', [
           { name: 'push', params: [key] },
         ]);

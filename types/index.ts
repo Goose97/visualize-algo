@@ -28,6 +28,7 @@ export interface BaseMemoryBlockProps {
   focus?: boolean;
   value: string | number | null;
   label?: string[];
+  highlight?: boolean;
 }
 
 export interface HTMLRendererParams<T = {}> {

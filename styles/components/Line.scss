@@ -1,5 +1,5 @@
 .line--wrapper {
   stroke: $primary-color-2;
   stroke-width: 2;
-  stroke-dasharray: 10;
+  stroke-dasharray: $default-dasharray;
 }

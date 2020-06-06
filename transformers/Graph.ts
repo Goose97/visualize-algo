@@ -45,6 +45,19 @@ const transformGraphModel = (
       });
     }
 
+    case 'highlight': {
+      const [keyToHighlight] = payload;
+      return produce(currentModel, draft => {
+        const listKey = Array.isArray(keyToHighlight)
+          ? keyToHighlight
+          : [keyToHighlight];
+        listKey.forEach(item => {
+          const nodeToHighlight = draft.find(({ key }) => key === item);
+          if (nodeToHighlight) nodeToHighlight.highlight = true;
+        });
+      });
+    }
+
     case 'resetAll': {
       // Reset focus, visited and label
       const listTransformation = ([
@@ -72,6 +85,12 @@ const transformGraphModel = (
     case 'resetLabel': {
       return produce(currentModel, draft => {
         draft.forEach(item => (item.label = []));
+      });
+    }
+
+    case 'resetHighlight': {
+      return produce(currentModel, draft => {
+        draft.forEach(item => (item.highlight = false));
       });
     }
 

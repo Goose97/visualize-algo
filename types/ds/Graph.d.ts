@@ -17,9 +17,11 @@ export declare namespace Graph {
     | 'focus'
     | 'visited'
     | 'resetAll'
+    | 'highlight'
     | 'resetFocus'
     | 'resetLabel'
-    | 'resetVisited';
+    | 'resetVisited'
+    | 'resetHighlight';
 
   export interface TraversalParams {
     startAt: number;
