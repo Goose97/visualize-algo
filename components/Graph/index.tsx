@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { flatMap, groupBy, pick, isFunction } from 'lodash';
+import { flatMap, groupBy, pick, isFunction, uniqBy } from 'lodash';
 
 import { GraphMemoryBlock, GraphLikeEdges } from 'components';
 import { GraphHTML } from 'components/Graph/GraphHTML';
@@ -168,7 +168,7 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
 
   renderEdges() {
     let allEdgesToRender = this.getAllEdgesToRender();
-    return allEdgesToRender.map(vertexPair => {
+    return allEdgesToRender.map(({ key: vertexPair, highlight }) => {
       const [from, to] = vertexPair
         .split('-')
         .map(key => this.findNodeByKey(this.getGraphModel(), +key));
@@ -179,10 +179,8 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
             from={pick(from, ['x', 'y'])}
             to={pick(to, ['x', 'y'])}
             key={vertexPair}
-            // visible={!!this.isNodeVisible(bstModel, child)}
+            highlight={highlight}
             visible
-            // visited={visited && childVisited}
-            // following={nodeAboutToVisit.has(child)}
           />
         );
       } else {
@@ -192,15 +190,19 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
   }
 
   getAllEdgesToRender() {
-    let allEdgesToRender: Set<string> = new Set([]);
-    this.getGraphModel().forEach(({ key, adjacentNodes }) => {
+    let allEdgesToRender: Array<{ key: string; highlight: boolean }> = [];
+    this.getGraphModel().forEach(({ key, adjacentNodes, highlightEdges }) => {
       adjacentNodes.forEach(adjacentKey => {
         const edgeKey = [key, adjacentKey].sort().join('-');
-        allEdgesToRender.add(edgeKey);
+        const isEdgeNeedFocus = !!highlightEdges?.includes(adjacentKey);
+        allEdgesToRender.push({
+          key: edgeKey,
+          highlight: isEdgeNeedFocus,
+        });
       });
     });
 
-    return [...allEdgesToRender.values()];
+    return uniqBy([...allEdgesToRender.values()], ({ key }) => key);
   }
 
   findNodeByKey(model: Graph.Model, nodeKey: number) {
@@ -229,7 +231,7 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
   }
 
   render() {
-    const { isVisible } = this.state;
+    const { isVisible, graphModel } = this.state;
     return (
       isVisible && (
         <>

@@ -6,6 +6,7 @@ export declare namespace Graph {
     key: number;
     adjacentNodes: number[];
     visited?: boolean;
+    highlightEdges?: number[];
   }
 
   export type Model = NodeModel[];
@@ -18,6 +19,7 @@ export declare namespace Graph {
     | 'visited'
     | 'resetAll'
     | 'highlight'
+    | 'highlightEdge'
     | 'resetFocus'
     | 'resetLabel'
     | 'resetVisited'

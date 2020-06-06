@@ -37,25 +37,37 @@ const dfsInstruction = (
   ]);
 
   while (stack.length) {
+    // Check the node on top of the stack
     const lastNodeKey = last(stack);
-    instructions.pushActionsAndEndStep('graph', [
-      { name: 'focus', params: [lastNodeKey, true] },
+    instructions.pushActions('graph', [{ name: 'resetHighlight', params: [] }]);
+    instructions.pushActions('graph', [
+      { name: 'focus', params: [lastNodeKey] },
     ]);
-    const adjacentNodesWhichNotVisited = data
-      .find(({ key }) => key === lastNodeKey)!
-      .adjacentNodes.filter(key => !visited.has(key) && !stack.includes(key));
 
+    // Highlight all adjacent nodes
+    const adjacentNodes = data.find(({ key }) => key === lastNodeKey)!
+      .adjacentNodes;
+    adjacentNodes.forEach(nodeKey => {
+      instructions.pushActions('graph', [
+        { name: 'highlightEdge', params: [lastNodeKey, nodeKey] },
+      ]);
+      instructions.pushActions('graph', [
+        { name: 'highlight', params: [nodeKey] },
+      ]);
+    });
+    instructions.endStep();
+
+    // Filter out nodes which are already in stack or visited
+    const adjacentNodesWhichNotVisited = adjacentNodes.filter(
+      key => !visited.has(key) && !stack.includes(key),
+    );
     if (adjacentNodesWhichNotVisited.length) {
       // Still has node to push to stack
       adjacentNodesWhichNotVisited.forEach(key => {
         stack.push(key);
-        instructions.pushActions('graph', [
-          { name: 'highlight', params: [key] },
-        ]);
-        instructions.pushActionsAndEndStep('stack', [
-          { name: 'push', params: [key] },
-        ]);
+        instructions.pushActions('stack', [{ name: 'push', params: [key] }]);
       });
+      instructions.endStep();
     } else {
       // Reach leaf node, pop it out
       const nodeKeyToPop = stack.pop();
@@ -87,48 +99,49 @@ const bfsInstruction = (
   // Start make instruction
   let queue: number[] = [];
   let visited: Set<number> = new Set([]);
-  let currentFocusNode: number | undefined;
   queue.push(startAt);
+  instructions.pushActionsAndEndStep('queue', [
+    { name: 'enqueue', params: [startAt] },
+  ]);
 
   while (queue.length) {
-    const currentNodeKey = queue.shift();
-    instructions.pushActions('queue', [{ name: 'dequeue', params: [] }]);
-
-    if (currentFocusNode) {
-      instructions.pushActions('array', [
-        { name: 'push', params: [currentFocusNode] },
-      ]);
-      instructions.pushActions('graph', [
-        { name: 'visited', params: [currentFocusNode] },
-      ]);
-    }
-    visited.add(currentNodeKey!);
-
-    instructions.pushActionsAndEndStep('graph', [
-      { name: 'focus', params: [currentNodeKey] },
-    ]);
-    currentFocusNode = currentNodeKey;
-
+    // Highlight all adjacent nodes
+    const currentNodeKey = queue[0];
     const currentNode = data.find(({ key }) => key === currentNodeKey);
     const adjacentNodes = currentNode ? currentNode.adjacentNodes : [];
+    instructions.pushActions('graph', [
+      { name: 'focus', params: [currentNodeKey] },
+    ]);
+    instructions.pushActions('graph', [{ name: 'resetHighlight', params: [] }]);
+    adjacentNodes.forEach(nodeKey => {
+      instructions.pushActions('graph', [
+        { name: 'highlight', params: [nodeKey] },
+      ]);
+      instructions.pushActions('graph', [
+        { name: 'highlightEdge', params: [currentNodeKey, nodeKey] },
+      ]);
+    });
+    instructions.endStep();
 
-    adjacentNodes
-      .filter(key => !visited.has(key) && !queue.includes(key))
-      .forEach(key => {
-        queue.push(key);
-        instructions.pushActionsAndEndStep('queue', [
-          { name: 'enqueue', params: [key] },
-        ]);
-      });
-  }
+    // Push all adjacent nodes which are not visited or in queue to queue
+    const adjacentNodesWhichNotVisited = adjacentNodes.filter(
+      key => !visited.has(key) && !queue.includes(key),
+    );
+    adjacentNodesWhichNotVisited.forEach(key => {
+      queue.push(key);
+      instructions.pushActions('queue', [{ name: 'enqueue', params: [key] }]);
+    });
+    if (adjacentNodesWhichNotVisited.length) instructions.endStep();
 
-  if (currentFocusNode) {
+    // Dequeue and mark the current node as visited, push current node to result array
+    queue.shift();
+    visited.add(currentNodeKey!);
+    instructions.pushActions('queue', [{ name: 'dequeue', params: [] }]);
     instructions.pushActions('array', [
-      { name: 'push', params: [currentFocusNode] },
+      { name: 'push', params: [currentNodeKey] },
     ]);
     instructions.pushActionsAndEndStep('graph', [
-      { name: 'resetFocus', params: [] },
-      { name: 'visited', params: [currentFocusNode] },
+      { name: 'visited', params: [currentNodeKey] },
     ]);
   }
 

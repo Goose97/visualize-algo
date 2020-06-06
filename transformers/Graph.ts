@@ -58,12 +58,34 @@ const transformGraphModel = (
       });
     }
 
+    case 'highlightEdge': {
+      const [from, to] = payload;
+      return produce(currentModel, draft => {
+        const fromNode = draft.find(({ key }) => key === from);
+        const toNode = draft.find(({ key }) => key === to);
+        if (!fromNode || !toNode) return;
+
+        {
+          const oldHighlightEdges = fromNode.highlightEdges || [];
+          const newHighlightEdges = uniq(oldHighlightEdges.concat(to));
+          fromNode.highlightEdges = newHighlightEdges;
+        }
+
+        {
+          const oldHighlightEdges = toNode.highlightEdges || [];
+          const newHighlightEdges = uniq(oldHighlightEdges.concat(from));
+          toNode.highlightEdges = newHighlightEdges;
+        }
+      });
+    }
+
     case 'resetAll': {
       // Reset focus, visited and label
       const listTransformation = ([
         'resetFocus',
         'resetVisited',
         'resetLabel',
+        'resetHighlight',
       ] as Graph.Method[]).map(method => (model: Graph.Model) =>
         transformGraphModel(model, method, []),
       );
@@ -89,8 +111,12 @@ const transformGraphModel = (
     }
 
     case 'resetHighlight': {
+      // reset highlight of node and edges
       return produce(currentModel, draft => {
-        draft.forEach(item => (item.highlight = false));
+        draft.forEach(item => {
+          item.highlight = false;
+          item.highlightEdges = [];
+        });
       });
     }
 

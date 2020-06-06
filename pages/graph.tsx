@@ -26,12 +26,16 @@ interface IState extends BaseDSPageState {
 
 interface IProps {}
 
+const data =
+  '[{"x":0,"y":0,"key":1,"adjacentNodes":[5,3,6],"value":1,"visible":true},{"x":74,"y":144,"key":2,"adjacentNodes":[5,4],"value":2,"visible":true},{"x":316,"y":175,"key":3,"adjacentNodes":[5,1],"value":3,"visible":true},{"x":370,"y":41,"key":4,"adjacentNodes":[5,2,6],"value":4,"visible":true},{"x":206,"y":237,"key":5,"adjacentNodes":[1,2,3,4],"value":5,"visible":true},{"x":531,"y":91,"key":6,"adjacentNodes":[1,4],"value":6,"visible":true}]';
+
 export class BinarySearchTreePage extends Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
 
     this.state = {
       stepDescription: [],
+      data: JSON.parse(data),
       autoPlay: false,
     };
   }
