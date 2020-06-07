@@ -110,6 +110,7 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
           title='Construct new BST'
           onCancel={() => this.setState({ isModalVisible: false })}
           onOk={() => onSubmit(input)}
+          okButtonProps={{ disabled: !input || !input.length }}
         >
           <div className='init-bst-modal__wrapper fx'>
             {previewWindow}

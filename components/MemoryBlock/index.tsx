@@ -11,9 +11,12 @@ import { IProps, IState } from './index.d';
 type PropsWithHoc = IProps & WithExtendClassName;
 
 export class MemoryBlock extends Component<PropsWithHoc, IState> {
+  private labelText: React.RefObject<SVGTextElement>;
   constructor(props: IProps) {
     super(props);
     this.state = {};
+
+    this.labelText = React.createRef();
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -80,6 +83,27 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
     }
   }
 
+  renderBackgroundOverlayForText() {
+    const { x, y, width, height } = this.props;
+    const textElement = this.labelText.current;
+    if (!textElement) return null;
+
+    const {
+      width: textWidth,
+      height: textHeight,
+    } = textElement.getBoundingClientRect();
+    return (
+      <rect
+        x={x + width / 2}
+        y={y - height / 2}
+        transform={`translate(-${textWidth / 2}, -${textHeight / 2})`}
+        width={textWidth}
+        height={textHeight}
+        className="fill-background"
+      ></rect>
+    );
+  }
+
   render() {
     const {
       value,
@@ -107,15 +131,19 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
     );
 
     const labelText = label && label.length && (
-      <text
-        x={x + width / 2}
-        y={y - height / 2}
-        dominantBaseline='middle'
-        textAnchor='middle'
-        className='memory-block__text italic'
-      >
-        {label.join(' / ')}
-      </text>
+      <g>
+        {this.renderBackgroundOverlayForText()}
+        <text
+          x={x + width / 2}
+          y={y - height / 2}
+          dominantBaseline='middle'
+          textAnchor='middle'
+          className='memory-block__text italic'
+          ref={this.labelText}
+        >
+          {label.join(' / ')}
+        </text>
+      </g>
     );
 
     const highlightCircle = highlight && (

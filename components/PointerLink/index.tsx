@@ -29,35 +29,20 @@ export class PointerLink extends Component<IProps, IState> {
     if (visible !== prevProps.visible) {
       if (!visible) this.hide();
     }
-
-    // Change in following state
-    if (following && !prevProps.following) {
-      this.follow();
-    }
-
-    if (!visited && prevProps.visited) {
-      this.setState({ isFollowing: false });
-    }
   }
 
   hide() {
     this.setState({ isDisappearing: true });
   }
 
-  follow() {
-    this.setState({
-      isFollowing: true,
-    });
-  }
-
   produceClassName() {
-    const { isDisappearing, isFollowing } = this.state;
-    const { visited, highlight } = this.props;
+    const { isDisappearing } = this.state;
+    const { visited, highlight, following } = this.props;
     return classNameHelper({
       base: 'pointer-link has-transition',
       disappearing: !!isDisappearing,
       visited: !!visited,
-      following: !!isFollowing,
+      following: !!following,
       highlight: !!highlight,
     });
   }
@@ -82,14 +67,13 @@ export class PointerLink extends Component<IProps, IState> {
   }
 
   produceStartPointMark() {
-    const { isFollowing } = this.state;
-    const { path, visited } = this.props;
+    const { path, visited, following } = this.props;
     const regex = /^M (\d+) (\d+)/;
     const startPoint = path?.match(regex);
     if (startPoint) {
       const className = classNameHelper({
         base: 'pointer-link__start-dot',
-        follow: !!isFollowing,
+        follow: !!following,
         visited: !!visited,
       });
       return (
@@ -106,12 +90,11 @@ export class PointerLink extends Component<IProps, IState> {
   renderFocusMaskOnPointerLink() {
     // Just a layer of pointer link of top of the original one
     // Create a effect of highlight when focus
-    const { isFollowing } = this.state;
-    const { highlight } = this.props;
-    const shouldRender = isFollowing || highlight;
+    const { highlight, following } = this.props;
+    const shouldRender = following || highlight;
     const className = classNameHelper({
       base: 'pointer-link__line',
-      ['follow animated-path']: !!isFollowing,
+      ['follow animated-path']: !!following,
       highlight: !!highlight,
     });
     return (

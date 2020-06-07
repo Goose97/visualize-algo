@@ -201,7 +201,7 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
         nodeKeyToStart,
         nodeKeyToVisit,
       );
-    }, 400);
+    }, 800);
 
     return currentModel;
   };
@@ -218,6 +218,10 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
     startNodeKey: number,
     nodeKeyToVisit: number,
   ) {
+    const { nodeAboutToVisit } = this.state;
+    const clonedState = new Set(nodeAboutToVisit);
+    clonedState.delete(nodeKeyToVisit);
+
     // Mark the start node as visited and focus to the node which is just visited
     const visitAction: Action<BST.Method> = {
       name: 'visited',
@@ -233,7 +237,7 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
       currentModel,
       true,
     );
-    this.setState({ bstModel: newModel });
+    this.setState({ bstModel: newModel, nodeAboutToVisit: clonedState });
   }
 
   // params: [parentKey, valueToInsert]
@@ -432,8 +436,8 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
           />
           <defs>
             <g id='binary-search-tree' x='0' y='0'>
-              {this.renderNodes()}
               {this.renderPointerLinks()}
+              {this.renderNodes()}
             </g>
           </defs>
         </>
