@@ -11,7 +11,7 @@ import {
   LINKED_LIST_BLOCK_HEIGHT,
 } from '../../../constants';
 import { LinkedList } from 'types/ds/LinkedList';
-import { classNameHelper, upcaseFirstLetter } from 'utils';
+import { classNameHelper, upcaseFirstLetterAndSplit } from 'utils';
 
 const options: Array<{
   label: string;
@@ -45,7 +45,7 @@ export class LinkedListNodeApiDropdown extends Component<
 
   handleSelectApi(api: LinkedList.Api, params: Object) {
     const { handler } = this.props;
-    // const method = `on${upcaseFirstLetter(api)}`;
+    // const method = `on${upcaseFirstLetterAndSplit(api)}`;
     // //@ts-ignore
     // const handler = this.props[method];
     // handler && handler(params);

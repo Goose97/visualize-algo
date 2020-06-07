@@ -4,10 +4,15 @@
     stroke-width: 2px;
     fill: none;
 
-    &.follow {
+    &.follow,
+    &.highlight {
       stroke: $primary-color;
       fill: $primary-color !important;
       stroke-width: 3px;
+    }
+
+    &.highlight + .pointer-link__line {
+      opacity: 0;
     }
   }
 

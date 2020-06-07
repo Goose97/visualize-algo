@@ -3,6 +3,7 @@
 $border-radius: 4px;
 $transition-style: all 0.3s ease 0s;
 $border-style: 1px solid #cfcfcf;
+$default-dasharray: 8px;
 
 @for $i from 0 through 30 {
   .fx-gap-#{$i} > * {
@@ -281,7 +282,4 @@ $border-style: 1px solid #cfcfcf;
 
 .interactive {
   cursor: pointer;
-}
-
-#html-overlay {
 }

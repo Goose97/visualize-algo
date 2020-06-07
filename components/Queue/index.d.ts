@@ -1,30 +1,18 @@
-import { PointCoordinate, BaseMemoryBlockProps } from 'types';
+import { PointCoordinate, BaseMemoryBlockProps, BaseDSProps } from 'types';
+import { Queue } from 'types/ds/Queue';
 
-export type QueueModel = QueueItemModel[];
-
-export interface QueueItemModel extends BaseMemoryBlockProps {
-  key: number;
-  offsetFromFront: number;
-  isNew?: boolean;
-}
-
-export interface IProps {
-  x: number;
-  y: number;
-  currentStep: number;
-  totalStep: number;
+export interface IProps extends BaseDSProps {
   instructions: Action[][];
   initialData: number[];
 }
 
 export interface IState {
-  queueModel: QueueModel;
+  queueModel: Queue.Model;
 }
 
 export type QueueMethod = 'dequeue' | 'enqueue';
 
-export interface QueueItemProps extends QueueItemModel {
-  origin: PointCoordinate;
+export interface QueueItemProps extends Queue.ItemModel {
   isNew?: boolean;
 }
 

@@ -1,0 +1,6 @@
+.highlight-circle {
+  @extend .stroke-2;
+  fill: none;
+  stroke: $destructive-color;
+  stroke-dasharray: $default-dasharray;
+}

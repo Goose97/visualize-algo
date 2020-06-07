@@ -1,30 +1,16 @@
-import { PointCoordinate, BaseMemoryBlockProps } from 'types';
+import { PointCoordinate, BaseMemoryBlockProps, BaseDSProps } from 'types';
+import { Stack } from 'types/ds/Stack';
 
-export type StackModel = StackItemModel[];
-
-export interface StackItemModel extends BaseMemoryBlockProps {
-  key: number;
-  offsetFromFront: number;
-  isNew?: boolean;
-}
-
-export interface IProps {
-  x: number;
-  y: number;
-  currentStep: number;
-  totalStep: number;
-  instructions: Action[][];
+export interface IProps extends BaseDSProps {
+  instructions: Action<Stack.Method>[][];
   initialData: number[];
 }
 
 export interface IState {
-  stackModel: StackModel;
+  stackModel: Stack.Model;
 }
 
-export type StackMethod = 'push' | 'pop';
-
-export interface StackItemProps extends StackItemModel {
-  origin: PointCoordinate;
+export interface StackItemProps extends Stack.ItemModel {
   isNew?: boolean;
 }
 

@@ -52,12 +52,13 @@ export class PointerLink extends Component<IProps, IState> {
 
   produceClassName() {
     const { isDisappearing, isFollowing } = this.state;
-    const { visited } = this.props;
+    const { visited, highlight } = this.props;
     return classNameHelper({
       base: 'pointer-link has-transition',
       disappearing: !!isDisappearing,
       visited: !!visited,
       following: !!isFollowing,
+      highlight: !!highlight,
     });
   }
 
@@ -102,18 +103,30 @@ export class PointerLink extends Component<IProps, IState> {
     } else return null;
   }
 
-  render() {
+  renderFocusMaskOnPointerLink() {
+    // Just a layer of pointer link of top of the original one
+    // Create a effect of highlight when focus
     const { isFollowing } = this.state;
+    const { highlight } = this.props;
+    const shouldRender = isFollowing || highlight;
+    const className = classNameHelper({
+      base: 'pointer-link__line',
+      ['follow animated-path']: !!isFollowing,
+      highlight: !!highlight,
+    });
+    return (
+      shouldRender && (
+        <path d={this.produceFullPathWithArrow()} className={className} />
+      )
+    );
+  }
+
+  render() {
     const propsToOmit = ['arrowDirection', 'following', 'visited', 'visible'];
 
     return (
       <g className={this.produceClassName()} {...omit(this.props, propsToOmit)}>
-        {isFollowing && (
-          <path
-            d={this.produceFullPathWithArrow()}
-            className='pointer-link__line follow animated-path'
-          />
-        )}
+        {this.renderFocusMaskOnPointerLink()}
         <path
           d={this.produceFullPathWithArrow()}
           className='pointer-link__line'

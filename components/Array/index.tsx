@@ -40,7 +40,9 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
   }
 
   push(currentModel: Array.Model, params: [number]) {
-    const biggestKey = Math.max(...currentModel.map(({ key }) => key));
+    const biggestKey = currentModel.length
+      ? Math.max(...currentModel.map(({ key }) => key))
+      : -1;
     const newArrayNode: Array.Node = {
       value: params[0],
       key: biggestKey + 1,

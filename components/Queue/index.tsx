@@ -7,15 +7,16 @@ import {
   QUEUE_BLOCK_HEIGHT,
   QUEUE_BLOCK_GAP,
 } from '../../constants';
-import { QueueModel, IState, IProps, QueueItemModel } from './index.d';
+import { IState, IProps } from './index.d';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { Action } from 'types';
-import transformModel from './ModelTransformer';
+import { Queue } from 'types/ds/Queue';
+import transformQueueModel from 'transformers/Queue';
 import { getProgressDirection } from 'utils';
 
-type PropsWithHoc = IProps & WithReverseStep<QueueModel>;
+type PropsWithHoc = IProps & WithReverseStep<Queue.Model>;
 
-export class Queue extends Component<PropsWithHoc, IState> {
+export class QueueDS extends Component<PropsWithHoc, IState> {
   constructor(props: PropsWithHoc) {
     super(props);
 
@@ -49,15 +50,15 @@ export class Queue extends Component<PropsWithHoc, IState> {
         reverseToStep(currentStep);
         break;
 
-      case 'fastForward':
-        console.log('fastForward');
-        this.handleFastForward();
-        break;
+      // case 'fastForward':
+      //   console.log('fastForward');
+      //   this.handleFastForward();
+      //   break;
 
-      case 'fastBackward':
-        console.log('fastBackward');
-        this.handleFastBackward();
-        break;
+      // case 'fastBackward':
+      //   console.log('fastBackward');
+      //   this.handleFastBackward();
+      //   break;
     }
   }
 
@@ -88,38 +89,66 @@ export class Queue extends Component<PropsWithHoc, IState> {
   }
 
   consumeMultipleActions(
-    actionList: Action[],
-    currentModel: QueueModel,
-  ): QueueModel {
+    actionList: Action<Queue.Method>[],
+    currentModel: Queue.Model,
+    onlyTranformData?: boolean,
+  ): Queue.Model {
     // Treat each action as a transformation function which take a linkedListModel
     // and return a new one. Consuming multiple actions is merely chaining those
     // transformations together
     // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
-    let finalQueueModel = currentModel;
-    actionList.forEach(({ name, params }) => {
+    return actionList.reduce<Queue.Model>((finalModel, action) => {
+      // the main function of a handler is doing side effect before transform model
+      // a handler must also return a new model
+      // if no handler is specify, just transform model right away
+      const { name, params } = action;
       //@ts-ignore
-      finalQueueModel = this[name](finalQueueModel, params);
-    });
+      const customHandler = this[name];
 
-    return finalQueueModel;
+      if (typeof customHandler === 'function') {
+        return customHandler(finalModel, params, onlyTranformData);
+      } else {
+        return transformQueueModel(finalModel, name, params);
+      }
+    }, currentModel);
   }
 
+  enqueue(currentModel: Queue.Model, params: [number]) {
+    const firstItem = currentModel[0];
+    const firstVisibleItem = currentModel.filter(({ visible }) => !!visible)[0];
+
+    const queueItemToEnqueue: Queue.ItemModel = {
+      value: params[0],
+      visible: true,
+      offsetFromFront: firstVisibleItem
+        ? firstVisibleItem.offsetFromFront + 1
+        : 0,
+      key: firstItem ? firstItem.key + 1 : 0,
+      isNew: true,
+    };
+    const newModel = transformQueueModel(currentModel, 'enqueue', [
+      queueItemToEnqueue,
+    ]);
+    return newModel;
+  }
+
+  handleReverse = (stateOfPreviousStep: Queue.Model) => {
+    this.setState({ queueModel: stateOfPreviousStep });
+  };
+
   renderQueueBoundary() {
-    const { x, y } = this.props;
     const queueWidth = this.caculateWidthOfQueue();
     const upperBound = (
       <path
         className='default-stroke has-transition'
-        d={`M ${x + QUEUE_BLOCK_WIDTH} ${
-          y - 20
-        } l -2 2 l 8 -2 l -8 -2 l 2 2 h ${-queueWidth}`}
+        d={`M ${QUEUE_BLOCK_WIDTH} ${-20} l -2 2 l 8 -2 l -8 -2 l 2 2 h ${-queueWidth}`}
       ></path>
     );
     const lowerBound = (
       <path
         className='default-stroke has-transition'
-        d={`M ${x + QUEUE_BLOCK_WIDTH} ${
-          y + QUEUE_BLOCK_HEIGHT + 20
+        d={`M ${QUEUE_BLOCK_WIDTH} ${
+          QUEUE_BLOCK_HEIGHT + 20
         } l -2 2 l 8 -2 l -8 -2 l 2 2 h ${-queueWidth}`}
       ></path>
     );
@@ -133,44 +162,29 @@ export class Queue extends Component<PropsWithHoc, IState> {
 
   caculateWidthOfQueue() {
     const { queueModel } = this.state;
-    const numberOfQueueItem = queueModel.length;
+    const numberOfQueueItem = queueModel.filter(({ visible }) => !!visible)
+      .length;
     return (
       numberOfQueueItem * (QUEUE_BLOCK_WIDTH + QUEUE_BLOCK_GAP) -
       QUEUE_BLOCK_GAP
     );
   }
 
-  dequeue(currentModel: QueueModel, params: []) {
-    const newModel = transformModel(currentModel, 'dequeue', params);
-    return newModel;
-  }
-
-  enqueue(currentModel: QueueModel, params: [number]) {
-    const queueItemToEnqueue: QueueItemModel = {
-      value: params[0],
-      visible: true,
-      offsetFromFront: currentModel[0].offsetFromFront + 1,
-      key: currentModel[0].key + 1,
-      isNew: true,
-    };
-    const newModel = transformModel(currentModel, 'enqueue', [
-      queueItemToEnqueue,
-    ]);
-    return newModel;
-  }
-
   render() {
     const { queueModel } = this.state;
-    const listQueueItem = queueModel.map(item => (
-      <QueueItem {...item} origin={pick(this.props, ['x', 'y'])} />
-    ));
+    const listQueueItem = queueModel.map(item => <QueueItem {...item} />);
     return (
-      <g className='queue__wrapper'>
-        {listQueueItem}
-        {this.renderQueueBoundary()}
-      </g>
+      <>
+        <use href='#queue' {...pick(this.props, ['x', 'y'])} />
+        <defs>
+          <g id='queue' className='queue__wrapper'>
+            {listQueueItem}
+            {this.renderQueueBoundary()}
+          </g>
+        </defs>
+      </>
     );
   }
 }
 
-export default withReverseStep<QueueModel, PropsWithHoc>(Queue);
+export default withReverseStep<Queue.Model, PropsWithHoc>(QueueDS);

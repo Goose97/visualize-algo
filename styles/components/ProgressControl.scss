@@ -24,7 +24,7 @@
 
       &:hover:not(.disabled) {
         @extend .shadow;
-        background-color: $primary-color-5;
+        background-color: $primary-color-2;
         cursor: pointer;
       }
 
@@ -45,7 +45,7 @@
     border-radius: 3px;
 
     .progress-control__progress-bar {
-      background-color: $primary-color-3;
+      background-color: $primary-color;
       height: 100%;
       border-radius: 3px;
     }

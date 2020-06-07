@@ -1,10 +1,10 @@
 .stack-item__wrapper {
-  &.disappearing {
-    animation: popOut 0.5s ease;
-  }
-
   &.appearing {
     animation: popIn 0.5s ease;
+  }
+
+  &.disappearing {
+    animation: popOut 0.5s ease forwards;
   }
 }
 

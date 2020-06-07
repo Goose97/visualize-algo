@@ -1,14 +1,14 @@
 import produce from 'immer';
 
-import { QueueModel, QueueMethod } from './index.d';
+import { Queue } from 'types/ds/Queue';
 
 // Nhận vào trạng thái hiện tại của data structure
 // và operation tương ứng. Trả về trạng thái mới
-const transformModel = (
-  currentModel: QueueModel,
-  operation: QueueMethod,
+const transformQueueModel = (
+  currentModel: Queue.Model,
+  operation: Queue.Method,
   payload: any[],
-): QueueModel => {
+): Queue.Model => {
   switch (operation) {
     case 'dequeue': {
       // Find the first element from the back which still visible
@@ -39,4 +39,4 @@ const transformModel = (
   }
 };
 
-export default transformModel;
+export default transformQueueModel;

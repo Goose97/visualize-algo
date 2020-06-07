@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { pick } from 'lodash';
 
+import { HighlightCircle } from 'components';
 import { classNameHelper } from 'utils';
 import withExtendClassName, {
   WithExtendClassName,
@@ -87,6 +88,7 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
       height,
       children,
       textOffset,
+      highlight,
       x,
       y,
     } = this.props;
@@ -98,7 +100,7 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
         y={y + height / 2}
         dominantBaseline='middle'
         textAnchor='middle'
-        className='memory-block__text'
+        className='memory-block__text value-text'
       >
         {value}
       </text>
@@ -116,12 +118,21 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
       </text>
     );
 
+    const highlightCircle = highlight && (
+      <HighlightCircle
+        x={x + width / 2}
+        y={y + height / 2}
+        radius={width / 2 + 15}
+      />
+    );
+
     return (
       <g className={this.produceClassName()}>
         {this.renderMemoryBlockContainer()}
         {valueText}
         {labelText}
         {children}
+        {highlightCircle}
       </g>
     );
   }

@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import { flatMap, groupBy, pick } from 'lodash';
+import { flatMap, groupBy, pick, isFunction, uniqBy } from 'lodash';
 
 import { GraphMemoryBlock, GraphLikeEdges } from 'components';
+import { GraphHTML } from 'components/Graph/GraphHTML';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import transformGraphModel from 'transformers/Graph';
 import { getProgressDirection, keyExist } from 'utils';
 import { IProps, IState } from './index.d';
-import { Action, ActionWithStep } from 'types';
+import { Action, ActionWithStep, ObjectType } from 'types';
 import { Graph } from 'types/ds/Graph';
 
 type PropsWithHoc = IProps & WithReverseStep<Graph.Model>;
@@ -167,7 +168,7 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
 
   renderEdges() {
     let allEdgesToRender = this.getAllEdgesToRender();
-    return allEdgesToRender.map(vertexPair => {
+    return allEdgesToRender.map(({ key: vertexPair, highlight }) => {
       const [from, to] = vertexPair
         .split('-')
         .map(key => this.findNodeByKey(this.getGraphModel(), +key));
@@ -178,10 +179,8 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
             from={pick(from, ['x', 'y'])}
             to={pick(to, ['x', 'y'])}
             key={vertexPair}
-            // visible={!!this.isNodeVisible(bstModel, child)}
+            highlight={highlight}
             visible
-            // visited={visited && childVisited}
-            // following={nodeAboutToVisit.has(child)}
           />
         );
       } else {
@@ -191,23 +190,48 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
   }
 
   getAllEdgesToRender() {
-    let allEdgesToRender: Set<string> = new Set([]);
-    this.getGraphModel().forEach(({ key, adjacentNodes }) => {
+    let allEdgesToRender: Array<{ key: string; highlight: boolean }> = [];
+    this.getGraphModel().forEach(({ key, adjacentNodes, highlightEdges }) => {
       adjacentNodes.forEach(adjacentKey => {
         const edgeKey = [key, adjacentKey].sort().join('-');
-        allEdgesToRender.add(edgeKey);
+        const isEdgeNeedFocus = !!highlightEdges?.includes(adjacentKey);
+        allEdgesToRender.push({
+          key: edgeKey,
+          highlight: isEdgeNeedFocus,
+        });
       });
     });
 
-    return [...allEdgesToRender.values()];
+    return uniqBy([...allEdgesToRender.values()], ({ key }) => key);
   }
 
   findNodeByKey(model: Graph.Model, nodeKey: number) {
     return model.find(({ key }) => key === nodeKey);
   }
 
+  componentDidMount() {
+    const { interactive } = this.props;
+    if (interactive) this.injectHTMLIntoCanvas();
+  }
+
+  injectHTMLIntoCanvas() {
+    const { graphModel } = this.state;
+    const { handleExecuteApi } = this.props;
+    setTimeout(() => {
+      GraphHTML.renderToView({
+        model: graphModel,
+        wrapperElement: this.wrapperRef.current,
+        coordinate: pick(this.props, ['x', 'y']),
+        apiHandler: (apiName: string, params?: ObjectType<any>) => {
+          if (!isFunction(handleExecuteApi)) return;
+          handleExecuteApi(apiName, params);
+        },
+      });
+    }, 0);
+  }
+
   render() {
-    const { isVisible } = this.state;
+    const { isVisible, graphModel } = this.state;
     return (
       isVisible && (
         <>

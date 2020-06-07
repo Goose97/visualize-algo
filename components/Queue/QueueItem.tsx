@@ -21,13 +21,10 @@ export class QueueItem extends Component<QueueItemProps, QueueItemState> {
   }
 
   caculateItemCoordinate() {
-    const {
-      origin: { x, y },
-      offsetFromFront,
-    } = this.props;
+    const { offsetFromFront } = this.props;
     return {
-      x: x - offsetFromFront * (QUEUE_BLOCK_WIDTH + QUEUE_BLOCK_GAP),
-      y: y,
+      x: -offsetFromFront * (QUEUE_BLOCK_WIDTH + QUEUE_BLOCK_GAP),
+      y: 0,
     };
   }
 

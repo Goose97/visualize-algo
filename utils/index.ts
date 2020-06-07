@@ -61,9 +61,10 @@ export const getProgressDirection = (
   }
 };
 
-export const upcaseFirstLetter = (string: string) => {
-  if (string.length === 0) return string;
-  return string[0].toUpperCase() + string.slice(1);
+export const upcaseFirstLetterAndSplit = (string: string) => {
+  const regex = /[A-Z]/g;
+  let result = string.replace(regex, value => ` ${value}`);
+  return result[0].toUpperCase() + result.slice(1);
 };
 
 export const keyExist = (object: Object, keys: string[]) => {
@@ -123,4 +124,20 @@ const caculateAngleOfLine = (
       ? Math.atan(tan) - Math.PI
       : Math.atan(tan) + Math.PI;
   }
+};
+
+export const caculateDistanceToALine = (
+  pointA: PointCoordinate,
+  pointB: PointCoordinate,
+  pointC: PointCoordinate,
+) => {
+  // Distance from A to BC
+  const ab = caculateLength(pointA, pointB);
+  const bc = caculateLength(pointB, pointC);
+  const ca = caculateLength(pointC, pointA);
+
+  // Caculate triangle area use Heron's formula
+  const s = (ab + bc + ca) / 2;
+  const area = Math.sqrt(s * (s - ab) * (s - bc) * (s - ca));
+  return (area * 2) / bc;
 };
