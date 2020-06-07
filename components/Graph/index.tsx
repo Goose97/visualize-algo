@@ -231,7 +231,7 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
   }
 
   render() {
-    const { isVisible, graphModel } = this.state;
+    const { isVisible } = this.state;
     return (
       isVisible && (
         <>
@@ -242,8 +242,8 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
           />
           <defs>
             <g id='graph'>
-              {this.renderVertices()}
               {this.renderEdges()}
+              {this.renderVertices()}
             </g>
           </defs>
         </>
