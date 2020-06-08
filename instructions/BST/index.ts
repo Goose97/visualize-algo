@@ -184,6 +184,8 @@ const deleteInstruction = (
   let instructions = new Instructions();
   const codeLines = getCodeLine('delete');
 
+  console.log('bst', bst)
+
   let current = bst;
   let found = false;
 
@@ -284,6 +286,7 @@ const deleteInstruction = (
         { name: 'delete', params: [key] },
       ]);
     } else {
+      console.log('1111', current)
       // One child situation
       // Copy value and delete child
       const onlyChildNode = current.left || current.right;

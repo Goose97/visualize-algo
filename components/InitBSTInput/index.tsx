@@ -67,7 +67,7 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
   };
 
   generateRandomData() {
-    return [1, 2, null, 3, null, null, null, 4];
+    return [2, -1, 6, null, 0, null, 8];
     return [4, 1, 8, -3, 2, 6, 9, null, -2, null, null, null, null, null, null];
     return Array(8)
       .fill(0)

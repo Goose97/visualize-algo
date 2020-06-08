@@ -38,10 +38,12 @@ export function initBinaryTree(array: Array<number | string | null>) {
   let head = null;
   let queue = [];
   let counter = 0;
+  let key = 0;
   if (!array.length) return null;
   for (let i = 0; i < array.length; i++) {
     let val = array[i];
-    const newNode = val !== null ? new BinaryTreeNode(val, i) : null;
+
+    const newNode = val !== null ? new BinaryTreeNode(val, key++) : null;
     if (head) {
       let parentNode = queue[0]!;
       if (counter === 0) {

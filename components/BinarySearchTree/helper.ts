@@ -99,11 +99,12 @@ export const produceInitialBSTData = (
   let queue: Array<Omit<BST.NodeModel, 'x' | 'y'> | null> = [];
   let result: Omit<BST.NodeModel, 'x' | 'y'>[] = [];
   let counter = 0;
+  let key = 0;
   for (let i = 0; i < array.length; i++) {
     let val = array[i];
     let parentNode = queue[0];
-
-    const newNode = val !== null ? new BinaryTreeNode(val, i) : null;
+    
+    const newNode = val !== null ? new BinaryTreeNode(val, key++) : null;
     if (newNode) {
       queue.push({
         key: newNode!.key,
@@ -131,5 +132,5 @@ export const produceInitialBSTData = (
 
   //@ts-ignore
   result.push(...queue);
-  return result;
+  return result.filter(item => !!item);
 };
