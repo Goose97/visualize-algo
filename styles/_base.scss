@@ -287,3 +287,11 @@ $default-dasharray: 8px;
 .fill-background {
   fill: $background-light-1;
 }
+
+.error-color {
+  color: $destructive-color;
+}
+
+.success-color {
+  color: $success-color;
+}

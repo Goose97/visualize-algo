@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Input } from 'antd';
 
 import { Button, CustomModal, BinarySearchTreeDS } from 'components';
+import { validateBinaryTree } from 'instructions/BST/helper';
 import withExtendClassName, {
   WithExtendClassName,
 } from 'hocs/withExtendClassName';
@@ -34,15 +35,19 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
   getBSTRepresentationFromInputText(
     inputText: string,
   ): { input?: Array<number | null>; error?: string | null } {
-    const regex = /^\[([(\d|null),\s]+)\]$/;
+    const regex = /^\[([(\d|null)\-,\s]+)\]$/;
     const match = inputText.match(regex);
     if (!match) return { error: 'Sai cú pháp' };
+
+    const input = match[1]
+      .split(',')
+      .map(string => (string.includes('null') ? null : parseInt(string)))
+      .filter(item => item === null || typeof item === 'number');
+
+    const isBSTValid = validateBinaryTree(input);
     return {
-      input: match[1]
-        .split(',')
-        .map(string => (string.includes('null') ? null : parseInt(string)))
-        .filter(item => item === null || typeof item === 'number'),
-      error: null,
+      input,
+      error: isBSTValid ? null : 'BST không hợp lệ',
     };
   }
 
@@ -62,6 +67,7 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
   };
 
   generateRandomData() {
+    return [1, 2, null, 3, null, null, null, 4];
     return [4, 1, 8, -3, 2, 6, 9, null, -2, null, null, null, null, null, null];
     return Array(8)
       .fill(0)
@@ -73,7 +79,7 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
   }
 
   render() {
-    const { isModalVisible, input, textInput } = this.state;
+    const { isModalVisible, input, textInput, error } = this.state;
     const { className, onSubmit } = this.props;
     const previewWindow = (
       <div className='init-bst-modal__preview fx-7'>
@@ -92,6 +98,7 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
           placeholder='[1,2,3,null,4,5]'
           value={textInput}
         />
+        <span className='f-small-1 italic error-color mb-2'>{error}</span>
         <Button type='secondary' onClick={this.handleRandomizeData}>
           Generate random data
         </Button>
@@ -110,7 +117,7 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
           title='Construct new BST'
           onCancel={() => this.setState({ isModalVisible: false })}
           onOk={() => onSubmit(input)}
-          okButtonProps={{ disabled: !input || !input.length }}
+          okButtonProps={{ disabled: !input || !input.length || !!error }}
         >
           <div className='init-bst-modal__wrapper fx'>
             {previewWindow}

@@ -96,7 +96,7 @@ export const produceInitialBSTData = (
   array: Array<number | null> | Array<string | null>,
 ): Omit<BST.NodeModel, 'x' | 'y'>[] => {
   if (!array.length) return [];
-  let queue: Omit<BST.NodeModel, 'x' | 'y'>[] = [];
+  let queue: Array<Omit<BST.NodeModel, 'x' | 'y'> | null> = [];
   let result: Omit<BST.NodeModel, 'x' | 'y'>[] = [];
   let counter = 0;
   for (let i = 0; i < array.length; i++) {
@@ -104,29 +104,32 @@ export const produceInitialBSTData = (
     let parentNode = queue[0];
 
     const newNode = val !== null ? new BinaryTreeNode(val, i) : null;
-    if (newNode)
+    if (newNode) {
       queue.push({
         key: newNode!.key,
         value: newNode!.val,
         left: null,
         right: null,
       });
+    } else {
+      queue.push(null);
+    }
 
-    if (parentNode) {
-      if (counter === 0) {
-        // this node is left of parent node
-        parentNode.left = newNode ? newNode.key : null;
-        counter++;
-      } else {
-        // this node is right of parent node
-        parentNode.right = newNode ? newNode.key : null;
-        counter = 0;
-        result.push(queue.shift()!);
-      }
+    if (parentNode === undefined) continue;
+
+    if (counter === 0) {
+      // this node is left of parent node
+      if (parentNode) parentNode.left = newNode ? newNode.key : null;
+      counter++;
+    } else {
+      // this node is right of parent node
+      if (parentNode) parentNode.right = newNode ? newNode.key : null;
+      counter = 0;
+      result.push(queue.shift()!);
     }
   }
 
+  //@ts-ignore
   result.push(...queue);
-
   return result;
 };

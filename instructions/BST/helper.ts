@@ -1,5 +1,4 @@
 import { StepInstruction } from 'types';
-import { BSTInputData } from './index.d';
 
 const DEFAULT_DURATION = 1500;
 
@@ -74,4 +73,26 @@ export const findPredecessorOfNode = (node: BinaryTreeNode): BinaryTreeNode => {
   }
 
   return currentNode;
+};
+
+export const validateBinaryTree = (input: Array<string | number | null>) => {
+  function helper(
+    bst: BinaryTreeNode | null,
+  ): [string | number | null, string | number | null, boolean] {
+    if (bst === null) return [null, null, true];
+    const [minLeft, maxLeft, isLeftValid] = helper(bst.left);
+    const [minRight, maxRight, isRightValid] = helper(bst.right);
+
+    if (!isLeftValid || !isRightValid) return [null, null, false];
+
+    const isBiggerThanLeftSubtree = maxLeft === null || bst.val > maxLeft;
+    const isSmallerThanRightSubtree = minRight === null || bst.val < minRight;
+    const isValid = isBiggerThanLeftSubtree && isSmallerThanRightSubtree;
+    const minOfThisSubTree = minLeft === null ? bst.val : minLeft;
+    const maxOfThisSubTree = maxRight === null ? bst.val : maxRight;
+    return [minOfThisSubTree, maxOfThisSubTree, isValid];
+  }
+
+  const bst = initBinaryTree(input);
+  return helper(bst)[2];
 };
