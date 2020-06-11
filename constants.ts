@@ -25,3 +25,8 @@ export const BST_CHILD_DISTANCE_FROM_PARENT = 50;
 export const TREE_LIKE_LEVEL_GAP = 100;
 
 export const LINE_HEIGHT = 30;
+
+export const HASH_TABLE_KEYS_WIDTH = 80;
+export const HASH_TABLE_KEYS_HEIGHT = 40;
+export const HASH_TABLE_FUNC_WIDTH = 200;
+export const HASH_TABLE_FUNC_HEIGHT = 300;
