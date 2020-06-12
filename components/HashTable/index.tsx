@@ -6,6 +6,7 @@ import { getProgressDirection, keyExist } from 'utils';
 import KeyList from './KeyList';
 import HashFunction from './HashFunction';
 import MemoryArray from './MemoryArray';
+import HashTableHTML from './HashTableHTML';
 import HashIndicationArrow from './HashIndicationArrow';
 import { IProps, IState } from './index.d';
 import { Action } from 'types';
@@ -173,23 +174,23 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
     );
   }
 
-  // componentDidMount() {
-  //   const { interactive } = this.props;
-  //   if (interactive) this.injectHTMLIntoCanvas();
-  // }
+  componentDidMount() {
+    const { interactive } = this.props;
+    if (interactive) this.injectHTMLIntoCanvas();
+  }
 
-  // injectHTMLIntoCanvas() {
-  //   const { hashTableModel } = this.state;
-  //   const { handleExecuteApi } = this.props;
-  //   setTimeout(() => {
-  //     HashTableHTML.renderToView({
-  //       model: hashTableModel,
-  //       wrapperElement: this.wrapperRef.current,
-  //       coordinate: pick(this.props, ['x', 'y']),
-  //       apiHandler: handleExecuteApi,
-  //     });
-  //   }, 0);
-  // }
+  injectHTMLIntoCanvas() {
+    const { hashTableModel } = this.state;
+    const { handleExecuteApi } = this.props;
+    setTimeout(() => {
+      HashTableHTML.renderToView({
+        model: hashTableModel,
+        wrapperElement: this.wrapperRef.current,
+        coordinate: pick(this.props, ['x', 'y']),
+        apiHandler: handleExecuteApi,
+      });
+    }, 0);
+  }
 
   render() {
     const { hashTableModel, isVisible } = this.state;
@@ -197,13 +198,9 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
     return (
       isVisible && (
         <>
-          <use
-            href='#hashTable'
-            {...pick(this.props, ['x', 'y'])}
-            ref={this.wrapperRef}
-          />
+          <use href='#hashTable' {...pick(this.props, ['x', 'y'])} />
           <defs>
-            <g id='hashTable'>
+            <g id='hashTable' ref={this.wrapperRef}>
               <KeyList hashTableModel={hashTableModel} />
               <HashFunction />
               <MemoryArray hashTableModel={hashTableModel} />

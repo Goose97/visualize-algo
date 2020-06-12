@@ -13,31 +13,35 @@ import { ObjectType } from 'types';
 
 export class MemoryArray extends Component<MemoryArrayProps> {
   renderListMemoryBlock() {
-    return Array(HASH_TABLE_UNIVERSAL_KEY_SIZE)
-      .fill(0)
-      .map((_, index) => {
-        return (
-          <MemoryBlock
-            key={index}
-            width={ARRAY_BLOCK_WIDTH}
-            height={ARRAY_BLOCK_HEIGHT}
-            x={HASH_TABLE_ARRAY_X}
-            y={index * ARRAY_BLOCK_HEIGHT}
-            value={null}
-            visible
-            type='rectangle'
-            labelDirection='left'
-            label={[index.toString()]}
-          />
-        );
-      });
+    return (
+      <g className="hash-table__memory-blocks">
+        {Array(HASH_TABLE_UNIVERSAL_KEY_SIZE)
+          .fill(0)
+          .map((_, index) => {
+            return (
+              <MemoryBlock
+                key={index}
+                width={ARRAY_BLOCK_WIDTH}
+                height={ARRAY_BLOCK_HEIGHT}
+                x={HASH_TABLE_ARRAY_X}
+                y={index * ARRAY_BLOCK_HEIGHT}
+                value={null}
+                visible
+                type='rectangle'
+                labelDirection='left'
+                label={[index.toString()]}
+              />
+            );
+          })}
+      </g>
+    );
   }
 
   renderLinkedListInEachBlock() {
     const valuesInArrayAddress = this.getArrayAddressValuesMap();
     return Object.entries(valuesInArrayAddress).map(([address, values]) => {
       return (
-        <>
+        <g key={address}>
           {this.renderPointerLinkToLinkedList(+address)}
           <LinkedListDS
             key={address}
@@ -46,7 +50,7 @@ export class MemoryArray extends Component<MemoryArrayProps> {
             instructions={[]}
             initialData={values.map(({ value }) => value)}
           />
-        </>
+        </g>
       );
     });
   }
