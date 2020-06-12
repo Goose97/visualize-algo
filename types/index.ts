@@ -29,6 +29,7 @@ export interface BaseMemoryBlockProps {
   value: string | number | null;
   label?: string[];
   highlight?: boolean;
+  labelDirection?: 'top' | 'left' | 'right' | 'bottom';
 }
 
 export interface HTMLRendererParams<T = {}> {

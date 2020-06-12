@@ -5,6 +5,8 @@ import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { getProgressDirection, keyExist } from 'utils';
 import KeyList from './KeyList';
 import HashFunction from './HashFunction';
+import MemoryArray from './MemoryArray';
+import HashIndicationArrow from './HashIndicationArrow';
 import { IProps, IState } from './index.d';
 import { Action } from 'types';
 import transformHashTableModel from 'transformers/HashTable';
@@ -203,6 +205,8 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
             <g id='hashTable'>
               <KeyList hashTableModel={hashTableModel} />
               <HashFunction />
+              <MemoryArray hashTableModel={hashTableModel} />
+              <HashIndicationArrow hashTableModel={hashTableModel} />
             </g>
           </defs>
         </>

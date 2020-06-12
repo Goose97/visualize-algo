@@ -23,3 +23,11 @@ export interface HashTableMemoryBlockProps extends BaseMemoryBlockProps {
 export interface KeyListProps {
   hashTableModel: HashTable.Model;
 }
+
+export interface MemoryArrayProps {
+  hashTableModel: HashTable.Model;
+}
+
+export interface HashIndicationArrowProps {
+  hashTableModel: HashTable.Model;
+}
