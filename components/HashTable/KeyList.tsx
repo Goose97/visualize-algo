@@ -19,6 +19,7 @@ export class KeyList extends Component<KeyListProps> {
           value={key}
           label={index === 0 ? ['Keys'] : undefined}
           visible
+          key={key}
         />
       );
     });

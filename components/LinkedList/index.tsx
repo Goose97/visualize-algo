@@ -22,6 +22,7 @@ type PropsWithHoc = IProps & WithReverseStep<LinkedList.Model>;
 export class LinkedListDS extends Component<PropsWithHoc, IState> {
   private initialLinkedListModel: LinkedList.Model;
   private wrapperRef: React.RefObject<SVGUseElement>;
+  private randomId: number;
 
   constructor(props: PropsWithHoc) {
     super(props);
@@ -33,6 +34,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
       isVisible: true,
     };
     this.wrapperRef = React.createRef();
+    this.randomId = Math.round(Math.random() * 100000);
   }
 
   initiateMemoryLinkedListModel(props: PropsWithHoc): LinkedList.Model {
@@ -483,6 +485,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
   }
 
   render() {
+    const { headArrowVisible } = this.props;
     const { linkedListModel, isVisible } = this.state;
     const listMemoryBlock = linkedListModel.map(linkedListNode => (
       <LinkedListMemoryBlock
@@ -498,13 +501,15 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
       isVisible && (
         <>
           <use
-            href='#linked-list'
+            href={`#linked-list-${this.randomId}`}
             {...pick(this.props, ['x', 'y'])}
             ref={this.wrapperRef}
           />
           <defs>
-            <g id='linked-list'>
-              <HeadPointer headBlock={this.findNextBlock(-1)} />
+            <g id={`linked-list-${this.randomId}`}>
+              {headArrowVisible && (
+                <HeadPointer headBlock={this.findNextBlock(-1)} />
+              )}
               {listMemoryBlock}
               {listPointerLink}
             </g>

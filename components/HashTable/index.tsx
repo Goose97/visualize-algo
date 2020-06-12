@@ -33,6 +33,7 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
     return [
       { key: 'a', value: 1 },
       { key: 'b', value: 2 },
+      { key: 'l', value: 3 },
     ];
     // const { initialData } = props;
     // return initialData.map((value, index) => ({

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import { PointerLink } from 'components';
 import { HashIndicationArrowProps } from './index.d';
+import { caculateKeyHash } from './helper';
 import {
   HASH_TABLE_KEYS_HEIGHT,
   HASH_TABLE_KEYS_WIDTH,
@@ -9,13 +10,14 @@ import {
   HASH_TABLE_ARRAY_X,
   ARRAY_BLOCK_HEIGHT,
   HASH_TABLE_FUNC_WIDTH,
+  HASH_TABLE_UNIVERSAL_KEY_SIZE,
 } from '../../constants';
 
 export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
   renderArrowIndicateHashForKey() {
     const { hashTableModel } = this.props;
     return hashTableModel.map(({ key }, index) => {
-      const hash = this.getKeyHash();
+      const hash = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
       const memoryLocationYCoordinate = (hash + 0.5) * ARRAY_BLOCK_HEIGHT;
       // The path can be divided into three part
       // 1 - Move to hash funtion
@@ -36,10 +38,6 @@ export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
 
       return <PointerLink path={path} key={key} arrowDirection='right' />;
     });
-  }
-
-  getKeyHash() {
-    return Math.round(Math.random() * 10);
   }
 
   render() {
