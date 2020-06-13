@@ -9,19 +9,12 @@ export declare namespace HashTable {
 
   export type Model = Item[];
 
-  export type Api = 'bubbleSort' | 'selectionSort' | 'insertionSort';
+  export type Api = 'insert' | 'delete';
 
-  export type Method =
-    | 'swap'
-    | 'focus'
-    | 'resetFocus'
-    | 'resetFocusAll'
-    | 'complete'
-    | 'label'
-    | 'unlabel'
-    | 'setValue'
-    | 'setLine'
-    | 'push';
+  export type Method = 'insert' | 'delete';
 
-  export interface SortParams {}
+  export interface InsertParams {
+    key: string;
+    value: number;
+  }
 }

@@ -83,60 +83,8 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
     }
   }
 
-  renderBackgroundOverlayForText() {
-    const { x, y, width, height } = this.props;
-    const textElement = this.labelText.current;
-    if (!textElement) return null;
-
-    const {
-      width: textWidth,
-      height: textHeight,
-    } = textElement.getBoundingClientRect();
-    return (
-      <rect
-        x={x + width / 2}
-        y={y - height / 2}
-        transform={`translate(-${textWidth / 2}, -${textHeight / 2})`}
-        width={textWidth}
-        height={textHeight}
-        className='fill-background'
-      ></rect>
-    );
-  }
-
   renderLabelText() {
-    const { labelDirection, label, width, height, x, y } = this.props;
-    const direction = labelDirection || 'top';
-    let coordinate;
-    switch (direction) {
-      case 'top':
-        coordinate = {
-          x: x + width / 2,
-          y: y - 20,
-        };
-        break;
-
-      case 'bottom':
-        coordinate = {
-          x: x + width / 2,
-          y: y + height + 20,
-        };
-        break;
-
-      case 'left':
-        coordinate = {
-          x: x - 30,
-          y: y + height / 2,
-        };
-        break;
-
-      case 'right':
-        coordinate = {
-          x: x + 20,
-          y: y + height / 2,
-        };
-        break;
-    }
+    const { label } = this.props;
 
     return (
       label &&
@@ -144,7 +92,7 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
         <g>
           {this.renderBackgroundOverlayForText()}
           <text
-            {...coordinate}
+            {...this.getLabelTextCoordinate()}
             dominantBaseline='middle'
             textAnchor='middle'
             className='memory-block__text italic'
@@ -155,6 +103,55 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
         </g>
       )
     );
+  }
+
+  renderBackgroundOverlayForText() {
+    const textElement = this.labelText.current;
+    if (!textElement) return null;
+
+    const {
+      width: textWidth,
+      height: textHeight,
+    } = textElement.getBoundingClientRect();
+    return (
+      <rect
+        {...this.getLabelTextCoordinate()}
+        transform={`translate(-${textWidth / 2}, -${textHeight / 2})`}
+        width={textWidth}
+        height={textHeight}
+        className='fill-background'
+      ></rect>
+    );
+  }
+
+  getLabelTextCoordinate() {
+    const { labelDirection, width, height, x, y } = this.props;
+    const direction = labelDirection || 'top';
+    switch (direction) {
+      case 'top':
+        return {
+          x: x + width / 2,
+          y: y - 20,
+        };
+
+      case 'bottom':
+        return {
+          x: x + width / 2,
+          y: y + height + 20,
+        };
+
+      case 'left':
+        return {
+          x: x - 30,
+          y: y + height / 2,
+        };
+
+      case 'right':
+        return {
+          x: x + 20,
+          y: y + height / 2,
+        };
+    }
   }
 
   render() {

@@ -35,8 +35,9 @@ export class HashTablePage extends Component<IProps, IState> {
   };
 
   handleExecuteApi = (api: HashTable.Api, params: ObjectType<any>) => {
-    // const stepDescription = this.generateStepDescription(api, params);
-    // this.setState({ stepDescription, autoPlay: true, currentApi: api });
+    const stepDescription = this.generateStepDescription(api, params);
+    console.log('stepDescription', stepDescription)
+    this.setState({ stepDescription, autoPlay: true, currentApi: api });
   };
 
   generateStepDescription(currentApi: HashTable.Api, params: ObjectType<any>) {
