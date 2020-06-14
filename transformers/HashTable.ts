@@ -13,7 +13,7 @@ const transformHashTableModel = (
     case 'insert': {
       const [key, value] = payload;
       return produce(currentModel, draft => {
-        const newKey = { key, value };
+        const newKey = { key, value, isNew: true };
         draft.push(newKey);
       });
     }
@@ -25,6 +25,17 @@ const transformHashTableModel = (
           ({ key: itemKey }) => key === itemKey,
         );
         draft.splice(keyToDelete, 1);
+      });
+    }
+
+    case 'toggleIsNew': {
+      const [key] = payload;
+      return produce(currentModel, draft => {
+        const keyToToggle = draft.find(({ key: itemKey }) => key === itemKey);
+        if (keyToToggle) {
+          const oldIsNew = !!keyToToggle.isNew;
+          keyToToggle.isNew = !oldIsNew;
+        }
       });
     }
 

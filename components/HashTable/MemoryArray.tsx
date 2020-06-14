@@ -14,7 +14,7 @@ import { ObjectType } from 'types';
 export class MemoryArray extends Component<MemoryArrayProps> {
   renderListMemoryBlock() {
     return (
-      <g className="hash-table__memory-blocks">
+      <g className='hash-table__memory-blocks'>
         {Array(HASH_TABLE_UNIVERSAL_KEY_SIZE)
           .fill(0)
           .map((_, index) => {
@@ -48,7 +48,8 @@ export class MemoryArray extends Component<MemoryArrayProps> {
             x={HASH_TABLE_ARRAY_X + ARRAY_BLOCK_WIDTH + 50}
             y={+address * ARRAY_BLOCK_HEIGHT + 5}
             instructions={[]}
-            initialData={values.map(({ value }) => value)}
+            data={values.map(({ value }) => value)}
+            controlled
           />
         </g>
       );
@@ -72,8 +73,10 @@ export class MemoryArray extends Component<MemoryArrayProps> {
     const { hashTableModel } = this.props;
     return hashTableModel.reduce<
       ObjectType<{ key: string; value: number | string }[]>
-    >((acc, { key, value }) => {
+    >((acc, { key, value, isNew }) => {
       const hash = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
+      if (isNew) return acc;
+
       if (acc[hash]) {
         acc[hash].push({ key, value });
       } else {

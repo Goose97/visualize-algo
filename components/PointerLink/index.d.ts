@@ -7,6 +7,9 @@ interface IProps extends SVGAttributes<SVGGElement> {
   visible?: boolean;
   highlight?: boolean;
   arrowDirection?: 'left' | 'right' | 'up' | 'down'; // SHOULD REMOVE IN FUTURE
+  isNew?: boolean;
+  animationDuration?: string;
+  onAnimationEnd?: (animationName: string) => void;
 }
 
 interface IState {

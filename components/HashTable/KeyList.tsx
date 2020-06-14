@@ -7,7 +7,7 @@ import { HASH_TABLE_KEYS_WIDTH, HASH_TABLE_KEYS_HEIGHT } from '../../constants';
 export class KeyList extends Component<KeyListProps> {
   renderListKeyBlock() {
     const { hashTableModel } = this.props;
-    return hashTableModel.map(({ key }, index) => {
+    return hashTableModel.map(({ key, isNew }, index) => {
       const y = (HASH_TABLE_KEYS_HEIGHT + 10) * index;
       return (
         <MemoryBlock
@@ -20,6 +20,7 @@ export class KeyList extends Component<KeyListProps> {
           label={index === 0 ? ['Keys'] : undefined}
           visible
           key={key}
+          isNew={isNew}
         />
       );
     });

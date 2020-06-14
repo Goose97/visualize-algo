@@ -47,20 +47,6 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
     // }));
   }
 
-  push(currentModel: HashTable.Model, params: [number]) {
-    const biggestKey = Math.max(...currentModel.map(({ key }) => key));
-    const newHashTableNode: HashTable.Node = {
-      value: params[0],
-      key: biggestKey + 1,
-      index: currentModel.length,
-      visible: true,
-    };
-    const newModel = transformHashTableModel(currentModel, 'push', [
-      newHashTableNode,
-    ]);
-    return newModel;
-  }
-
   componentDidUpdate(prevProps: IProps) {
     const {
       currentStep,
@@ -174,6 +160,17 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
     );
   }
 
+  handlePointerLinkAnimationEnd = (key: string, animationName: string) => {
+    const { hashTableModel } = this.state;
+    if (animationName === 'appear') {
+      this.setState({
+        hashTableModel: transformHashTableModel(hashTableModel, 'toggleIsNew', [
+          key,
+        ]),
+      });
+    }
+  };
+
   componentDidMount() {
     const { interactive } = this.props;
     if (interactive) this.injectHTMLIntoCanvas();
@@ -204,7 +201,10 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
               <KeyList hashTableModel={hashTableModel} />
               <HashFunction />
               <MemoryArray hashTableModel={hashTableModel} />
-              <HashIndicationArrow hashTableModel={hashTableModel} />
+              <HashIndicationArrow
+                hashTableModel={hashTableModel}
+                onAnimationEnd={this.handlePointerLinkAnimationEnd}
+              />
             </g>
           </defs>
         </>

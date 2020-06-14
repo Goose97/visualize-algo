@@ -15,8 +15,8 @@ import {
 
 export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
   renderArrowIndicateHashForKey() {
-    const { hashTableModel } = this.props;
-    return hashTableModel.map(({ key }, index) => {
+    const { hashTableModel, onAnimationEnd } = this.props;
+    return hashTableModel.map(({ key, isNew }, index) => {
       const hash = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
       const memoryLocationYCoordinate = (hash + 0.5) * ARRAY_BLOCK_HEIGHT;
       // The path can be divided into three part
@@ -36,7 +36,18 @@ export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
         reachMemoryBlock,
       ].join(' ');
 
-      return <PointerLink path={path} key={key} arrowDirection='right' />;
+      return (
+        <PointerLink
+          path={path}
+          key={key}
+          arrowDirection='right'
+          isNew={!!isNew}
+          animationDuration='2s'
+          onAnimationEnd={(animationName: string) =>
+            onAnimationEnd(key, animationName)
+          }
+        />
+      );
     });
   }
 

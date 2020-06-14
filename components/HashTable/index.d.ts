@@ -30,4 +30,5 @@ export interface MemoryArrayProps {
 
 export interface HashIndicationArrowProps {
   hashTableModel: HashTable.Model;
+  onAnimationEnd: (key: string, animationName: string) => void;
 }

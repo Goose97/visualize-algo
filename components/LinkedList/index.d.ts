@@ -10,7 +10,8 @@ import { IProps as PointerLinkProps } from 'components/PointerLink/index.d';
 
 export interface IProps extends BaseDSProps {
   instructions: Action<LinkedList.Method>[][];
-  initialData: Array<number | string>;
+  initialData?: Array<number | string>;
+  data?: Array<number | string>;
   headArrowVisible?: boolean;
 }
 

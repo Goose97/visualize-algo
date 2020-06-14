@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import produce from 'immer';
-import { omit, flatMap, groupBy, pick, isFunction } from 'lodash';
+import { omit, flatMap, groupBy, pick, isFunction, isEqual } from 'lodash';
 
 import transformLinkedListModel from 'transformers/LinkedList';
 import HeadPointer from './HeadPointer';
@@ -27,7 +27,9 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
   constructor(props: PropsWithHoc) {
     super(props);
 
-    this.initialLinkedListModel = this.initiateMemoryLinkedListModel(props);
+    this.initialLinkedListModel = this.initLinkedListModel(
+      this.getInitialData(),
+    );
     this.state = {
       linkedListModel: this.initialLinkedListModel,
       nodeAboutToAppear: new Set([]),
@@ -37,9 +39,16 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
     this.randomId = Math.round(Math.random() * 100000);
   }
 
-  initiateMemoryLinkedListModel(props: PropsWithHoc): LinkedList.Model {
-    const { initialData } = props;
-    return initialData.map((value, index) => ({
+  getInitialData() {
+    const { initialData, data, controlled } = this.props;
+    let result;
+    if (controlled) result = data;
+    else result = initialData;
+    return result || [];
+  }
+
+  initLinkedListModel(data: Array<string | number>): LinkedList.Model {
+    return data.map((value, index) => ({
       ...this.caculateBlockCoordinate(index),
       value,
       index,
@@ -47,7 +56,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
       visited: false,
       key: index,
       focus: false,
-      pointer: index === initialData.length - 1 ? null : index + 1,
+      pointer: index === data.length - 1 ? null : index + 1,
     }));
   }
 
@@ -130,6 +139,8 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
       reverseToStep,
       saveStepSnapshots,
       totalStep,
+      controlled,
+      data,
     } = this.props;
     const { linkedListModel } = this.state;
 
@@ -155,6 +166,15 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
         case 'fastBackward':
           this.handleFastBackward();
           break;
+      }
+    }
+
+    // Update according to controlled data
+    if (controlled) {
+      if (!isEqual(data, prevProps.data)) {
+        this.setState({
+          linkedListModel: data ? this.initLinkedListModel(data) : [],
+        });
       }
     }
   }

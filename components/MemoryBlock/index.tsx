@@ -41,12 +41,12 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
   }
 
   produceClassName() {
-    const { visible, visited, focus, className } = this.props;
+    const { visible, visited, focus, className, isNew } = this.props;
     const { isHiding, isShowing } = this.state;
     return classNameHelper({
       base: className as string,
       disappearing: !!isHiding,
-      appearing: !!isShowing,
+      appearing: !!(isShowing || isNew),
       invisible: !visible,
       visited: !!visited,
       focus: !!focus,
