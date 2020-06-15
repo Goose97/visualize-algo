@@ -1,10 +1,19 @@
 // import { IProps as MemoryBlockProps } from '../MemoryBlock';
-import { PointCoordinate, BaseDSProps, BaseMemoryBlockProps } from 'types';
+import {
+  PointCoordinate,
+  BaseDSProps,
+  BaseMemoryBlockProps,
+  ObjectType,
+  StepInstruction,
+  Action,
+} from 'types';
 import { HashTable } from 'types/ds/HashTable';
+import { LinkedList } from 'types/ds/LinkedList';
 
 export interface IState {
   hashTableModel: HashTable.Model;
   isVisible: boolean;
+  keyAboutToBeDeleted: string[];
 }
 
 export interface IProps extends BaseDSProps {
@@ -26,9 +35,18 @@ export interface KeyListProps {
 
 export interface MemoryArrayProps {
   hashTableModel: HashTable.Model;
+  keyAboutToBeDeleted: string[];
+}
+
+export interface MemoryArrayState {
+  linkedListInstructionAndStep: ObjectType<{
+    instructions?: Action<LinkedList.Method>[][];
+    currentStep?: number;
+  }>;
 }
 
 export interface HashIndicationArrowProps {
   hashTableModel: HashTable.Model;
   onAnimationEnd: (key: string, animationName: string) => void;
+  keyAboutToBeDeleted: string[];
 }

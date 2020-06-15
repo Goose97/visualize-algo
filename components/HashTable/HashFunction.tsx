@@ -10,7 +10,6 @@ import {
 
 export class HashFunction extends Component {
   render() {
-    const {} = this.props;
     return (
       <MemoryBlock
         x={HASH_TABLE_HASH_FUNC_X}

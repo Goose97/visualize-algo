@@ -12,7 +12,7 @@ import {
 import { ArrayMemoryBlockProps } from './index.d';
 import { PointCoordinate } from 'types';
 
-export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
+class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   private initialCoordinate: PointCoordinate;
   constructor(props: ArrayMemoryBlockProps) {
     super(props);

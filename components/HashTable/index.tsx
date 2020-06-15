@@ -26,6 +26,7 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
     this.state = {
       hashTableModel: this.initialLinkedListModel,
       isVisible: true,
+      keyAboutToBeDeleted: [],
     };
     this.wrapperRef = React.createRef();
   }
@@ -125,6 +126,19 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
     }, currentModel);
   }
 
+  delete = (model: HashTable.Model, [key]: [string]) => {
+    const { keyAboutToBeDeleted } = this.state;
+    this.setState({ keyAboutToBeDeleted: keyAboutToBeDeleted.concat(key) });
+    setTimeout(() => {
+      // wait for the animation to finish
+      this.setState({
+        hashTableModel: transformHashTableModel(model, 'delete', [key]),
+      });
+    }, 1000);
+
+    return model;
+  };
+
   handleReverse = (stateOfPreviousStep: HashTable.Model) => {
     this.setState({ hashTableModel: stateOfPreviousStep });
   };
@@ -190,7 +204,7 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
   }
 
   render() {
-    const { hashTableModel, isVisible } = this.state;
+    const { hashTableModel, isVisible, keyAboutToBeDeleted } = this.state;
 
     return (
       isVisible && (
@@ -200,10 +214,14 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
             <g id='hashTable' ref={this.wrapperRef}>
               <KeyList hashTableModel={hashTableModel} />
               <HashFunction />
-              <MemoryArray hashTableModel={hashTableModel} />
+              <MemoryArray
+                hashTableModel={hashTableModel}
+                keyAboutToBeDeleted={keyAboutToBeDeleted}
+              />
               <HashIndicationArrow
                 hashTableModel={hashTableModel}
                 onAnimationEnd={this.handlePointerLinkAnimationEnd}
+                keyAboutToBeDeleted={keyAboutToBeDeleted}
               />
             </g>
           </defs>

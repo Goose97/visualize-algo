@@ -405,7 +405,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
     }
   }
 
-  findNodeByKey(key: number) {
+  findNodeByKey(key: number | null) {
     const { linkedListModel } = this.state;
     const nodeWithKey = linkedListModel.find(
       ({ key: nodeKey }) => key === nodeKey,
@@ -416,6 +416,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
   renderPointerLinkForMemoryBlock(nodeIndex: number) {
     const { linkedListModel, nodeAboutToAppear } = this.state;
     const { key, pointer, visible, visited } = linkedListModel[nodeIndex];
+    const pointToNode = this.findNodeByKey(pointer);
     return (
       <LinkedListPointer
         nodeAboutToAppear={nodeAboutToAppear}
@@ -425,7 +426,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
         linkedListModel={linkedListModel}
         following={this.isLinkNeedToBeFollowed(nodeIndex)}
         visited={visited}
-        visible={visible}
+        visible={visible && pointToNode?.visible}
       />
     );
   }

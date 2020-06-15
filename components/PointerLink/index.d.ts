@@ -14,5 +14,4 @@ interface IProps extends SVGAttributes<SVGGElement> {
 
 interface IState {
   transformList: string[];
-  isDisappearing?: boolean;
 }
