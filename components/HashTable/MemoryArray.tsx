@@ -80,56 +80,63 @@ export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
         {Array(HASH_TABLE_UNIVERSAL_KEY_SIZE)
           .fill(0)
           .map((_, index) => {
+            const blur = this.shouldThisAddressBlur(index);
+
             return (
-              <MemoryBlock
-                key={index}
-                width={ARRAY_BLOCK_WIDTH}
-                height={ARRAY_BLOCK_HEIGHT}
-                x={HASH_TABLE_ARRAY_X}
-                y={index * ARRAY_BLOCK_HEIGHT}
-                value={null}
-                visible
-                type='rectangle'
-                labelDirection='left'
-                label={[index.toString()]}
-              />
+              <g className={`hash-table__memory-block${blur ? ' blur' : ''}`}>
+                <MemoryBlock
+                  key={index}
+                  width={ARRAY_BLOCK_WIDTH}
+                  height={ARRAY_BLOCK_HEIGHT}
+                  x={HASH_TABLE_ARRAY_X}
+                  y={index * ARRAY_BLOCK_HEIGHT}
+                  value={null}
+                  visible
+                  type='rectangle'
+                  labelDirection='left'
+                  label={[index.toString()]}
+                />
+                {this.renderLinkedListAtAddress(index)}
+              </g>
             );
           })}
       </g>
     );
   }
 
-  renderLinkedListInEachBlock() {
-    const { linkedListInstructionAndStep } = this.state;
-    const valuesInArrayAddress = this.getArrayAddressValuesMap();
-    return Object.entries(valuesInArrayAddress).map(([address, values]) => {
-      return (
-        <g key={address}>
-          {this.renderPointerLinkToLinkedList(+address)}
-          <LinkedListDS
-            key={address}
-            x={HASH_TABLE_ARRAY_X + ARRAY_BLOCK_WIDTH + 50}
-            y={+address * ARRAY_BLOCK_HEIGHT + 5}
-            instructions={[]}
-            data={values.map(({ value }) => value)}
-            controlled
-            // {...linkedListInstructionAndStep[address]}
-            totalStep={10}
-          />
-        </g>
-      );
-    });
+  shouldThisAddressBlur(address: number) {
+    const { hashTableModel } = this.props;
+    const hasNewKey = hashTableModel.some(({ isNew }) => isNew);
+    if (!hasNewKey) return false;
+    const addressesOfNewKey = this.getAddressesOfNewKey();
+    return !addressesOfNewKey.includes(address);
   }
 
-  renderPointerLinkToLinkedList(address: number) {
-    return (
-      <PointerLink
-        path={`M ${HASH_TABLE_ARRAY_X + ARRAY_BLOCK_WIDTH / 2} ${
-          +address * ARRAY_BLOCK_HEIGHT + ARRAY_BLOCK_HEIGHT / 2
-        } H ${HASH_TABLE_ARRAY_X + ARRAY_BLOCK_WIDTH + 50 - 6}`}
-        arrowDirection='right'
-      />
-    );
+  getAddressesOfNewKey() {
+    const { hashTableModel } = this.props;
+    return hashTableModel
+      .filter(({ isNew }) => isNew)
+      .map(({ key }) => caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE));
+  }
+
+  renderLinkedListAtAddress(address: number) {
+    const valuesInArrayAddress = this.getArrayAddressValuesMap();
+    const values = valuesInArrayAddress[address];
+    return values ? (
+      <>
+        {this.renderPointerLinkToLinkedList(+address)}
+        <LinkedListDS
+          key={address}
+          x={HASH_TABLE_ARRAY_X + ARRAY_BLOCK_WIDTH + 50}
+          y={+address * ARRAY_BLOCK_HEIGHT + 5}
+          instructions={[]}
+          data={values.map(({ value }) => value)}
+          controlled
+          // {...linkedListInstructionAndStep[address]}
+          totalStep={10}
+        />
+      </>
+    ) : null;
   }
 
   getArrayAddressValuesMap(): ObjectType<
@@ -152,13 +159,19 @@ export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
     }, {});
   }
 
-  render() {
+  renderPointerLinkToLinkedList(address: number) {
     return (
-      <g>
-        {this.renderListMemoryBlock()}
-        {this.renderLinkedListInEachBlock()}
-      </g>
+      <PointerLink
+        path={`M ${HASH_TABLE_ARRAY_X + ARRAY_BLOCK_WIDTH / 2} ${
+          +address * ARRAY_BLOCK_HEIGHT + ARRAY_BLOCK_HEIGHT / 2
+        } H ${HASH_TABLE_ARRAY_X + ARRAY_BLOCK_WIDTH + 50 - 6}`}
+        arrowDirection='right'
+      />
     );
+  }
+
+  render() {
+    return this.renderListMemoryBlock();
   }
 }
 

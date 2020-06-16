@@ -1,0 +1,15 @@
+.hash-table-key-list__wrapper {
+  .hash-table-key-list__title {
+    @extend .has-transition;
+    @extend .f-big-2;
+    font-weight: 400;
+  }
+}
+
+.hash-table__memory-blocks {
+  .hash-table__memory-block {
+    &.blur * {
+      @extend .deemphasized-1;
+    }
+  }
+}

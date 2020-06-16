@@ -36,6 +36,7 @@ class KeyList extends Component<KeyListProps> {
 
   renderListKeyBlock() {
     const { hashTableModel } = this.props;
+    const hasNewKey = hashTableModel.some(({ isNew }) => isNew);
     return hashTableModel.map(({ key, isNew }, index) => {
       const y = (HASH_TABLE_KEYS_HEIGHT + 10) * index;
       return (
@@ -51,9 +52,9 @@ class KeyList extends Component<KeyListProps> {
             height={HASH_TABLE_KEYS_HEIGHT}
             type='rectangle'
             value={key}
-            label={index === 0 ? ['Keys'] : undefined}
             visible
             isNew={isNew}
+            blur={hasNewKey ? !isNew : false}
           />
         </AutoTransformGroup>
       );
@@ -61,7 +62,20 @@ class KeyList extends Component<KeyListProps> {
   }
 
   render() {
-    return this.renderListKeyBlock();
+    return (
+      <g className='hash-table-key-list__wrapper'>
+        <text
+          x={HASH_TABLE_KEYS_WIDTH / 2}
+          y={-20}
+          dominantBaseline='middle'
+          textAnchor='middle'
+          className='hash-table-key-list__title'
+        >
+          Keys
+        </text>
+        {this.renderListKeyBlock()}
+      </g>
+    );
   }
 }
 

@@ -6,6 +6,7 @@ interface IProps extends SVGAttributes<SVGGElement> {
   visited?: boolean;
   visible?: boolean;
   highlight?: boolean;
+  blur?: boolean;
   arrowDirection?: 'left' | 'right' | 'up' | 'down'; // SHOULD REMOVE IN FUTURE
   isNew?: boolean;
   animationDuration?: string;

@@ -22,6 +22,8 @@ export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
       keyAboutToBeAdded,
     } = this.props;
     const keyToHighlight = keyAboutToBeDeleted.concat(keyAboutToBeAdded);
+    const hasNewKey = hashTableModel.some(({ isNew }) => isNew);
+
     return [...hashTableModel]
       .sort(({ key: keyA }, { key: keyB }) => {
         // We sort so the key which are about to be deleted will be paint later
@@ -61,6 +63,7 @@ export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
               onAnimationEnd(key, animationName)
             }
             highlight={keyToHighlight.includes(key)}
+            blur={hasNewKey ? !isNew : false}
           />
         );
       });

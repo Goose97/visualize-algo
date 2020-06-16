@@ -55,4 +55,8 @@
       opacity: 0.3;
     }
   }
+
+  &.blur * {
+    @extend .deemphasized;
+  }  
 }

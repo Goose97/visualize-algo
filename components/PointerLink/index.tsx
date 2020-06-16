@@ -30,7 +30,14 @@ export class PointerLink extends Component<PropsWithHoc, IState> {
   }
 
   produceClassName() {
-    const { visited, highlight, following, className, visible } = this.props;
+    const {
+      visited,
+      highlight,
+      following,
+      className,
+      visible,
+      blur,
+    } = this.props;
     return classNameHelper({
       base: [className, 'pointer-link has-transition']
         .filter(item => item)
@@ -39,6 +46,7 @@ export class PointerLink extends Component<PropsWithHoc, IState> {
       visited: !!visited,
       following: !!following,
       highlight: !!highlight,
+      blur: !!blur,
     });
   }
 
@@ -138,6 +146,7 @@ export class PointerLink extends Component<PropsWithHoc, IState> {
       'animationDuration',
       'onAnimationEnd',
       'highlight',
+      'blur',
     ];
 
     return (
