@@ -13,6 +13,7 @@ import { LinkedList } from 'types/ds/LinkedList';
 export interface IState {
   hashTableModel: HashTable.Model;
   isVisible: boolean;
+  keyAboutToBeAdded: string[];
   keyAboutToBeDeleted: string[];
 }
 
@@ -49,4 +50,5 @@ export interface HashIndicationArrowProps {
   hashTableModel: HashTable.Model;
   onAnimationEnd: (key: string, animationName: string) => void;
   keyAboutToBeDeleted: string[];
+  keyAboutToBeAdded: string[];
 }

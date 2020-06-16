@@ -22,6 +22,18 @@ class KeyList extends Component<KeyListProps> {
     }, {});
   }
 
+  getInitialYCoordinate(key: string) {
+    const { hashTableModel } = this.props;
+    const valueInCache = this.initialYCoordinationOfKeys[key];
+    if (valueInCache != undefined) return valueInCache;
+    const keyIndex = hashTableModel.findIndex(
+      ({ key: nodeKey }) => key === nodeKey,
+    )!;
+    const value = (HASH_TABLE_KEYS_HEIGHT + 10) * keyIndex;
+    this.initialYCoordinationOfKeys[key] = value;
+    return value;
+  }
+
   renderListKeyBlock() {
     const { hashTableModel } = this.props;
     return hashTableModel.map(({ key, isNew }, index) => {
@@ -34,7 +46,7 @@ class KeyList extends Component<KeyListProps> {
         >
           <MemoryBlock
             x={0}
-            y={this.initialYCoordinationOfKeys[key]}
+            y={this.getInitialYCoordinate(key)}
             width={HASH_TABLE_KEYS_WIDTH}
             height={HASH_TABLE_KEYS_HEIGHT}
             type='rectangle'

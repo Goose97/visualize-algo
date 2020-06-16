@@ -15,13 +15,19 @@ import {
 
 export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
   renderArrowIndicateHashForKey() {
-    const { hashTableModel, onAnimationEnd, keyAboutToBeDeleted } = this.props;
+    const {
+      hashTableModel,
+      onAnimationEnd,
+      keyAboutToBeDeleted,
+      keyAboutToBeAdded,
+    } = this.props;
+    const keyToHighlight = keyAboutToBeDeleted.concat(keyAboutToBeAdded);
     return [...hashTableModel]
       .sort(({ key: keyA }, { key: keyB }) => {
         // We sort so the key which are about to be deleted will be paint later
         // so the highlight arrow will be easier to see
-        const pointA = keyAboutToBeDeleted.includes(keyA) ? 1 : 0;
-        const pointB = keyAboutToBeDeleted.includes(keyB) ? 1 : 0;
+        const pointA = keyToHighlight.includes(keyA) ? 1 : 0;
+        const pointB = keyToHighlight.includes(keyB) ? 1 : 0;
         return pointA - pointB;
       })
       .map(({ key, isNew }, index) => {
@@ -54,7 +60,7 @@ export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
             onAnimationEnd={(animationName: string) =>
               onAnimationEnd(key, animationName)
             }
-            highlight={keyAboutToBeDeleted.includes(key)}
+            highlight={keyToHighlight.includes(key)}
           />
         );
       });

@@ -43,11 +43,18 @@ export class PointerLink extends Component<PropsWithHoc, IState> {
   }
 
   renderMainPointerLink() {
-    const { path, isNew, animationDuration, onAnimationEnd } = this.props;
+    const {
+      path,
+      isNew,
+      animationDuration,
+      onAnimationEnd,
+      highlight,
+    } = this.props;
     const fullPathWithArrow = `${path} ${this.produceArrowPath()}`;
     const className = classNameHelper({
       base: 'pointer-link__line',
       ['animated-path']: !!isNew,
+      highlight: !!highlight,
     });
     return (
       <path
@@ -104,13 +111,12 @@ export class PointerLink extends Component<PropsWithHoc, IState> {
   renderFocusMaskOnPointerLink() {
     // Just a layer of pointer link of top of the original one
     // Create a effect of highlight when focus
-    const { highlight, following } = this.props;
-    const shouldRender = following || highlight;
+    const { isNew, following } = this.props;
+    const shouldRender = following && !isNew;
     const compoundClassName = classNameHelper({
       // base: [className, 'pointer-link__line'].filter(item => !item).join(' '),
       base: 'pointer-link__line',
       ['follow animated-path']: !!following,
-      highlight: !!highlight,
     });
     return (
       shouldRender && (

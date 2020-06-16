@@ -26,6 +26,7 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
     this.state = {
       hashTableModel: this.initialLinkedListModel,
       isVisible: true,
+      keyAboutToBeAdded: [],
       keyAboutToBeDeleted: [],
     };
     this.wrapperRef = React.createRef();
@@ -126,6 +127,12 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
     }, currentModel);
   }
 
+  insert = (model: HashTable.Model, [key, value]: [string, any]) => {
+    const { keyAboutToBeAdded } = this.state;
+    this.setState({ keyAboutToBeAdded: keyAboutToBeAdded.concat(key) });
+    return transformHashTableModel(model, 'insert', [key, value]);
+  };
+
   delete = (model: HashTable.Model, [key]: [string]) => {
     const { keyAboutToBeDeleted } = this.state;
     this.setState({ keyAboutToBeDeleted: keyAboutToBeDeleted.concat(key) });
@@ -176,6 +183,7 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
 
   handlePointerLinkAnimationEnd = (key: string, animationName: string) => {
     const { hashTableModel } = this.state;
+    console.log('animationName', animationName);
     if (animationName === 'appear') {
       this.setState({
         hashTableModel: transformHashTableModel(hashTableModel, 'toggleIsNew', [
@@ -204,7 +212,12 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
   }
 
   render() {
-    const { hashTableModel, isVisible, keyAboutToBeDeleted } = this.state;
+    const {
+      hashTableModel,
+      isVisible,
+      keyAboutToBeDeleted,
+      keyAboutToBeAdded,
+    } = this.state;
 
     return (
       isVisible && (
@@ -222,6 +235,7 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
                 hashTableModel={hashTableModel}
                 onAnimationEnd={this.handlePointerLinkAnimationEnd}
                 keyAboutToBeDeleted={keyAboutToBeDeleted}
+                keyAboutToBeAdded={keyAboutToBeAdded}
               />
             </g>
           </defs>

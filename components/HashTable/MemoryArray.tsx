@@ -111,10 +111,9 @@ export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
             x={HASH_TABLE_ARRAY_X + ARRAY_BLOCK_WIDTH + 50}
             y={+address * ARRAY_BLOCK_HEIGHT + 5}
             instructions={[]}
-            // data={values.map(({ value }) => value)}
-            initialData={values.map(({ value }) => value)}
-            // controlled
-            {...linkedListInstructionAndStep[address]}
+            data={values.map(({ value }) => value)}
+            controlled
+            // {...linkedListInstructionAndStep[address]}
             totalStep={10}
           />
         </g>
