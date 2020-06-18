@@ -39,7 +39,6 @@ class AutoTransformGroup extends Component<PropsWithHoc, IState> {
   }
 
   applyChanges(changes: TransformationChange[]) {
-    console.log('changes', changes);
     const { transformSequence } = this.state;
     let additionTransfromSequence = changes.map(({ direction, amount }) => {
       switch (direction) {

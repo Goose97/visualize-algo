@@ -16,7 +16,7 @@ class KeyList extends Component<KeyListProps> {
 
   produceInitialKeyYCoordination() {
     const { hashTableModel } = this.props;
-    return hashTableModel.reduce((acc, { key }, index) => {
+    return hashTableModel.keys.reduce((acc, { key }, index) => {
       const y = (HASH_TABLE_KEYS_HEIGHT + 10) * index;
       return { ...acc, [key]: y };
     }, {});
@@ -26,7 +26,7 @@ class KeyList extends Component<KeyListProps> {
     const { hashTableModel } = this.props;
     const valueInCache = this.initialYCoordinationOfKeys[key];
     if (valueInCache != undefined) return valueInCache;
-    const keyIndex = hashTableModel.findIndex(
+    const keyIndex = hashTableModel.keys.findIndex(
       ({ key: nodeKey }) => key === nodeKey,
     )!;
     const value = (HASH_TABLE_KEYS_HEIGHT + 10) * keyIndex;
@@ -36,8 +36,8 @@ class KeyList extends Component<KeyListProps> {
 
   renderListKeyBlock() {
     const { hashTableModel } = this.props;
-    const hasNewKey = hashTableModel.some(({ isNew }) => isNew);
-    return hashTableModel.map(({ key, isNew }, index) => {
+    const shouldHighlightKeys = this.getShouldHighlightKeys();
+    return hashTableModel.keys.map(({ key, isNew }, index) => {
       const y = (HASH_TABLE_KEYS_HEIGHT + 10) * index;
       return (
         <AutoTransformGroup
@@ -54,11 +54,23 @@ class KeyList extends Component<KeyListProps> {
             value={key}
             visible
             isNew={isNew}
-            blur={hasNewKey ? !isNew : false}
+            // Highlight one key also means blur every other keys
+            blur={
+              shouldHighlightKeys.length
+                ? !shouldHighlightKeys.includes(key)
+                : false
+            }
           />
         </AutoTransformGroup>
       );
     });
+  }
+
+  getShouldHighlightKeys() {
+    const { hashTableModel } = this.props;
+    return hashTableModel.keys
+      .filter(({ isNew, highlight }) => !!(isNew || highlight))
+      .map(({ key }) => key);
   }
 
   render() {

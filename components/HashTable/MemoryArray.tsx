@@ -11,7 +11,7 @@ import {
   HASH_TABLE_ARRAY_X,
 } from '../../constants';
 import { MemoryArrayProps, MemoryArrayState } from './index.d';
-import { ObjectType, Action } from 'types';
+import { Action } from 'types';
 import { LinkedList } from 'types/ds/LinkedList';
 
 export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
@@ -71,7 +71,7 @@ export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
 
   getValueOfKey(keyToFind: string) {
     const { hashTableModel } = this.props;
-    return hashTableModel.find(({ key }) => key === keyToFind)!.value;
+    return hashTableModel.keys.find(({ key }) => key === keyToFind)!.value;
   }
 
   renderListMemoryBlock() {
@@ -80,12 +80,15 @@ export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
         {Array(HASH_TABLE_UNIVERSAL_KEY_SIZE)
           .fill(0)
           .map((_, index) => {
-            const blur = this.shouldThisAddressBlur(index);
+            // const blur = this.shouldThisAddressBlur(index);
+            const blur = false;
 
             return (
-              <g className={`hash-table__memory-block${blur ? ' blur' : ''}`}>
+              <g
+                className={`hash-table__memory-block${blur ? ' blur' : ''}`}
+                key={index}
+              >
                 <MemoryBlock
-                  key={index}
                   width={ARRAY_BLOCK_WIDTH}
                   height={ARRAY_BLOCK_HEIGHT}
                   x={HASH_TABLE_ARRAY_X}
@@ -104,25 +107,31 @@ export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
     );
   }
 
-  shouldThisAddressBlur(address: number) {
-    const { hashTableModel } = this.props;
-    const hasNewKey = hashTableModel.some(({ isNew }) => isNew);
-    if (!hasNewKey) return false;
-    const addressesOfNewKey = this.getAddressesOfNewKey();
-    return !addressesOfNewKey.includes(address);
-  }
+  // shouldThisAddressBlur(address: number) {
+  //   const { hashTableModel } = this.props;
+  //   const hasNewKey = hashTableModel.some(({ isNew }) => isNew);
+  //   if (!hasNewKey) return false;
+  //   const addressesOfNewKey = this.getAddressesOfNewKey();
+  //   return !addressesOfNewKey.includes(address);
+  // }
 
-  getAddressesOfNewKey() {
-    const { hashTableModel } = this.props;
-    return hashTableModel
-      .filter(({ isNew }) => isNew)
-      .map(({ key }) => caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE));
-  }
+  // getAddressesOfNewKey() {
+  //   const { hashTableModel } = this.props;
+  //   return hashTableModel
+  //     .filter(({ isNew }) => isNew)
+  //     .map(({ key }) => caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE));
+  // }
 
   renderLinkedListAtAddress(address: number) {
-    const valuesInArrayAddress = this.getArrayAddressValuesMap();
-    const values = valuesInArrayAddress[address];
-    return values ? (
+    const { hashTableModel } = this.props;
+    const memoryAddress = hashTableModel.memoryAddresses.find(
+      ({ key }) => key == address,
+    );
+
+    if (!memoryAddress) return null;
+    if (!memoryAddress.values.length) return null;
+
+    return (
       <>
         {this.renderPointerLinkToLinkedList(+address)}
         <LinkedListDS
@@ -130,33 +139,13 @@ export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
           x={HASH_TABLE_ARRAY_X + ARRAY_BLOCK_WIDTH + 50}
           y={+address * ARRAY_BLOCK_HEIGHT + 5}
           instructions={[]}
-          data={values.map(({ value }) => value)}
+          data={memoryAddress.values}
           controlled
           // {...linkedListInstructionAndStep[address]}
           totalStep={10}
         />
       </>
-    ) : null;
-  }
-
-  getArrayAddressValuesMap(): ObjectType<
-    { key: string; value: number | string }[]
-  > {
-    const { hashTableModel } = this.props;
-    return hashTableModel.reduce<
-      ObjectType<{ key: string; value: number | string }[]>
-    >((acc, { key, value, isNew }) => {
-      const hash = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
-      if (isNew) return acc;
-
-      if (acc[hash]) {
-        acc[hash].push({ key, value });
-      } else {
-        acc[hash] = [{ key, value }];
-      }
-
-      return acc;
-    }, {});
+    );
   }
 
   renderPointerLinkToLinkedList(address: number) {

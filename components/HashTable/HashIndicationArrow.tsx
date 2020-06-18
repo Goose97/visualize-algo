@@ -22,9 +22,9 @@ export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
       keyAboutToBeAdded,
     } = this.props;
     const keyToHighlight = keyAboutToBeDeleted.concat(keyAboutToBeAdded);
-    const hasNewKey = hashTableModel.some(({ isNew }) => isNew);
+    const hasNewKey = hashTableModel.keys.some(({ isNew }) => isNew);
 
-    return [...hashTableModel]
+    return [...hashTableModel.keys]
       .sort(({ key: keyA }, { key: keyB }) => {
         // We sort so the key which are about to be deleted will be paint later
         // so the highlight arrow will be easier to see

@@ -12,6 +12,8 @@ import { IProps, IState } from './index.d';
 import { Action } from 'types';
 import transformHashTableModel from 'transformers/HashTable';
 import { HashTable } from 'types/ds/HashTable';
+import { caculateKeyHash } from './helper';
+import { HASH_TABLE_UNIVERSAL_KEY_SIZE } from '../../constants';
 
 type PropsWithHoc = IProps & WithReverseStep<HashTable.Model>;
 
@@ -33,20 +35,31 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
   }
 
   initHashTableModel(props: PropsWithHoc): HashTable.Model {
-    return [
+    const keys = [
       { key: 'a', value: 1 },
       { key: 'b', value: 2 },
       { key: 'l', value: 3 },
     ];
-    // const { initialData } = props;
-    // return initialData.map((value, index) => ({
-    //   value,
-    //   index,
-    //   visible: true,
-    //   visited: false,
-    //   key: index,
-    //   focus: false,
-    // }));
+
+    return {
+      keys,
+      memoryAddresses: this.produceMemoryAddressesFromKeys(keys),
+    };
+  }
+
+  produceMemoryAddressesFromKeys(
+    keys: HashTable.Model['keys'],
+  ): HashTable.Model['memoryAddresses'] {
+    let memoryAddresses = keys.map(({ key, value }) => ({
+      key: caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE),
+      value,
+    }));
+    return Object.entries(groupBy(memoryAddresses, ({ key }) => key)).map(
+      ([address, values]) => ({
+        key: +address,
+        values: values.map(({ value }) => value),
+      }),
+    );
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -130,7 +143,15 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
   insert = (model: HashTable.Model, [key, value]: [string, any]) => {
     const { keyAboutToBeAdded } = this.state;
     this.setState({ keyAboutToBeAdded: keyAboutToBeAdded.concat(key) });
-    return transformHashTableModel(model, 'insert', [key, value]);
+    setTimeout(() => {
+      this.setState({
+        hashTableModel: transformHashTableModel(model, 'insertValue', [
+          key,
+          value,
+        ]),
+      });
+    }, 1800);
+    return transformHashTableModel(model, 'insertKey', [key, value]);
   };
 
   delete = (model: HashTable.Model, [key]: [string]) => {

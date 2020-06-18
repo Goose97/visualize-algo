@@ -38,8 +38,8 @@ export class HashTableHTML {
         height,
         left: wrapperLeft,
       } = wrapperElement.getBoundingClientRect();
-      const { right } = memoryBlocks.getBoundingClientRect();
-      const width = right - wrapperLeft;
+      const { left } = memoryBlocks.getBoundingClientRect();
+      const width = left + 100 - wrapperLeft;
 
       const elementToRender = (
         <div style={{ width, height }} className='hash-table-html__wrapper'>

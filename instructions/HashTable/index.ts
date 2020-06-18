@@ -21,10 +21,23 @@ export const hashTableInstruction = (
 
 const insertInstruction = (
   data: any,
-  { key, value }: HashTable.InsertParams,
+  { key, value, collisionResolution }: HashTable.InsertParams,
 ) => {
   let instructions = new Instructions();
   instructions.setDuration(1000);
+  
+  // switch (collisionResolution) {
+  //   case 'chaining':
+  //     instructions.pushActionsAndEndStep('hashTable', [
+  //       { name: 'insert', params: [key, value] },
+  //     ]);
+
+  //     return instructions.get();
+
+  //   case 'linearProbe':
+
+  // }
+
   instructions.pushActionsAndEndStep('hashTable', [
     { name: 'insert', params: [key, value] },
   ]);
