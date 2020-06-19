@@ -33,6 +33,8 @@ export declare namespace HashTable {
     | 'assignAddressToKey'
     | 'highlightAddress'
     | 'dehighlightAddress'
+    | 'deleteKey'
+    | 'deleteValue'
     | 'resetAll';
 
   export interface InsertParams {

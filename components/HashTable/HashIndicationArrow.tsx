@@ -24,8 +24,10 @@ export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
         const pointB = keyToHighlight.includes(keyB) ? 1 : 0;
         return pointA - pointB;
       })
-      .map(({ key, isNew, address }, index) => {
+      .map(({ key, isNew, address }) => {
         const memoryLocationYCoordinate = (address + 0.5) * ARRAY_BLOCK_HEIGHT;
+        const index = this.getKeysIndex(key);
+
         // The path can be divided into three part
         // 1 - Move to hash funtion
         // 2 - Move inside hash function
@@ -68,6 +70,11 @@ export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
     return hashTableModel.keys
       .filter(({ highlight }) => highlight)
       .map(({ key }) => key);
+  }
+
+  getKeysIndex(key: string) {
+    const { hashTableModel } = this.props;
+    return hashTableModel.keys.findIndex(({ key: itemKey }) => key === itemKey);
   }
 
   render() {

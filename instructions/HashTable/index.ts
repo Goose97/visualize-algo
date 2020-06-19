@@ -92,12 +92,30 @@ const insertInstruction = (
   return instructions.get();
 };
 
-const deleteInstruction = (data: any, { key }: HashTable.InsertParams) => {
+const deleteInstruction = (
+  data: any,
+  { key, collisionResolution }: HashTable.InsertParams,
+) => {
   let instructions = new Instructions();
-  instructions.setDuration(1000);
-  instructions.pushActionsAndEndStep('hashTable', [
-    { name: 'delete', params: [key] },
-  ]);
+  switch (collisionResolution) {
+    case 'chaining':
+      const hashedAddress = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
+      instructions.pushActionsAndEndStep('hashTable', [
+        { name: 'highlightKey', params: [key] },
+        { name: 'highlightAddress', params: [hashedAddress] },
+      ]);
+      instructions.pushActionsAndEndStep('hashTable', [
+        { name: 'deleteValue', params: [data[key], hashedAddress] },
+      ]);
+      instructions.pushActionsAndEndStep('hashTable', [
+        { name: 'deleteKey', params: [key] },
+      ]);
+      instructions.pushActionsAndEndStep('hashTable', [
+        { name: 'resetAll', params: [] },
+      ]);
+
+      return instructions.get();
+  }
 
   return instructions.get();
 };

@@ -3,6 +3,7 @@ import produce from 'immer';
 import { HashTable } from 'types/ds/HashTable';
 import { caculateKeyHash } from 'components/HashTable/helper';
 import { HASH_TABLE_UNIVERSAL_KEY_SIZE } from '../constants';
+import { add } from 'lodash';
 
 // Nhận vào trạng thái hiện tại của data structure
 // và operation tương ứng. Trả về trạng thái mới
@@ -150,6 +151,34 @@ const transformHashTableModel = (
           ({ key }) => key === address,
         );
         if (addressToHighlight) addressToHighlight.highlight = false;
+      });
+    }
+
+    case 'deleteKey': {
+      const [key] = payload;
+      return produce(currentModel, draft => {
+        draft.keys = draft.keys.filter(({ key: itemKey }) => key !== itemKey);
+      });
+    }
+
+    case 'deleteValue': {
+      const [value, address] = payload;
+      return produce(currentModel, draft => {
+        const addressToDelete = draft.memoryAddresses.find(
+          ({ key }) => key === address,
+        );
+        if (addressToDelete) {
+          const valuesAfterDelete = addressToDelete.values.filter(
+            item => item !== value,
+          );
+          if (valuesAfterDelete.length)
+            addressToDelete.values = valuesAfterDelete;
+          else {
+            draft.memoryAddresses = draft.memoryAddresses.filter(
+              ({ key }) => key !== address,
+            );
+          }
+        }
       });
     }
 
