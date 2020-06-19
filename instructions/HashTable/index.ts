@@ -31,8 +31,17 @@ const insertInstruction = (
 
   switch (collisionResolution) {
     case 'chaining': {
+      const hashedAddress = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
       instructions.pushActionsAndEndStep('hashTable', [
-        { name: 'insert', params: [key, value] },
+        { name: 'insertKey', params: [key, value] },
+        { name: 'highlightKey', params: [key] },
+      ]);
+      instructions.pushActionsAndEndStep('hashTable', [
+        { name: 'insertValue', params: [value, hashedAddress] },
+        { name: 'highlightAddress', params: [hashedAddress] },
+      ]);
+      instructions.pushActionsAndEndStep('hashTable', [
+        { name: 'resetAll', params: [] },
       ]);
 
       return instructions.get();

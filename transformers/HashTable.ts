@@ -20,7 +20,7 @@ const transformHashTableModel = (
           ({ key }) => key === address,
         );
         if (addressInfo) {
-          addressInfo.values.push(value);
+          addressInfo.values.unshift(value);
         } else {
           addressInfo = {
             key: address,
@@ -57,7 +57,7 @@ const transformHashTableModel = (
           ({ key }) => key === address,
         );
         if (addressInfo) {
-          addressInfo.values.push(value);
+          addressInfo.values.unshift(value);
         } else {
           draft.memoryAddresses.push({
             key: address,

@@ -42,7 +42,7 @@ export class HashTablePage extends Component<IProps, IState> {
   handleExecuteApi = (api: HashTable.Api, params: ObjectType<any>) => {
     const stepDescription = this.generateStepDescription(api, {
       ...params,
-      collisionResolution: 'linearProbe',
+      collisionResolution: 'chaining',
     });
     console.log('stepDescription', stepDescription);
     this.setState({ stepDescription, autoPlay: true, currentApi: api });
