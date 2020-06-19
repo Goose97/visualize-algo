@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import { PointerLink } from 'components';
 import { HashIndicationArrowProps } from './index.d';
-import { caculateKeyHash } from './helper';
 import {
   HASH_TABLE_KEYS_HEIGHT,
   HASH_TABLE_KEYS_WIDTH,
@@ -10,19 +9,12 @@ import {
   HASH_TABLE_ARRAY_X,
   ARRAY_BLOCK_HEIGHT,
   HASH_TABLE_FUNC_WIDTH,
-  HASH_TABLE_UNIVERSAL_KEY_SIZE,
 } from '../../constants';
 
 export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
   renderArrowIndicateHashForKey() {
-    const {
-      hashTableModel,
-      onAnimationEnd,
-      keyAboutToBeDeleted,
-      keyAboutToBeAdded,
-    } = this.props;
-    const keyToHighlight = keyAboutToBeDeleted.concat(keyAboutToBeAdded);
-    const hasNewKey = hashTableModel.keys.some(({ isNew }) => isNew);
+    const { hashTableModel, onAnimationEnd } = this.props;
+    const keyToHighlight = this.getKeysToHighlight();
 
     return [...hashTableModel.keys]
       .sort(({ key: keyA }, { key: keyB }) => {
@@ -32,9 +24,8 @@ export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
         const pointB = keyToHighlight.includes(keyB) ? 1 : 0;
         return pointA - pointB;
       })
-      .map(({ key, isNew }, index) => {
-        const hash = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
-        const memoryLocationYCoordinate = (hash + 0.5) * ARRAY_BLOCK_HEIGHT;
+      .map(({ key, isNew, address }, index) => {
+        const memoryLocationYCoordinate = (address + 0.5) * ARRAY_BLOCK_HEIGHT;
         // The path can be divided into three part
         // 1 - Move to hash funtion
         // 2 - Move inside hash function
@@ -52,6 +43,9 @@ export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
           reachMemoryBlock,
         ].join(' ');
 
+        const shouldHighlight = keyToHighlight.includes(key);
+        const shouldBlur = keyToHighlight.length ? !shouldHighlight : false;
+
         return (
           <PointerLink
             path={path}
@@ -62,11 +56,18 @@ export class HashIndicationArrow extends Component<HashIndicationArrowProps> {
             onAnimationEnd={(animationName: string) =>
               onAnimationEnd(key, animationName)
             }
-            highlight={keyToHighlight.includes(key)}
-            blur={hasNewKey ? !isNew : false}
+            highlight={shouldHighlight}
+            blur={shouldBlur}
           />
         );
       });
+  }
+
+  getKeysToHighlight() {
+    const { hashTableModel } = this.props;
+    return hashTableModel.keys
+      .filter(({ highlight }) => highlight)
+      .map(({ key }) => key);
   }
 
   render() {

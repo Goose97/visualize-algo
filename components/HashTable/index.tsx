@@ -35,11 +35,12 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
   }
 
   initHashTableModel(props: PropsWithHoc): HashTable.Model {
-    const keys = [
-      { key: 'a', value: 1 },
-      { key: 'b', value: 2 },
-      { key: 'l', value: 3 },
-    ];
+    const { initialData } = props;
+    const keys = Object.entries(initialData).map(([key, value]) => ({
+      key,
+      value,
+      address: caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE),
+    }));
 
     return {
       keys,
@@ -58,6 +59,7 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
       ([address, values]) => ({
         key: +address,
         values: values.map(({ value }) => value),
+        // highlight: address === '7',
       }),
     );
   }
@@ -140,19 +142,19 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
     }, currentModel);
   }
 
-  insert = (model: HashTable.Model, [key, value]: [string, any]) => {
-    const { keyAboutToBeAdded } = this.state;
-    this.setState({ keyAboutToBeAdded: keyAboutToBeAdded.concat(key) });
-    setTimeout(() => {
-      this.setState({
-        hashTableModel: transformHashTableModel(model, 'insertValue', [
-          key,
-          value,
-        ]),
-      });
-    }, 1800);
-    return transformHashTableModel(model, 'insertKey', [key, value]);
-  };
+  // insert = (model: HashTable.Model, [key, value]: [string, any]) => {
+  //   const { keyAboutToBeAdded } = this.state;
+  //   this.setState({ keyAboutToBeAdded: keyAboutToBeAdded.concat(key) });
+  //   setTimeout(() => {
+  //     this.setState({
+  //       hashTableModel: transformHashTableModel(model, 'insertValue', [
+  //         key,
+  //         value,
+  //       ]),
+  //     });
+  //   }, 1800);
+  //   return transformHashTableModel(model, 'insertKey', [key, value]);
+  // };
 
   delete = (model: HashTable.Model, [key]: [string]) => {
     const { keyAboutToBeDeleted } = this.state;
@@ -204,14 +206,13 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
 
   handlePointerLinkAnimationEnd = (key: string, animationName: string) => {
     const { hashTableModel } = this.state;
-    console.log('animationName', animationName);
-    if (animationName === 'appear') {
-      this.setState({
-        hashTableModel: transformHashTableModel(hashTableModel, 'toggleIsNew', [
-          key,
-        ]),
-      });
-    }
+    // if (animationName === 'appear') {
+    //   this.setState({
+    //     hashTableModel: transformHashTableModel(hashTableModel, 'toggleIsNew', [
+    //       key,
+    //     ]),
+    //   });
+    // }
   };
 
   componentDidMount() {

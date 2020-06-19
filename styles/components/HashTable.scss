@@ -8,8 +8,8 @@
 
 .hash-table__memory-blocks {
   .hash-table__memory-block {
-    &.blur * {
-      @extend .deemphasized-1;
+    &.blur > * {
+      @extend .deemphasized;
     }
   }
 }

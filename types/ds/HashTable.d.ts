@@ -7,6 +7,7 @@ export declare namespace HashTable {
     value: string | number;
     isNew?: boolean;
     highlight?: boolean;
+    address: number;
   }
 
   export interface MemoryAddress {
@@ -27,7 +28,12 @@ export declare namespace HashTable {
     | 'delete'
     | 'toggleIsNew'
     | 'insertKey'
-    | 'insertValue';
+    | 'insertValue'
+    | 'highlightKey'
+    | 'assignAddressToKey'
+    | 'highlightAddress'
+    | 'dehighlightAddress'
+    | 'resetAll';
 
   export interface InsertParams {
     key: string;

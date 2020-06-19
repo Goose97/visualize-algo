@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { pick } from 'lodash';
 
 import { MemoryBlock } from 'components';
 import { KeyListProps } from './index.d';
@@ -69,7 +68,7 @@ class KeyList extends Component<KeyListProps> {
   getShouldHighlightKeys() {
     const { hashTableModel } = this.props;
     return hashTableModel.keys
-      .filter(({ isNew, highlight }) => !!(isNew || highlight))
+      .filter(({ highlight }) => highlight)
       .map(({ key }) => key);
   }
 

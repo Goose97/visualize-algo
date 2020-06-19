@@ -80,8 +80,7 @@ export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
         {Array(HASH_TABLE_UNIVERSAL_KEY_SIZE)
           .fill(0)
           .map((_, index) => {
-            // const blur = this.shouldThisAddressBlur(index);
-            const blur = false;
+            const blur = this.shouldThisAddressBlur(index);
 
             return (
               <g
@@ -107,20 +106,17 @@ export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
     );
   }
 
-  // shouldThisAddressBlur(address: number) {
-  //   const { hashTableModel } = this.props;
-  //   const hasNewKey = hashTableModel.some(({ isNew }) => isNew);
-  //   if (!hasNewKey) return false;
-  //   const addressesOfNewKey = this.getAddressesOfNewKey();
-  //   return !addressesOfNewKey.includes(address);
-  // }
-
-  // getAddressesOfNewKey() {
-  //   const { hashTableModel } = this.props;
-  //   return hashTableModel
-  //     .filter(({ isNew }) => isNew)
-  //     .map(({ key }) => caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE));
-  // }
+  shouldThisAddressBlur(address: number) {
+    const { hashTableModel } = this.props;
+    const hasAddressNeedHighlight = hashTableModel.memoryAddresses.some(
+      ({ highlight }) => highlight,
+    );
+    if (!hasAddressNeedHighlight) return false;
+    const currentAddress = hashTableModel.memoryAddresses.find(
+      ({ key }) => key === address,
+    );
+    return !currentAddress?.highlight;
+  }
 
   renderLinkedListAtAddress(address: number) {
     const { hashTableModel } = this.props;

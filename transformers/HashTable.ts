@@ -32,6 +32,7 @@ const transformHashTableModel = (
           key,
           value,
           isNew: true,
+          address,
         });
       });
     }
@@ -39,28 +40,29 @@ const transformHashTableModel = (
     case 'insertKey': {
       const [key, value] = payload;
       return produce(currentModel, draft => {
+        const address = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
         draft.keys.push({
           key,
           value,
           isNew: true,
+          address,
         });
       });
     }
 
     case 'insertValue': {
-      const [key, value] = payload;
+      const [value, address] = payload;
       return produce(currentModel, draft => {
-        const address = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
         let addressInfo = draft.memoryAddresses.find(
           ({ key }) => key === address,
         );
         if (addressInfo) {
           addressInfo.values.push(value);
         } else {
-          addressInfo = {
+          draft.memoryAddresses.push({
             key: address,
             values: [value],
-          };
+          });
         }
       });
     }
@@ -98,6 +100,63 @@ const transformHashTableModel = (
           const oldIsNew = !!keyToToggle.isNew;
           keyToToggle.isNew = !oldIsNew;
         }
+      });
+    }
+
+    case 'highlightKey': {
+      const [key] = payload;
+      return produce(currentModel, draft => {
+        const keyToHighlight = draft.keys.find(
+          ({ key: itemKey }) => key === itemKey,
+        );
+        if (keyToHighlight) keyToHighlight.highlight = true;
+      });
+    }
+
+    case 'assignAddressToKey': {
+      const [key, address] = payload;
+      return produce(currentModel, draft => {
+        const keyToAssign = draft.keys.find(
+          ({ key: itemKey }) => key === itemKey,
+        );
+        if (keyToAssign) keyToAssign.address = address;
+      });
+    }
+
+    case 'highlightAddress': {
+      // Sometimes the address we want to highlight is not exist yet in modal
+      // insert a empty one in
+      const [address] = payload;
+      return produce(currentModel, draft => {
+        const addressToHighlight = draft.memoryAddresses.find(
+          ({ key }) => key === address,
+        );
+        if (addressToHighlight) addressToHighlight.highlight = true;
+        else {
+          const emptyAddress = {
+            key: address,
+            values: [],
+            highlight: true,
+          };
+          draft.memoryAddresses.push(emptyAddress);
+        }
+      });
+    }
+
+    case 'dehighlightAddress': {
+      const [address] = payload;
+      return produce(currentModel, draft => {
+        const addressToHighlight = draft.memoryAddresses.find(
+          ({ key }) => key === address,
+        );
+        if (addressToHighlight) addressToHighlight.highlight = false;
+      });
+    }
+
+    case 'resetAll': {
+      return produce(currentModel, draft => {
+        draft.keys.forEach(key => (key.highlight = false));
+        draft.memoryAddresses.forEach(address => (address.highlight = false));
       });
     }
 

@@ -10,7 +10,7 @@ import { Action, ObjectType, BaseDSPageState } from 'types';
 import { HashTable } from 'types/ds/HashTable.d';
 
 interface IState extends BaseDSPageState {
-  data?: number[];
+  data?: ObjectType<string | number>;
   currentApi?: HashTable.Api;
 }
 
@@ -23,6 +23,11 @@ export class HashTablePage extends Component<IProps, IState> {
     this.state = {
       stepDescription: [],
       autoPlay: false,
+      data: {
+        a: 1,
+        b: 2,
+        l: 3,
+      },
     };
   }
 
@@ -35,8 +40,11 @@ export class HashTablePage extends Component<IProps, IState> {
   };
 
   handleExecuteApi = (api: HashTable.Api, params: ObjectType<any>) => {
-    const stepDescription = this.generateStepDescription(api, params);
-    console.log('stepDescription', stepDescription)
+    const stepDescription = this.generateStepDescription(api, {
+      ...params,
+      collisionResolution: 'linearProbe',
+    });
+    console.log('stepDescription', stepDescription);
     this.setState({ stepDescription, autoPlay: true, currentApi: api });
   };
 
@@ -68,13 +76,13 @@ export class HashTablePage extends Component<IProps, IState> {
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
       >
-        {true || data ? (
+        {data ? (
           <CanvasContainer>
             <HashTableDS
               x={100}
               y={200}
               blockType='block'
-              initialData={{ a: 1, b: 2 }}
+              initialData={data}
               currentStep={currentStep}
               instructions={hashTableInstruction}
               totalStep={stepDescription.length - 1}
