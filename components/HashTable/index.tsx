@@ -35,17 +35,26 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
   }
 
   initHashTableModel(props: PropsWithHoc): HashTable.Model {
-    const { initialData } = props;
-    const keys = Object.entries(initialData).map(([key, value]) => ({
-      key,
-      value,
-      address: caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE),
-    }));
+    const { initialData, collisionResolution } = props;
 
-    return {
-      keys,
-      memoryAddresses: this.produceMemoryAddressesFromKeys(keys),
-    };
+    switch (collisionResolution) {
+      case 'chaining': {
+        const keys = Object.entries(initialData).map(([key, value]) => ({
+          key,
+          value,
+          address: caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE),
+        }));
+
+        return {
+          keys,
+          memoryAddresses: this.produceMemoryAddressesFromKeys(keys),
+        };
+      }
+
+      case 'linearProbe': {
+        return this.initLinearProbeHashTableData(initialData);
+      }
+    }
   }
 
   produceMemoryAddressesFromKeys(
@@ -62,6 +71,51 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
         // highlight: address === '7',
       }),
     );
+  }
+
+  initLinearProbeHashTableData(data: IProps['initialData']) {
+    let keys: HashTable.Key[] = [];
+    let memoryAddresses: HashTable.MemoryAddress[] = [];
+    const findAvailableSlot = (key: string) => {
+      let hashAddress = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
+      while (true) {
+        const memoryAddress = memoryAddresses.find(
+          ({ key }) => key === hashAddress,
+        );
+        if (!memoryAddress) return hashAddress;
+        hashAddress++;
+      }
+    };
+
+    const insertKey = (
+      key: string,
+      value: string | number,
+      address: number,
+    ) => {
+      keys.push({
+        key,
+        value,
+        address,
+      });
+    };
+
+    const insertMemoryAddress = (value: string | number, address: number) => {
+      memoryAddresses.push({
+        key: address,
+        values: [value],
+      });
+    };
+
+    Object.entries(data).forEach(([key, value]) => {
+      const addressToFill = findAvailableSlot(key);
+      insertKey(key, value, addressToFill);
+      insertMemoryAddress(value, addressToFill);
+    });
+
+    return {
+      keys,
+      memoryAddresses,
+    };
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -240,6 +294,7 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
       keyAboutToBeDeleted,
       keyAboutToBeAdded,
     } = this.state;
+    const { collisionResolution } = this.props;
 
     return (
       isVisible && (
@@ -252,6 +307,7 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
               <MemoryArray
                 hashTableModel={hashTableModel}
                 keyAboutToBeDeleted={keyAboutToBeDeleted}
+                collisionResolution={collisionResolution}
               />
               <HashIndicationArrow
                 hashTableModel={hashTableModel}

@@ -12,6 +12,7 @@ import { HashTable } from 'types/ds/HashTable.d';
 interface IState extends BaseDSPageState {
   data?: ObjectType<string | number>;
   currentApi?: HashTable.Api;
+  collisionResolution: 'chaining' | 'linearProbe';
 }
 
 interface IProps {}
@@ -28,6 +29,7 @@ export class HashTablePage extends Component<IProps, IState> {
         b: 2,
         l: 3,
       },
+      collisionResolution: 'linearProbe',
     };
   }
 
@@ -40,9 +42,10 @@ export class HashTablePage extends Component<IProps, IState> {
   };
 
   handleExecuteApi = (api: HashTable.Api, params: ObjectType<any>) => {
+    const { collisionResolution } = this.state;
     const stepDescription = this.generateStepDescription(api, {
       ...params,
-      collisionResolution: 'chaining',
+      collisionResolution,
     });
     console.log('stepDescription', stepDescription);
     this.setState({ stepDescription, autoPlay: true, currentApi: api });
@@ -61,6 +64,7 @@ export class HashTablePage extends Component<IProps, IState> {
       currentApi,
       stepDescription,
       autoPlay,
+      collisionResolution,
     } = this.state;
     const hashTableInstruction = extractInstructionFromDescription(
       stepDescription,
@@ -88,6 +92,7 @@ export class HashTablePage extends Component<IProps, IState> {
               totalStep={stepDescription.length - 1}
               //@ts-ignore
               handleExecuteApi={this.handleExecuteApi}
+              collisionResolution={collisionResolution}
               interactive
             />
           </CanvasContainer>

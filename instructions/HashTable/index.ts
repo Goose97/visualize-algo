@@ -33,7 +33,7 @@ const insertInstruction = (
     case 'chaining': {
       const hashedAddress = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
       instructions.pushActionsAndEndStep('hashTable', [
-        { name: 'insertKey', params: [key, value] },
+        { name: 'insertKey', params: [key, value, hashedAddress] },
         { name: 'highlightKey', params: [key] },
       ]);
       instructions.pushActionsAndEndStep('hashTable', [
@@ -49,22 +49,26 @@ const insertInstruction = (
 
     case 'linearProbe': {
       const addressValuesMap = produceAddressValuesMap(data);
+      let hashedAddress = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
+      let displacement = 0;
 
       instructions.pushActionsAndEndStep('hashTable', [
-        { name: 'insertKey', params: [key, value] },
+        { name: 'insertKey', params: [key, value, hashedAddress] },
         { name: 'highlightKey', params: [key] },
       ]);
 
       // Try to store in initital hash address, if already occupied, advance one address.
       // Keep repeat till we find the empty slot or out of slot to try
-      let hashedAddress = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
-      let displacement = 0;
       while (true) {
         // We only have to perform at most key size attempt
         if (displacement >= HASH_TABLE_UNIVERSAL_KEY_SIZE) break;
 
         const addressAttemptToFillValue = hashedAddress + displacement;
         instructions.pushActionsAndEndStep('hashTable', [
+          {
+            name: 'updateKeyAddress',
+            params: [key, addressAttemptToFillValue],
+          },
           { name: 'highlightAddress', params: [addressAttemptToFillValue] },
         ]);
 

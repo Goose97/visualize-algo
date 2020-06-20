@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { isEqual } from 'lodash';
+import { isEqual, add } from 'lodash';
 import { produce } from 'immer';
 
 import { MemoryBlock, LinkedListDS, PointerLink } from 'components';
@@ -13,6 +13,7 @@ import {
 import { MemoryArrayProps, MemoryArrayState } from './index.d';
 import { Action } from 'types';
 import { LinkedList } from 'types/ds/LinkedList';
+import { ADDRGETNETWORKPARAMS } from 'dns';
 
 export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
   constructor(props: MemoryArrayProps) {
@@ -75,6 +76,7 @@ export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
   }
 
   renderListMemoryBlock() {
+    const { collisionResolution } = this.props;
     return (
       <g className='hash-table__memory-blocks'>
         {Array(HASH_TABLE_UNIVERSAL_KEY_SIZE)
@@ -92,17 +94,30 @@ export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
                   height={ARRAY_BLOCK_HEIGHT}
                   x={HASH_TABLE_ARRAY_X}
                   y={index * ARRAY_BLOCK_HEIGHT}
-                  value={null}
+                  value={
+                    collisionResolution === 'linearProbe'
+                      ? this.getValueAtAddress(index)
+                      : null
+                  }
                   visible
                   type='rectangle'
                   labelDirection='left'
                   label={[index.toString()]}
                 />
-                {this.renderLinkedListAtAddress(index)}
+                {collisionResolution === 'chaining' &&
+                  this.renderLinkedListAtAddress(index)}
               </g>
             );
           })}
       </g>
+    );
+  }
+
+  getValueAtAddress(address: number) {
+    const { hashTableModel } = this.props;
+    return (
+      hashTableModel.memoryAddresses.find(({ key }) => key === address)
+        ?.values[0] || null
     );
   }
 
@@ -116,6 +131,35 @@ export class MemoryArray extends Component<MemoryArrayProps, MemoryArrayState> {
       ({ key }) => key === address,
     );
     return !currentAddress?.highlight;
+  }
+
+  getLabelAndValueProps(value: string | number, address: number) {
+    const { hashTableModel, collisionResolution } = this.props;
+    switch (collisionResolution) {
+      case 'chaining': {
+        return {
+          labelDirection: 'left',
+          label: [address.toString()],
+          value: null,
+        };
+      }
+
+      case 'linearProbe': {
+        return {
+          label: [
+            {
+              value: address.toString(),
+              direction: 'left',
+            },
+            {
+              value: address.toString(),
+              direction: 'right',
+            },
+          ],
+          value,
+        };
+      }
+    }
   }
 
   renderLinkedListAtAddress(address: number) {

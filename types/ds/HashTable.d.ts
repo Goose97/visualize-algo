@@ -28,6 +28,7 @@ export declare namespace HashTable {
     | 'delete'
     | 'toggleIsNew'
     | 'insertKey'
+    | 'updateKeyAddress'
     | 'insertValue'
     | 'highlightKey'
     | 'assignAddressToKey'

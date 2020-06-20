@@ -21,6 +21,7 @@ export interface IProps extends BaseDSProps {
   initialData: Object;
   instructions: Action<HashTable.Method>[][];
   blockType: string;
+  collisionResolution: 'chaining' | 'linearProbe';
 }
 
 export interface HashTableMemoryBlockProps extends BaseMemoryBlockProps {
@@ -37,6 +38,7 @@ export interface KeyListProps {
 export interface MemoryArrayProps {
   hashTableModel: HashTable.Model;
   keyAboutToBeDeleted: string[];
+  collisionResolution: 'chaining' | 'linearProbe';
 }
 
 export interface MemoryArrayState {

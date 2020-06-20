@@ -3,7 +3,6 @@ import produce from 'immer';
 import { HashTable } from 'types/ds/HashTable';
 import { caculateKeyHash } from 'components/HashTable/helper';
 import { HASH_TABLE_UNIVERSAL_KEY_SIZE } from '../constants';
-import { add } from 'lodash';
 
 // Nhận vào trạng thái hiện tại của data structure
 // và operation tương ứng. Trả về trạng thái mới
@@ -48,6 +47,16 @@ const transformHashTableModel = (
           isNew: true,
           address,
         });
+      });
+    }
+
+    case 'updateKeyAddress': {
+      const [key, address] = payload;
+      return produce(currentModel, draft => {
+        const keyToUpdate = draft.keys.find(
+          ({ key: itemKey }) => key === itemKey,
+        );
+        if (keyToUpdate) keyToUpdate.address = address;
       });
     }
 
