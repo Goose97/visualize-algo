@@ -29,7 +29,7 @@ export class HashTablePage extends Component<IProps, IState> {
         b: 2,
         l: 3,
       },
-      collisionResolution: 'linearProbe',
+      collisionResolution: 'chaining',
     };
   }
 

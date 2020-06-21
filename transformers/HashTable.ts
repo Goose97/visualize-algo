@@ -123,16 +123,6 @@ const transformHashTableModel = (
       });
     }
 
-    case 'assignAddressToKey': {
-      const [key, address] = payload;
-      return produce(currentModel, draft => {
-        const keyToAssign = draft.keys.find(
-          ({ key: itemKey }) => key === itemKey,
-        );
-        if (keyToAssign) keyToAssign.address = address;
-      });
-    }
-
     case 'highlightAddress': {
       // Sometimes the address we want to highlight is not exist yet in modal
       // insert a empty one in

@@ -12,7 +12,7 @@ import { IProps, IState } from './index.d';
 import { Action } from 'types';
 import transformHashTableModel from 'transformers/HashTable';
 import { HashTable } from 'types/ds/HashTable';
-import { caculateKeyHash } from './helper';
+import { caculateKeyHash, initLinearProbeHashTableData } from './helper';
 import { HASH_TABLE_UNIVERSAL_KEY_SIZE } from '../../constants';
 
 type PropsWithHoc = IProps & WithReverseStep<HashTable.Model>;
@@ -52,7 +52,7 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
       }
 
       case 'linearProbe': {
-        return this.initLinearProbeHashTableData(initialData);
+        return initLinearProbeHashTableData(initialData);
       }
     }
   }
@@ -71,51 +71,6 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
         // highlight: address === '7',
       }),
     );
-  }
-
-  initLinearProbeHashTableData(data: IProps['initialData']) {
-    let keys: HashTable.Key[] = [];
-    let memoryAddresses: HashTable.MemoryAddress[] = [];
-    const findAvailableSlot = (key: string) => {
-      let hashAddress = caculateKeyHash(key, HASH_TABLE_UNIVERSAL_KEY_SIZE);
-      while (true) {
-        const memoryAddress = memoryAddresses.find(
-          ({ key }) => key === hashAddress,
-        );
-        if (!memoryAddress) return hashAddress;
-        hashAddress++;
-      }
-    };
-
-    const insertKey = (
-      key: string,
-      value: string | number,
-      address: number,
-    ) => {
-      keys.push({
-        key,
-        value,
-        address,
-      });
-    };
-
-    const insertMemoryAddress = (value: string | number, address: number) => {
-      memoryAddresses.push({
-        key: address,
-        values: [value],
-      });
-    };
-
-    Object.entries(data).forEach(([key, value]) => {
-      const addressToFill = findAvailableSlot(key);
-      insertKey(key, value, addressToFill);
-      insertMemoryAddress(value, addressToFill);
-    });
-
-    return {
-      keys,
-      memoryAddresses,
-    };
   }
 
   componentDidUpdate(prevProps: IProps) {
