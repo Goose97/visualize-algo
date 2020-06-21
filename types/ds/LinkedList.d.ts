@@ -30,6 +30,7 @@ export declare namespace LinkedList {
   export type Method =
     | 'insert'
     | 'remove'
+    | 'removeByValue'
     | 'visit'
     | 'visited'
     | 'focus'

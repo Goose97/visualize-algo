@@ -13,7 +13,7 @@ import { IProps, IState, TransformationChange } from './index.d';
 // Lí do phải sử dụng component này là để thực hiện animation
 
 type PropsWithHoc = IProps & WithExtendClassName;
-export class AutoTransformGroup extends Component<PropsWithHoc, IState> {
+class AutoTransformGroup extends Component<PropsWithHoc, IState> {
   constructor(props: PropsWithHoc) {
     super(props);
 

@@ -41,15 +41,16 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
   }
 
   produceClassName() {
-    const { visible, visited, focus, className } = this.props;
+    const { visible, visited, focus, className, isNew, blur } = this.props;
     const { isHiding, isShowing } = this.state;
     return classNameHelper({
       base: className as string,
       disappearing: !!isHiding,
-      appearing: !!isShowing,
+      appearing: !!(isShowing || isNew),
       invisible: !visible,
       visited: !!visited,
       focus: !!focus,
+      blur: !!blur,
     });
   }
 
@@ -83,8 +84,29 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
     }
   }
 
+  renderLabelText() {
+    const { label } = this.props;
+
+    return (
+      label &&
+      label.length && (
+        <g>
+          {this.renderBackgroundOverlayForText()}
+          <text
+            {...this.getLabelTextCoordinate()}
+            dominantBaseline='middle'
+            textAnchor='middle'
+            className='memory-block__text italic'
+            ref={this.labelText}
+          >
+            {label.join(' / ')}
+          </text>
+        </g>
+      )
+    );
+  }
+
   renderBackgroundOverlayForText() {
-    const { x, y, width, height } = this.props;
     const textElement = this.labelText.current;
     if (!textElement) return null;
 
@@ -94,14 +116,43 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
     } = textElement.getBoundingClientRect();
     return (
       <rect
-        x={x + width / 2}
-        y={y - height / 2}
+        {...this.getLabelTextCoordinate()}
         transform={`translate(-${textWidth / 2}, -${textHeight / 2})`}
         width={textWidth}
         height={textHeight}
-        className="fill-background"
+        className='fill-background'
       ></rect>
     );
+  }
+
+  getLabelTextCoordinate() {
+    const { labelDirection, width, height, x, y } = this.props;
+    const direction = labelDirection || 'top';
+    switch (direction) {
+      case 'top':
+        return {
+          x: x + width / 2,
+          y: y - 20,
+        };
+
+      case 'bottom':
+        return {
+          x: x + width / 2,
+          y: y + height + 20,
+        };
+
+      case 'left':
+        return {
+          x: x - 30,
+          y: y + height / 2,
+        };
+
+      case 'right':
+        return {
+          x: x + 20,
+          y: y + height / 2,
+        };
+    }
   }
 
   render() {
@@ -130,22 +181,6 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
       </text>
     );
 
-    const labelText = label && label.length && (
-      <g>
-        {this.renderBackgroundOverlayForText()}
-        <text
-          x={x + width / 2}
-          y={y - height / 2}
-          dominantBaseline='middle'
-          textAnchor='middle'
-          className='memory-block__text italic'
-          ref={this.labelText}
-        >
-          {label.join(' / ')}
-        </text>
-      </g>
-    );
-
     const highlightCircle = highlight && (
       <HighlightCircle
         x={x + width / 2}
@@ -158,7 +193,7 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
       <g className={this.produceClassName()}>
         {this.renderMemoryBlockContainer()}
         {valueText}
-        {labelText}
+        {this.renderLabelText()}
         {children}
         {highlightCircle}
       </g>

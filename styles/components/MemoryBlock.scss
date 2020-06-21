@@ -59,4 +59,8 @@
   &.appearing {
     animation: fadeIn 0.65s ease;
   }
+
+  &.blur * {
+    @extend .deemphasized;
+  }  
 }

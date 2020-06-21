@@ -23,12 +23,18 @@ export interface PointCoordinate {
 
 export type DataStructureMethod<T> = (model: T, params: any) => T;
 
+interface LabelWithDirection {
+  value: string;
+  direction: BaseMemoryBlockProps['labelDirection'];
+}
 export interface BaseMemoryBlockProps {
   visible?: boolean;
   focus?: boolean;
   value: string | number | null;
-  label?: string[];
   highlight?: boolean;
+  blur?: boolean;
+  label?: string[] | LabelWithDirection[];
+  labelDirection?: 'top' | 'left' | 'right' | 'bottom';
 }
 
 export interface HTMLRendererParams<T = {}> {

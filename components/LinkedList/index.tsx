@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import produce from 'immer';
-import { omit, flatMap, groupBy, pick, isFunction } from 'lodash';
+import { omit, flatMap, groupBy, pick, isFunction, isEqual } from 'lodash';
 
 import transformLinkedListModel from 'transformers/LinkedList';
 import HeadPointer from './HeadPointer';
@@ -22,22 +22,33 @@ type PropsWithHoc = IProps & WithReverseStep<LinkedList.Model>;
 export class LinkedListDS extends Component<PropsWithHoc, IState> {
   private initialLinkedListModel: LinkedList.Model;
   private wrapperRef: React.RefObject<SVGUseElement>;
+  private randomId: number;
 
   constructor(props: PropsWithHoc) {
     super(props);
 
-    this.initialLinkedListModel = this.initiateMemoryLinkedListModel(props);
+    this.initialLinkedListModel = this.initLinkedListModel(
+      this.getInitialData(),
+    );
     this.state = {
       linkedListModel: this.initialLinkedListModel,
       nodeAboutToAppear: new Set([]),
       isVisible: true,
     };
     this.wrapperRef = React.createRef();
+    this.randomId = Math.round(Math.random() * 100000);
   }
 
-  initiateMemoryLinkedListModel(props: PropsWithHoc): LinkedList.Model {
-    const { initialData } = props;
-    return initialData.map((value, index) => ({
+  getInitialData() {
+    const { initialData, data, controlled } = this.props;
+    let result;
+    if (controlled) result = data;
+    else result = initialData;
+    return result || [];
+  }
+
+  initLinkedListModel(data: Array<string | number>): LinkedList.Model {
+    return data.map((value, index) => ({
       ...this.caculateBlockCoordinate(index),
       value,
       index,
@@ -45,7 +56,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
       visited: false,
       key: index,
       focus: false,
-      pointer: index === initialData.length - 1 ? null : index + 1,
+      pointer: index === data.length - 1 ? null : index + 1,
     }));
   }
 
@@ -128,6 +139,8 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
       reverseToStep,
       saveStepSnapshots,
       totalStep,
+      controlled,
+      data,
     } = this.props;
     const { linkedListModel } = this.state;
 
@@ -153,6 +166,15 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
         case 'fastBackward':
           this.handleFastBackward();
           break;
+      }
+    }
+
+    // Update according to controlled data
+    if (controlled) {
+      if (!isEqual(data, prevProps.data)) {
+        this.setState({
+          linkedListModel: data ? this.initLinkedListModel(data) : [],
+        });
       }
     }
   }
@@ -383,7 +405,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
     }
   }
 
-  findNodeByKey(key: number) {
+  findNodeByKey(key: number | null) {
     const { linkedListModel } = this.state;
     const nodeWithKey = linkedListModel.find(
       ({ key: nodeKey }) => key === nodeKey,
@@ -394,6 +416,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
   renderPointerLinkForMemoryBlock(nodeIndex: number) {
     const { linkedListModel, nodeAboutToAppear } = this.state;
     const { key, pointer, visible, visited } = linkedListModel[nodeIndex];
+    const pointToNode = this.findNodeByKey(pointer);
     return (
       <LinkedListPointer
         nodeAboutToAppear={nodeAboutToAppear}
@@ -403,7 +426,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
         linkedListModel={linkedListModel}
         following={this.isLinkNeedToBeFollowed(nodeIndex)}
         visited={visited}
-        visible={visible}
+        visible={visible && pointToNode?.visible}
       />
     );
   }
@@ -483,6 +506,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
   }
 
   render() {
+    const { headArrowVisible } = this.props;
     const { linkedListModel, isVisible } = this.state;
     const listMemoryBlock = linkedListModel.map(linkedListNode => (
       <LinkedListMemoryBlock
@@ -498,13 +522,15 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
       isVisible && (
         <>
           <use
-            href='#linked-list'
+            href={`#linked-list-${this.randomId}`}
             {...pick(this.props, ['x', 'y'])}
             ref={this.wrapperRef}
           />
           <defs>
-            <g id='linked-list'>
-              <HeadPointer headBlock={this.findNextBlock(-1)} />
+            <g id={`linked-list-${this.randomId}`}>
+              {headArrowVisible && (
+                <HeadPointer headBlock={this.findNextBlock(-1)} />
+              )}
               {listMemoryBlock}
               {listPointerLink}
             </g>
