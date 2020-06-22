@@ -158,12 +158,12 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
   render() {
     const {
       value,
-      label,
       width,
       height,
       children,
       textOffset,
       highlight,
+      transform,
       x,
       y,
     } = this.props;
@@ -190,7 +190,7 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
     );
 
     return (
-      <g className={this.produceClassName()}>
+      <g className={this.produceClassName()} transform={transform}>
         {this.renderMemoryBlockContainer()}
         {valueText}
         {this.renderLabelText()}

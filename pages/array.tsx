@@ -44,6 +44,12 @@ export class ArrayPage extends Component<IProps, IState> {
     return arrayInstruction(data!, currentApi, params);
   }
 
+  renderHelperItemsForSort() {
+    const { stepDescription } = this.state
+    console.log('stepDescription', stepDescription)
+    return null
+  }
+
   render() {
     const {
       data,
@@ -80,6 +86,7 @@ export class ArrayPage extends Component<IProps, IState> {
               handleExecuteApi={this.handleExecuteApi}
               interactive
             />
+            {this.renderHelperItemsForSort()}
           </CanvasContainer>
         ) : (
           <div className='h-full fx-center linked-list-page__init-button'>

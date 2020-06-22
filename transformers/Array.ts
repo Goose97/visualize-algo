@@ -3,6 +3,12 @@ import { uniq } from 'lodash';
 
 import { Array } from 'types/ds/Array';
 
+const swapObjectProperty = (objectA: any, objectB: any, property: string) => {
+  const tmp = objectA[property];
+  objectA[property] = objectB[property];
+  objectB[property] = tmp;
+};
+
 // Nhận vào trạng thái hiện tại của data structure
 // và operation tương ứng. Trả về trạng thái mới
 const transformArrayModel = (
@@ -17,9 +23,7 @@ const transformArrayModel = (
         const fromNode = draft.find(({ key }) => key === from);
         const toNode = draft.find(({ key }) => key === to);
         if (fromNode && toNode) {
-          const temp = fromNode.index;
-          fromNode.index = toNode.index;
-          toNode.index = temp;
+          swapObjectProperty(fromNode, toNode, 'index');
         }
       });
     }
@@ -101,17 +105,6 @@ const transformArrayModel = (
           ({ key }) => key === keyToResetValue,
         );
         if (nodeToResetValue) nodeToResetValue.value = value;
-      });
-    }
-
-    case 'setLine': {
-      const [keyToSetLine] = payload;
-      return produce(currentModel, draft => {
-        const nodeToSetLine = draft.find(({ key }) => key === keyToSetLine);
-        draft.forEach(node => (node.hasLine = false));
-        if (nodeToSetLine) {
-          nodeToSetLine.hasLine = true;
-        }
       });
     }
 

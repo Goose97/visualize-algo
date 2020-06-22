@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { MemoryBlock, AutoTransformGroup, Line } from 'components';
+import { MemoryBlock, AutoTransformGroup } from 'components';
 import {
   ARRAY_BLOCK_WIDTH,
   ARRAY_BLOCK_HEIGHT,
@@ -87,9 +87,9 @@ class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
       visited,
       label,
       blockType,
-      hasLine,
+      className,
+      transform,
     } = this.props;
-    const { x1, y1, x2, y2 } = this.calculateLine();
     return (
       <AutoTransformGroup origin={this.calculatePosition()}>
         <MemoryBlock
@@ -104,18 +104,9 @@ class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
           visited={visited}
           label={label}
           type='rectangle'
+          className={className}
+          transform={transform}
         />
-        {hasLine && (
-          <g>
-            <text x={x2 - 90} y={y2}>
-              Đã sắp xếp
-            </text>
-            <Line x1={x1} x2={x2} y1={y1} y2={y2} />
-            <text x={x2 + 10} y={y2}>
-              Chưa sắp xếp
-            </text>
-          </g>
-        )}
       </AutoTransformGroup>
     );
   }

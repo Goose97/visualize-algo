@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { pick, groupBy, flatMap } from 'lodash';
 
+import { Line } from 'components';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { getProgressDirection, keyExist } from 'utils';
 import { IProps, IState } from './index.d';
@@ -9,6 +10,11 @@ import ArrayMemoryBlock from './ArrayMemoryBlock';
 import ArrayHTML from './ArrayHTML';
 import transformArrayModel from 'transformers/Array';
 import { Array } from 'types/ds/Array';
+import {
+  ARRAY_BLOCK_WIDTH,
+  ARRAY_BLOCK_HEIGHT,
+  LINE_HEIGHT,
+} from '../../constants';
 
 type PropsWithHoc = IProps & WithReverseStep<Array.Model>;
 
@@ -23,6 +29,7 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     this.state = {
       arrayModel: this.initialLinkedListModel,
       isVisible: true,
+      insertionSort: {},
     };
     this.wrapperRef = React.createRef();
   }
@@ -131,6 +138,30 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     }, currentModel);
   }
 
+  setUnsortedLine = (currentModel: Array.Model, [key]: [number]) => {
+    const { insertionSort } = this.state;
+    const elementWithLine = currentModel.find(
+      ({ key: itemKey }) => itemKey === key,
+    );
+    if (!elementWithLine) return currentModel;
+
+    const currentSortingElement = currentModel.find(
+      ({ index }) => index === elementWithLine.index + 1,
+    );
+    this.setState({
+      insertionSort: Object.assign({}, insertionSort, {
+        currentSortingElementIndex: elementWithLine.index + 1,
+        currentSortingElementValue: currentSortingElement?.value,
+      }),
+    });
+    return currentModel;
+  };
+
+  resetAll = (currentModel: Array.Model) => {
+    this.setState({ insertionSort: {} });
+    return currentModel;
+  };
+
   handleReverse = (stateOfPreviousStep: Array.Model) => {
     this.setState({ arrayModel: stateOfPreviousStep });
   };
@@ -183,11 +214,76 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     }, 0);
   }
 
+  renderExtraUIForInsertionSort() {
+    return (
+      <g>
+        {this.renderSeparationLine()}
+        {this.renderCurrentSortingItem()}
+      </g>
+    );
+  }
+
+  renderSeparationLine() {
+    const {
+      insertionSort: { currentSortingElementIndex },
+    } = this.state;
+    if (!currentSortingElementIndex) return null;
+
+    const x = ARRAY_BLOCK_WIDTH * currentSortingElementIndex;
+    const y1 = ARRAY_BLOCK_HEIGHT + LINE_HEIGHT;
+    const y2 = -LINE_HEIGHT;
+    return (
+      <g>
+        <text x={x - 60} y={y2}>
+          Sorted
+        </text>
+        <Line x1={x} x2={x} y1={y1} y2={y2} />
+        <text x={x + 10} y={y2}>
+          Unsorted
+        </text>
+      </g>
+    );
+  }
+
+  renderCurrentSortingItem() {
+    const {
+      insertionSort: { currentSortingElementIndex, currentSortingElementValue },
+    } = this.state;
+    const { blockType } = this.props;
+    if (
+      currentSortingElementIndex === undefined ||
+      currentSortingElementValue === undefined
+    )
+      return null;
+
+    return (
+      <ArrayMemoryBlock
+        visible
+        value={currentSortingElementValue}
+        index={currentSortingElementIndex}
+        blockType={blockType}
+        transform='translate(0, 100)'
+      />
+    );
+  }
+
   render() {
     const { arrayModel, isVisible } = this.state;
     const { blockType } = this.props;
+    const hollowArrayMemoryBlock = arrayModel.map((_, index) => (
+      <ArrayMemoryBlock
+        visible
+        value={null}
+        index={index}
+        blockType={blockType}
+      />
+    ));
     const arrayMemoryBlock = arrayModel.map(arrayNode => (
-      <ArrayMemoryBlock {...arrayNode} blockType={blockType} />
+      <ArrayMemoryBlock
+        {...arrayNode}
+        blockType={blockType}
+        className='array-memory-block--only-value'
+      />
     ));
 
     return (
@@ -199,7 +295,11 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
             ref={this.wrapperRef}
           />
           <defs>
-            <g id='array'>{arrayMemoryBlock}</g>
+            <g id='array'>
+              {hollowArrayMemoryBlock}
+              {arrayMemoryBlock}
+              {this.renderExtraUIForInsertionSort()}
+            </g>
           </defs>
         </>
       )

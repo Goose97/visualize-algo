@@ -6,7 +6,6 @@ export declare namespace Array {
     key: number;
     index: number;
     visited?: boolean;
-    hasLine?: boolean;
   }
 
   export type Model = Node[];
@@ -22,7 +21,6 @@ export declare namespace Array {
     | 'label'
     | 'unlabel'
     | 'setValue'
-    | 'setLine'
     | 'push';
 
   export interface SortParams {}

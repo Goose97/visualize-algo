@@ -35,6 +35,7 @@ export interface BaseMemoryBlockProps {
   blur?: boolean;
   label?: string[] | LabelWithDirection[];
   labelDirection?: 'top' | 'left' | 'right' | 'bottom';
+  transform?: string;
 }
 
 export interface HTMLRendererParams<T = {}> {
