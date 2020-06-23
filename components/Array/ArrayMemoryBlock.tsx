@@ -20,13 +20,13 @@ class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   }
 
   calculatePosition() {
-    const { index, blockType, value } = this.props;
+    const { index, blockType, value, isInsertionSorting } = this.props;
     const { height } = this.calculateSizeBlock(
       blockType,
       this.parseValueToNumber(value),
     );
     let xPosition = 0;
-    let yPosition = 0;
+    let yPosition = isInsertionSorting ? 100 : 0;
     switch (blockType) {
       case 'block':
         xPosition = ARRAY_BLOCK_WIDTH * index;
@@ -88,6 +88,7 @@ class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
       label,
       blockType,
       className,
+      highlight,
       transform,
     } = this.props;
     return (
@@ -106,6 +107,7 @@ class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
           type='rectangle'
           className={className}
           transform={transform}
+          highlight={highlight}
         />
       </AutoTransformGroup>
     );

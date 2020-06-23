@@ -21,7 +21,10 @@ export declare namespace Array {
     | 'label'
     | 'unlabel'
     | 'setValue'
-    | 'push';
+    | 'setIndex'
+    | 'push'
+    | 'highlight'
+    | 'dehighlight';
 
   export interface SortParams {}
 }

@@ -99,12 +99,18 @@ const transformArrayModel = (
     }
 
     case 'setValue': {
-      const [keyToResetValue, value] = payload;
+      const [keyToSetValue, value] = payload;
       return produce(currentModel, draft => {
-        const nodeToResetValue = draft.find(
-          ({ key }) => key === keyToResetValue,
-        );
+        const nodeToResetValue = draft.find(({ key }) => key === keyToSetValue);
         if (nodeToResetValue) nodeToResetValue.value = value;
+      });
+    }
+
+    case 'setIndex': {
+      const [keyToSetIndex, index] = payload;
+      return produce(currentModel, draft => {
+        const nodeToResetValue = draft.find(({ key }) => key === keyToSetIndex);
+        if (nodeToResetValue) nodeToResetValue.index = index;
       });
     }
 
@@ -112,6 +118,22 @@ const transformArrayModel = (
       const [newArrayNode] = payload;
       return produce(currentModel, draft => {
         draft.push(newArrayNode);
+      });
+    }
+
+    case 'highlight': {
+      const [keyToHighlight] = payload;
+      return produce(currentModel, draft => {
+        const arrayNode = draft.find(({ key }) => key === keyToHighlight);
+        if (arrayNode) arrayNode.highlight = true;
+      });
+    }
+
+    case 'dehighlight': {
+      const [keyToDehighlight] = payload;
+      return produce(currentModel, draft => {
+        const arrayNode = draft.find(({ key }) => key === keyToDehighlight);
+        if (arrayNode) arrayNode.highlight = false;
       });
     }
 

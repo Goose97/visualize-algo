@@ -144,9 +144,14 @@ const insertionSortInstruction = (data: number[], params: Array.SortParams) => {
   let i, j, keyValue;
   for (i = 1; i < len; i++) {
     instructions.pushActionsAndEndStep('array', [
+      { name: 'highlight', params: [array[i].key] },
       { name: 'setUnsortedLine', params: [array[i - 1].key] },
-      { name: 'setValue', params: [array[i].key, null] },
     ]);
+    instructions.pushActionsAndEndStep('array', [
+      { name: 'dehighlight', params: [array[i].key] },
+      { name: 'setCurrentInsertionSortNode', params: [array[i].key] },
+    ]);
+
     keyValue = array[i].val;
     j = i - 1;
     /* Move elements of arr[0..i-1], that are 
@@ -154,13 +159,15 @@ const insertionSortInstruction = (data: number[], params: Array.SortParams) => {
           of their current position */
     for (j = i - 1; j >= 0 && array[j].val > keyValue; j--) {
       instructions.pushActionsAndEndStep('array', [
-        { name: 'swap', params: [array[j].key, array[j + 1].key] },
+        { name: 'setIndex', params: [array[j].key, j + 1] },
       ]);
       swapArrayNodes(j, j + 1);
     }
 
     instructions.pushActionsAndEndStep('array', [
+      { name: 'setIndex', params: [array[j + 1].key, j + 1] },
       { name: 'setValue', params: [array[j + 1].key, keyValue] },
+      { name: 'unsetCurrentInsertionSortNode', params: [] },
     ]);
     array[j + 1].val = keyValue;
   }

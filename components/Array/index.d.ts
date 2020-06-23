@@ -7,7 +7,7 @@ export interface IState {
   isVisible: boolean;
   insertionSort: {
     currentSortingElementIndex?: number;
-    currentSortingElementValue?: number | string | null;
+    currentSortingElementKey?: number;
   };
 }
 
@@ -22,4 +22,5 @@ export interface ArrayMemoryBlockProps extends BaseMemoryBlockProps {
   visited?: boolean;
   blockType: string;
   className?: string;
+  isInsertionSorting?: boolean;
 }
