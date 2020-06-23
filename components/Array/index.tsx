@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { pick, groupBy, flatMap } from 'lodash';
 
-import { Line } from 'components';
+import { Line, AutoTransformGroup } from 'components';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { getProgressDirection, keyExist } from 'utils';
 import { IProps, IState } from './index.d';
@@ -240,27 +240,33 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     }, 0);
   }
 
-  renderSeparationLine() {
-    const {
-      insertionSort: { currentSortingElementIndex },
-    } = this.state;
-    if (!currentSortingElementIndex) return null;
+  // Use IFEE to store private variable in closure
+  renderSeparationLine = (() => {
+    let initialX: number;
 
-    const x = ARRAY_BLOCK_WIDTH * currentSortingElementIndex;
-    const y1 = ARRAY_BLOCK_HEIGHT + LINE_HEIGHT;
-    const y2 = -LINE_HEIGHT;
-    return (
-      <g>
-        <text x={x - 60} y={y2}>
-          Sorted
-        </text>
-        <Line x1={x} x2={x} y1={y1} y2={y2} />
-        <text x={x + 10} y={y2}>
-          Unsorted
-        </text>
-      </g>
-    );
-  }
+    return () => {
+      const {
+        insertionSort: { currentSortingElementIndex },
+      } = this.state;
+      if (!currentSortingElementIndex) return null;
+
+      const x = ARRAY_BLOCK_WIDTH * currentSortingElementIndex;
+      if (initialX === undefined) initialX = x;
+      const y1 = ARRAY_BLOCK_HEIGHT + LINE_HEIGHT;
+      const y2 = -LINE_HEIGHT;
+      return (
+        <AutoTransformGroup origin={{ x, y: 0 }}>
+          <text x={initialX - 60} y={y2}>
+            Sorted
+          </text>
+          <Line x1={initialX} x2={initialX} y1={y1} y2={y2} />
+          <text x={initialX + 10} y={y2}>
+            Unsorted
+          </text>
+        </AutoTransformGroup>
+      );
+    };
+  })();
 
   renderCurrentSortingItem() {
     const {
