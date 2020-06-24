@@ -5,6 +5,10 @@ import { Array } from 'types/ds/Array';
 export interface IState {
   arrayModel: Array.Model;
   isVisible: boolean;
+  insertionSort: {
+    currentSortingElementIndex?: number;
+    currentSortingElementKey?: number;
+  };
 }
 
 export interface IProps extends BaseDSProps {
@@ -17,5 +21,6 @@ export interface ArrayMemoryBlockProps extends BaseMemoryBlockProps {
   index: number;
   visited?: boolean;
   blockType: string;
-  hasLine?: boolean;
+  className?: string;
+  isInsertionSorting?: boolean;
 }

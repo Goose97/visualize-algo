@@ -133,15 +133,25 @@ const insertionSortInstruction = (data: number[], params: Array.SortParams) => {
   instructions.setDuration(1000);
   let array = initArray(data);
   const codeLines = getCodeLine('insertionSort');
+  const swapArrayNodes = (indexA: number, indexB: number) => {
+    let tmp = array[indexA];
+    array[indexA] = array[indexB];
+    array[indexB] = tmp;
+  };
 
   // Start make instruction
-
   let len = array.length;
   let i, j, keyValue;
   for (i = 1; i < len; i++) {
     instructions.pushActionsAndEndStep('array', [
-      { name: 'setLine', params: [array[i].key] },
+      { name: 'highlight', params: [array[i].key] },
+      { name: 'setUnsortedLine', params: [array[i - 1].key] },
     ]);
+    instructions.pushActionsAndEndStep('array', [
+      { name: 'dehighlight', params: [array[i].key] },
+      { name: 'setCurrentInsertionSortNode', params: [array[i].key] },
+    ]);
+
     keyValue = array[i].val;
     j = i - 1;
     /* Move elements of arr[0..i-1], that are 
@@ -149,16 +159,22 @@ const insertionSortInstruction = (data: number[], params: Array.SortParams) => {
           of their current position */
     for (j = i - 1; j >= 0 && array[j].val > keyValue; j--) {
       instructions.pushActionsAndEndStep('array', [
-        { name: 'setValue', params: [array[j + 1].key, array[j].val] },
-        { name: 'setValue', params: [array[j].key, null] },
+        { name: 'setIndex', params: [array[j].key, j + 1] },
       ]);
-      array[j + 1].val = array[j].val;
+      swapArrayNodes(j, j + 1);
     }
+
     instructions.pushActionsAndEndStep('array', [
+      { name: 'setIndex', params: [array[j + 1].key, j + 1] },
       { name: 'setValue', params: [array[j + 1].key, keyValue] },
+      { name: 'unsetCurrentInsertionSortNode', params: [] },
     ]);
     array[j + 1].val = keyValue;
   }
+
+  instructions.pushActionsAndEndStep('array', [
+    { name: 'resetAll', params: [] },
+  ]);
 
   return instructions.get();
 };
@@ -173,7 +189,7 @@ const getCodeLine = (operation: Array.Api): ObjectType<string> => {
         iteration: '12',
         step: '13',
       };
-    
+
     case 'selectionSort':
       return {
         init: '1',
@@ -183,7 +199,7 @@ const getCodeLine = (operation: Array.Api): ObjectType<string> => {
         updateMin: '6-7',
         compare: '6',
       };
-    
+
     case 'insertionSort':
       return {
         init: '1',
@@ -193,7 +209,7 @@ const getCodeLine = (operation: Array.Api): ObjectType<string> => {
         updateMin: '6-7',
         compare: '6',
       };
-    
+
     default:
       return {};
   }

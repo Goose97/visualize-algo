@@ -4,6 +4,7 @@ import withExtendClassName, {
   WithExtendClassName,
 } from 'hocs/withExtendClassName';
 import { IProps, IState, TransformationChange } from './index.d';
+import { transform } from 'lodash';
 
 // Component này xử lý logic transform cho các phần tử svg
 // Bắt buộc phải chỉ định một điểm làm origin cho component này
@@ -14,12 +15,14 @@ import { IProps, IState, TransformationChange } from './index.d';
 
 type PropsWithHoc = IProps & WithExtendClassName;
 class AutoTransformGroup extends Component<PropsWithHoc, IState> {
+  private transformQueue: string[];
   constructor(props: PropsWithHoc) {
     super(props);
 
     this.state = {
       transformSequence: [],
     };
+    this.transformQueue = [];
   }
 
   componentDidUpdate(prevProps: IProps) {
@@ -39,7 +42,6 @@ class AutoTransformGroup extends Component<PropsWithHoc, IState> {
   }
 
   applyChanges(changes: TransformationChange[]) {
-    const { transformSequence } = this.state;
     let additionTransfromSequence = changes.map(({ direction, amount }) => {
       switch (direction) {
         case 'vertical':
@@ -48,11 +50,23 @@ class AutoTransformGroup extends Component<PropsWithHoc, IState> {
           return `translate(${amount} 0)`;
       }
     });
+    this.transformQueue = additionTransfromSequence;
+    this.dequeueTransformQueue();
+  }
+
+  dequeueTransformQueue() {
+    const { transformSequence } = this.state;
+    const transformString = this.transformQueue.shift();
+    if (!transformString) return;
 
     this.setState({
-      transformSequence: transformSequence.concat(additionTransfromSequence),
+      transformSequence: transformSequence.concat(transformString),
     });
   }
+
+  handleTransitionEnd = () => {
+    this.dequeueTransformQueue();
+  };
 
   produceTransformString() {
     const { transformSequence } = this.state;
@@ -62,7 +76,11 @@ class AutoTransformGroup extends Component<PropsWithHoc, IState> {
   render() {
     const { children, className } = this.props;
     return (
-      <g transform={this.produceTransformString()} className={className}>
+      <g
+        transform={this.produceTransformString()}
+        className={className}
+        onTransitionEnd={this.handleTransitionEnd}
+      >
         {children}
       </g>
     );

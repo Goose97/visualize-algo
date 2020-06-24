@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { pick, groupBy, flatMap } from 'lodash';
 
+import { Line, AutoTransformGroup } from 'components';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { getProgressDirection, keyExist } from 'utils';
 import { IProps, IState } from './index.d';
@@ -9,22 +10,32 @@ import ArrayMemoryBlock from './ArrayMemoryBlock';
 import ArrayHTML from './ArrayHTML';
 import transformArrayModel from 'transformers/Array';
 import { Array } from 'types/ds/Array';
+import {
+  ARRAY_BLOCK_WIDTH,
+  ARRAY_BLOCK_HEIGHT,
+  LINE_HEIGHT,
+} from '../../constants';
 
 type PropsWithHoc = IProps & WithReverseStep<Array.Model>;
 
 export class ArrayDS extends Component<PropsWithHoc, IState> {
-  private initialLinkedListModel: Array.Model;
+  private initialArrayModel: Array.Model;
   private wrapperRef: React.RefObject<SVGUseElement>;
+  private arrayBlockRef: React.RefObject<any>[];
 
   constructor(props: PropsWithHoc) {
     super(props);
 
-    this.initialLinkedListModel = this.initArrayModel(props);
+    this.initialArrayModel = this.initArrayModel(props);
     this.state = {
-      arrayModel: this.initialLinkedListModel,
+      arrayModel: this.initialArrayModel,
       isVisible: true,
+      insertionSort: {},
     };
     this.wrapperRef = React.createRef();
+    this.arrayBlockRef = window
+      .Array(this.initArrayModel.length)
+      .map(() => React.createRef());
   }
 
   initArrayModel(props: PropsWithHoc): Array.Model {
@@ -131,6 +142,52 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     }, currentModel);
   }
 
+  setUnsortedLine = (currentModel: Array.Model, [key]: [number]) => {
+    const { insertionSort } = this.state;
+    const elementWithLine = currentModel.find(
+      ({ key: itemKey }) => itemKey === key,
+    );
+    if (!elementWithLine) return currentModel;
+
+    this.setState({
+      insertionSort: Object.assign({}, insertionSort, {
+        currentSortingElementIndex: elementWithLine.index + 1,
+      }),
+    });
+    return currentModel;
+  };
+
+  setCurrentInsertionSortNode = (
+    currentModel: Array.Model,
+    [key]: [number],
+  ) => {
+    const { insertionSort } = this.state;
+    const currentSortingElement = currentModel.find(
+      ({ key: itemKey }) => key === itemKey,
+    );
+    this.setState({
+      insertionSort: Object.assign({}, insertionSort, {
+        currentSortingElementKey: currentSortingElement?.key,
+      }),
+    });
+    return currentModel;
+  };
+
+  unsetCurrentInsertionSortNode = (currentModel: Array.Model) => {
+    const { insertionSort } = this.state;
+    this.setState({
+      insertionSort: Object.assign({}, insertionSort, {
+        currentSortingElementKey: null,
+      }),
+    });
+    return currentModel;
+  };
+
+  resetAll = (currentModel: Array.Model) => {
+    this.setState({ insertionSort: {} });
+    return currentModel;
+  };
+
   handleReverse = (stateOfPreviousStep: Array.Model) => {
     this.setState({ arrayModel: stateOfPreviousStep });
   };
@@ -156,7 +213,7 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
   }
 
   handleFastBackward() {
-    this.updateWithoutAnimation(this.initialLinkedListModel);
+    this.updateWithoutAnimation(this.initialArrayModel);
   }
 
   updateWithoutAnimation(newLinkedListModel: Array.Model) {
@@ -183,12 +240,94 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     }, 0);
   }
 
-  render() {
-    const { arrayModel, isVisible } = this.state;
+  // Use IFEE to store private variable in closure
+  renderSeparationLine = (() => {
+    let initialX: number;
+
+    return () => {
+      const {
+        insertionSort: { currentSortingElementIndex },
+      } = this.state;
+      if (!currentSortingElementIndex) return null;
+
+      const x = ARRAY_BLOCK_WIDTH * currentSortingElementIndex;
+      if (initialX === undefined) initialX = x;
+      const y1 = ARRAY_BLOCK_HEIGHT + LINE_HEIGHT;
+      const y2 = -LINE_HEIGHT;
+      return (
+        <AutoTransformGroup origin={{ x, y: 0 }}>
+          <text x={initialX - 60} y={y2}>
+            Sorted
+          </text>
+          <Line x1={initialX} x2={initialX} y1={y1} y2={y2} />
+          <text x={initialX + 10} y={y2}>
+            Unsorted
+          </text>
+        </AutoTransformGroup>
+      );
+    };
+  })();
+
+  renderCurrentSortingItem() {
+    const {
+      insertionSort: { currentSortingElementIndex, currentSortingElementKey },
+    } = this.state;
     const { blockType } = this.props;
-    const arrayMemoryBlock = arrayModel.map(arrayNode => (
-      <ArrayMemoryBlock {...arrayNode} blockType={blockType} />
+
+    if (currentSortingElementKey == undefined) return null;
+    const currentSortingNode = this.findArrayNodeByKey(
+      currentSortingElementKey,
+    );
+    if (
+      currentSortingElementIndex === undefined ||
+      currentSortingNode === undefined
+    )
+      return null;
+
+    return (
+      <ArrayMemoryBlock
+        visible
+        value={null}
+        index={currentSortingElementIndex}
+        blockType={blockType}
+        transform='translate(0, 100)'
+      />
+    );
+  }
+
+  findArrayNodeByKey(key: number) {
+    const { arrayModel } = this.state;
+    return arrayModel.find(({ key: keyToFind }) => key === keyToFind);
+  }
+
+  render() {
+    const {
+      arrayModel,
+      isVisible,
+      insertionSort: { currentSortingElementKey },
+    } = this.state;
+    const { blockType } = this.props;
+    const hollowArrayMemoryBlock = arrayModel.map(({ key }, index) => (
+      <ArrayMemoryBlock
+        key={key}
+        visible
+        value={null}
+        index={index}
+        blockType={blockType}
+      />
     ));
+
+    const arrayMemoryBlock = arrayModel.map(arrayNode => {
+      const { key } = arrayNode;
+      return (
+        <ArrayMemoryBlock
+          {...arrayNode}
+          blockType={blockType}
+          className='array-memory-block--only-value'
+          isInsertionSorting={currentSortingElementKey === key}
+        />
+      );
+    });
 
     return (
       isVisible && (
@@ -199,7 +338,12 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
             ref={this.wrapperRef}
           />
           <defs>
-            <g id='array'>{arrayMemoryBlock}</g>
+            <g id='array'>
+              {this.renderCurrentSortingItem()}
+              {hollowArrayMemoryBlock}
+              {arrayMemoryBlock}
+              {this.renderSeparationLine()}
+            </g>
           </defs>
         </>
       )

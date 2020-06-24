@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { MemoryBlock, AutoTransformGroup, Line } from 'components';
+import { MemoryBlock, AutoTransformGroup } from 'components';
 import {
   ARRAY_BLOCK_WIDTH,
   ARRAY_BLOCK_HEIGHT,
@@ -20,13 +20,13 @@ class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   }
 
   calculatePosition() {
-    const { index, blockType, value } = this.props;
+    const { index, blockType, value, isInsertionSorting } = this.props;
     const { height } = this.calculateSizeBlock(
       blockType,
       this.parseValueToNumber(value),
     );
     let xPosition = 0;
-    let yPosition = 0;
+    let yPosition = isInsertionSorting ? 100 : 0;
     switch (blockType) {
       case 'block':
         xPosition = ARRAY_BLOCK_WIDTH * index;
@@ -87,9 +87,10 @@ class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
       visited,
       label,
       blockType,
-      hasLine,
+      className,
+      highlight,
+      transform,
     } = this.props;
-    const { x1, y1, x2, y2 } = this.calculateLine();
     return (
       <AutoTransformGroup origin={this.calculatePosition()}>
         <MemoryBlock
@@ -104,18 +105,10 @@ class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
           visited={visited}
           label={label}
           type='rectangle'
+          className={className}
+          transform={transform}
+          highlight={highlight}
         />
-        {hasLine && (
-          <g>
-            <text x={x2 - 90} y={y2}>
-              Đã sắp xếp
-            </text>
-            <Line x1={x1} x2={x2} y1={y1} y2={y2} />
-            <text x={x2 + 10} y={y2}>
-              Chưa sắp xếp
-            </text>
-          </g>
-        )}
       </AutoTransformGroup>
     );
   }

@@ -28,7 +28,6 @@ export interface HashTableMemoryBlockProps extends BaseMemoryBlockProps {
   index: number;
   visited?: boolean;
   blockType: string;
-  hasLine?: boolean;
 }
 
 export interface KeyListProps {
