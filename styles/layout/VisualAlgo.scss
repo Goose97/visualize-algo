@@ -12,6 +12,12 @@
       z-index: 20;
     }
   }
+
+  min-height: 0;
+
+  & > div:last-child {
+    overflow: hidden;
+  }
 }
 
 .drag-handler {

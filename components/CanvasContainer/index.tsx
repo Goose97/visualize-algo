@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
 
+import { PanZoomController } from 'components';
+
 interface IProps {}
 interface IState {
   viewBox: { width: number; height: number } | null;
+  scaleFactor: number;
 }
+
+const SCALE_FACTOR_STEP = 0.2;
 
 class CanvasContainer extends Component<IProps, IState> {
   private ref: React.RefObject<SVGSVGElement>;
@@ -12,6 +17,7 @@ class CanvasContainer extends Component<IProps, IState> {
     this.ref = React.createRef();
     this.state = {
       viewBox: null,
+      scaleFactor: 1,
     };
   }
 
@@ -48,14 +54,26 @@ class CanvasContainer extends Component<IProps, IState> {
   };
 
   produceViewBox() {
-    const { viewBox } = this.state;
+    const { viewBox, scaleFactor } = this.state;
     if (viewBox) {
       const { width, height } = viewBox;
-      return `0 0 ${Math.round(width)} ${Math.round(height)}`;
+      return `0 0 ${Math.round(width / scaleFactor)} ${Math.round(
+        height / scaleFactor,
+      )}`;
     } else {
       return '0 0 1500 1500';
     }
   }
+
+  handleZoom = (inOrOut: 'in' | 'out') => () => {
+    const { scaleFactor } = this.state;
+    const newScaleFactor =
+      inOrOut === 'in'
+        ? scaleFactor + SCALE_FACTOR_STEP
+        : scaleFactor - SCALE_FACTOR_STEP;
+
+    this.setState({ scaleFactor: newScaleFactor });
+  };
 
   render() {
     const { children } = this.props;
@@ -69,6 +87,10 @@ class CanvasContainer extends Component<IProps, IState> {
           {children}
         </svg>
         <div id='html-overlay'></div>
+        <PanZoomController
+          onZoomIn={this.handleZoom('in')}
+          onZoomOut={this.handleZoom('out')}
+        />
       </div>
     );
   }
