@@ -3,11 +3,13 @@ import BezierEasing from 'bezier-easing';
 
 import { PanZoomController, CanvasObserver } from 'components';
 import { performAnimation } from 'utils';
+import { PointCoordinate } from 'types';
 
 interface IProps {}
 interface IState {
   viewBox: { width: number; height: number } | null;
   scaleFactor: number;
+  translateFromOrigin: PointCoordinate;
 }
 
 const SCALE_FACTOR_STEP = 0.2;
@@ -20,6 +22,7 @@ class CanvasContainer extends Component<IProps, IState> {
     this.state = {
       viewBox: null,
       scaleFactor: 1,
+      translateFromOrigin: { x: 0, y: 0 },
     };
   }
 
@@ -57,10 +60,14 @@ class CanvasContainer extends Component<IProps, IState> {
   };
 
   produceViewBox() {
-    const { viewBox, scaleFactor } = this.state;
+    const {
+      viewBox,
+      scaleFactor,
+      translateFromOrigin: { x, y },
+    } = this.state;
     if (viewBox) {
       const { width, height } = viewBox;
-      return `0 0 ${Math.round(width / scaleFactor)} ${Math.round(
+      return `${x} ${y} ${Math.round(width / scaleFactor)} ${Math.round(
         height / scaleFactor,
       )}`;
     } else {
@@ -85,6 +92,26 @@ class CanvasContainer extends Component<IProps, IState> {
     });
   };
 
+  handlePanning = (deltaX: number, deltaY: number) => {
+    const {
+      translateFromOrigin: { x, y },
+    } = this.state;
+    this.setState({
+      translateFromOrigin: {
+        x: x - deltaX,
+        y: y - deltaY,
+      },
+    });
+  };
+
+  getHTMLTransform() {
+    const {
+      translateFromOrigin: { x, y },
+      scaleFactor,
+    } = this.state;
+    return `translate(${-x * scaleFactor}px, ${-y * scaleFactor}px)`;
+  }
+
   render() {
     const { children } = this.props;
     return (
@@ -96,10 +123,14 @@ class CanvasContainer extends Component<IProps, IState> {
         >
           {children}
         </svg>
-        <div id='html-overlay'></div>
+        <div
+          id='html-overlay'
+          style={{ transform: this.getHTMLTransform() }}
+        ></div>
         <PanZoomController
           onZoomIn={this.handleZoom('in')}
           onZoomOut={this.handleZoom('out')}
+          onPanning={this.handlePanning}
         />
       </div>
     );

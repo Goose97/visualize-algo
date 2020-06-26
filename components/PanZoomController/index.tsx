@@ -1,13 +1,71 @@
 import React, { Component } from 'react';
 
 import { IProps } from './index.d';
-
+import { PointCoordinate } from 'types';
 export class PanZoomController extends Component<IProps> {
+  private wrapperRef: React.RefObject<HTMLDivElement>;
+  private panningTaskQueue: PointCoordinate[];
+  private isPanningTaskQueueRunning: boolean;
+
+  constructor(props: any) {
+    super(props);
+    this.wrapperRef = React.createRef();
+    this.panningTaskQueue = [];
+    this.isPanningTaskQueueRunning = false;
+  }
+
+  componentDidMount() {
+    this.addPanListener();
+  }
+
+  addPanListener() {
+    try {
+      const canvasElement = this.wrapperRef.current?.parentNode;
+
+      canvasElement?.addEventListener('mousedown', () =>
+        canvasElement?.addEventListener('mousemove', this.trackingMouseMove),
+      );
+
+      canvasElement?.addEventListener('mouseup', () =>
+        canvasElement?.removeEventListener('mousemove', this.trackingMouseMove),
+      );
+    } catch (e) {
+      console.log('e', e);
+    }
+  }
+
+  trackingMouseMove: EventListener = e => {
+    const { movementX, movementY } = e as MouseEvent;
+    this.enqueuePanningTaskQueue({
+      x: movementX,
+      y: movementY,
+    });
+  };
+
+  enqueuePanningTaskQueue(task: PointCoordinate) {
+    this.panningTaskQueue.push(task);
+    if (!this.isPanningTaskQueueRunning) this.dequeuePanningTaskQueue();
+  }
+
+  dequeuePanningTaskQueue() {
+    const { onPanning } = this.props;
+    const nextTask = this.panningTaskQueue.shift();
+    if (!nextTask) {
+      this.isPanningTaskQueueRunning = false;
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      onPanning(nextTask.x, nextTask.y);
+      this.dequeuePanningTaskQueue();
+    });
+  }
+
   render() {
     const { onZoomIn, onZoomOut } = this.props;
 
     return (
-      <div className='zoom-controller__wrapper'>
+      <div className='zoom-controller__wrapper' ref={this.wrapperRef}>
         <div
           className='mb-4 fx-center f-big-1 shadow-1 clickable'
           onClick={onZoomIn}
