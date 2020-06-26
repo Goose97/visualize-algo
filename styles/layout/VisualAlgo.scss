@@ -20,24 +20,65 @@
   }
 }
 
-.drag-handler {
-  position: absolute;
-  top: 0;
-  left: 0;
+.code-and-explanation {
+  @extend .shadow-1;
+  position: fixed;
   right: 0;
-  height: 10px;
-  cursor: ns-resize;
+  top: 0;
+  bottom: 0;
 
-  &:after {
-    @extend .has-transition;
-    display: block;
-    content: '';
-    width: 100%;
-    height: 2px;
+  .code-and-explanation__drag-handler {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 20px;
+    cursor: ew-resize;
+
+    &:after {
+      @extend .has-transition;
+      display: block;
+      content: '';
+      height: 100%;
+      width: 3px;
+    }
+
+    &:hover:after {
+      background-color: $primary-color;
+    }
   }
 
-  &:hover:after {
-    background-color: $primary-color;
+  .code-and-explanation__collapse-button {
+    @extend .shadow-1;
+    @extend .fx-center;
+    @extend .has-transition;
+    background-color: $background-light-1;
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    top: 100px;
+    left: 0;
+    transform: translateX(-50%);
+    & > * {
+      transform: translateX(-1px);
+    }
+
+    path {
+      stroke-width: 30;
+      fill: $primary-text-color;
+      stroke: $primary-text-color;
+    }
+
+    &:hover {
+      @extend .clickable;
+      background-color: $primary-color;
+
+      path {
+        stroke: $white-text-color;
+        fill: $white-text-color;
+      }
+    }
   }
 }
 

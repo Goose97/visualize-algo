@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import BezierEasing from 'bezier-easing';
 
 import { PanZoomController } from 'components';
+import { performAnimation } from 'utils';
 
 interface IProps {}
 interface IState {
@@ -67,12 +69,19 @@ class CanvasContainer extends Component<IProps, IState> {
 
   handleZoom = (inOrOut: 'in' | 'out') => () => {
     const { scaleFactor } = this.state;
-    const newScaleFactor =
+    const targetScaleFactor =
       inOrOut === 'in'
         ? scaleFactor + SCALE_FACTOR_STEP
         : scaleFactor - SCALE_FACTOR_STEP;
 
-    this.setState({ scaleFactor: newScaleFactor });
+    performAnimation({
+      startValue: scaleFactor,
+      endValue: targetScaleFactor,
+      duration: 300,
+      callback: (newScaleFactor: number) =>
+        this.setState({ scaleFactor: newScaleFactor }),
+      cubicBezierFunction: BezierEasing(1, 0.02, 0.66, 0.74),
+    });
   };
 
   render() {

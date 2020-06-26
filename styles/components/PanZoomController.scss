@@ -1,8 +1,13 @@
 .zoom-controller__wrapper {
   & > div {
+    @extend .has-transition;
     width: 45px;
     height: 45px;
     border-radius: 50%;
     user-select: none;
+
+    &:hover {
+      background-color: $background-dark-1;
+    }
   }
 }
