@@ -27,3 +27,5 @@ export { default as GraphDS } from './Graph';
 export { default as GraphLikeEdges } from './GraphLikeEdges';
 export { default as InitGraphInput } from './InitGraphInput';
 export { default as HighlightCircle } from './HighlightCircle';
+export { default as PanZoomController } from './PanZoomController';
+export { default as CanvasObserver } from './CanvasObserver';

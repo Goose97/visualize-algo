@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { pick } from 'lodash';
 
 import {
@@ -7,20 +8,37 @@ import {
   ProgressControl,
   ApiController,
 } from '../../components';
-import { promiseSetState, compactObject } from 'utils';
+import {
+  promiseSetState,
+  compactObject,
+  classNameHelper,
+  performAnimation,
+} from 'utils';
 import { IProps, IState } from './index.d';
+import { PointCoordinate } from 'types';
 
 const DEFAULT_WAIT = 1500;
+const DEFAULT_SIDEBAR_WIDTH = 300;
+const SIDEBAR_COLLAPSE_WIDTH = 30;
 
 export class VisualAlgo extends Component<IProps, IState> {
   private nextStepTimeoutToken?: NodeJS.Timeout;
+  private mouseStart?: PointCoordinate;
+  private startWidth?: number;
+  private widthBeforeCollapse?: number;
+  private codeAndExplanationRef: React.RefObject<HTMLDivElement>;
+
   constructor(props: IProps) {
     super(props);
 
     this.state = {
       currentStep: -1,
       autoPlay: false,
+      isCollapsing: false,
+      sideBarWidth: DEFAULT_SIDEBAR_WIDTH,
     };
+
+    this.codeAndExplanationRef = React.createRef();
   }
 
   static getDerivedStateFromProps(props: IProps, state: IState) {
@@ -125,23 +143,25 @@ export class VisualAlgo extends Component<IProps, IState> {
     return (currentStep * 100) / total;
   }
 
-  handleStartResize = e => {
+  handleStartResize = (e: React.MouseEvent) => {
     this.saveMouseStartPoint(e);
-    this.saveHeightWhenStart(e);
+    this.saveWidthWhenStart(e);
     this.startTrackingMouseMove();
+    this.setState({ isCollapsing: false });
   };
 
-  saveMouseStartPoint(e) {
+  saveMouseStartPoint(e: React.MouseEvent) {
     this.mouseStart = {
       x: e.clientX,
       y: e.clientY,
     };
   }
 
-  saveHeightWhenStart(e) {
-    const wrapperDiv = e.currentTarget.parentNode;
-    this.startHeight = wrapperDiv.getBoundingClientRect().height;
-    this.newHeight = this.startHeight;
+  saveWidthWhenStart(e: React.MouseEvent) {
+    const wrapperDiv = e.currentTarget.parentNode as HTMLDivElement | undefined;
+    if (wrapperDiv) {
+      this.startWidth = wrapperDiv.getBoundingClientRect().width;
+    }
   }
 
   startTrackingMouseMove() {
@@ -149,31 +169,56 @@ export class VisualAlgo extends Component<IProps, IState> {
     document.addEventListener('mouseup', this.stopTrackingMouseMove);
   }
 
-  trackingMouseCallback = e => {
-    const deltaY = e.clientY - this.mouseStart.y;
-    this.newHeight = this.startHeight - deltaY;
-    this.forceUpdate();
+  trackingMouseCallback = (e: MouseEvent) => {
+    if (!this.mouseStart || !this.startWidth) return;
+    const deltaX = e.clientX - this.mouseStart.x;
+    this.setState({ sideBarWidth: this.startWidth - deltaX });
   };
 
   stopTrackingMouseMove = () => {
     document.removeEventListener('mousemove', this.trackingMouseCallback);
   };
 
+  handleCollapse = () => {
+    const { isCollapsing, sideBarWidth } = this.state;
+    if (!isCollapsing) this.widthBeforeCollapse = sideBarWidth;
+    performAnimation({
+      startValue: sideBarWidth!,
+      endValue: isCollapsing
+        ? this.widthBeforeCollapse!
+        : SIDEBAR_COLLAPSE_WIDTH,
+      duration: 300,
+      callback: (newWidth: number) => {
+        this.setState({ sideBarWidth: newWidth });
+      },
+    });
+
+    this.setState({
+      isCollapsing: !isCollapsing,
+    });
+  };
+
   render() {
     const { children, code, explanation } = this.props;
-    const { codeLine, explanationStep, autoPlay } = this.state;
+    const {
+      codeLine,
+      explanationStep,
+      autoPlay,
+      isCollapsing,
+      sideBarWidth,
+    } = this.state;
 
     const visualizationScreen = (
       <div className='fx-3 fx-col visual-container shadow'>
         <div className='fx fx-between px-8 py-2'>
-          <ApiController
+          {/* <ApiController
             {...pick(this.props, [
               'apiList',
               'parameterInput',
               'onApiChange',
               'actionButton',
             ])}
-          />
+          /> */}
           <ProgressControl
             onForward={this.increaseCurrentStep}
             onFastForward={this.goToFinalStep}
@@ -189,15 +234,25 @@ export class VisualAlgo extends Component<IProps, IState> {
       </div>
     );
 
+    const className = classNameHelper({
+      base: 'fx-col fx-2 code-and-explanation',
+    });
     const codeAndExplanation = (
       <div
-        className='fx-row fx-2'
-        style={{ position: 'relative', maxHeight: this.newHeight }}
+        className={className}
+        style={{ width: sideBarWidth }}
+        ref={this.codeAndExplanationRef}
       >
         <div
-          className='drag-handler'
+          className='code-and-explanation__drag-handler'
           onMouseDown={this.handleStartResize}
         ></div>
+        <div
+          className='code-and-explanation__collapse-button'
+          onClick={this.handleCollapse}
+        >
+          {isCollapsing ? <LeftOutlined /> : <RightOutlined />}
+        </div>
         <div className='fx-3 code-container'>
           <CodeBlock code={code} highlightLine={codeLine} />
         </div>
@@ -213,7 +268,7 @@ export class VisualAlgo extends Component<IProps, IState> {
     return (
       <div className='fx-col vh-100'>
         {visualizationScreen}
-        {/* {codeAndExplanation} */}
+        {codeAndExplanation}
       </div>
     );
   }

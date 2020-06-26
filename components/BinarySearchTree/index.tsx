@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { flatMap, pick, isEqual, groupBy } from 'lodash';
 
-import { GraphMemoryBlock, GraphLikeEdges } from 'components';
+import { GraphMemoryBlock, GraphLikeEdges, CanvasObserver } from 'components';
 import BinarySearchTreeHTML from './BinarySearchTreeHTML';
 import { IProps, IState, LevelOrderTraversalQueue } from './index.d';
 import { BST } from 'types/ds/BST';
@@ -409,6 +409,7 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
   componentDidMount() {
     const { interactive } = this.props;
     if (interactive) this.injectHTMLIntoCanvas();
+    CanvasObserver.register(this.injectHTMLIntoCanvas);
   }
 
   injectHTMLIntoCanvas() {

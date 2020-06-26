@@ -355,10 +355,10 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
         className={className}
         onClick={() => this.setState({ isModalVisible: true })}
       >
-        Create new BST
+        Create new graph
         <CustomModal
           visible={isModalVisible}
-          title='Construct new BST'
+          title='Construct new graph'
           onCancel={() => this.setState({ isModalVisible: false })}
           onOk={this.handleOk}
         >

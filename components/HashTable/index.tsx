@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { pick, groupBy, flatMap } from 'lodash';
 
+import { CanvasObserver } from 'components';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { getProgressDirection, keyExist } from 'utils';
 import KeyList from './KeyList';
@@ -227,6 +228,7 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
   componentDidMount() {
     const { interactive } = this.props;
     if (interactive) this.injectHTMLIntoCanvas();
+    CanvasObserver.register(this.injectHTMLIntoCanvas);
   }
 
   injectHTMLIntoCanvas() {

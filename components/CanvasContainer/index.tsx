@@ -1,9 +1,18 @@
 import React, { Component } from 'react';
+import BezierEasing from 'bezier-easing';
+
+import { PanZoomController, CanvasObserver } from 'components';
+import { performAnimation } from 'utils';
+import { PointCoordinate } from 'types';
 
 interface IProps {}
 interface IState {
   viewBox: { width: number; height: number } | null;
+  scaleFactor: number;
+  translateFromOrigin: PointCoordinate;
 }
+
+const SCALE_FACTOR_STEP = 0.2;
 
 class CanvasContainer extends Component<IProps, IState> {
   private ref: React.RefObject<SVGSVGElement>;
@@ -12,6 +21,8 @@ class CanvasContainer extends Component<IProps, IState> {
     this.ref = React.createRef();
     this.state = {
       viewBox: null,
+      scaleFactor: 1,
+      translateFromOrigin: { x: 0, y: 0 },
     };
   }
 
@@ -22,6 +33,7 @@ class CanvasContainer extends Component<IProps, IState> {
   componentDidMount() {
     this.setUpEventListener();
     this.caculateViewBox();
+    CanvasObserver.initiate();
   }
 
   setUpEventListener() {
@@ -48,13 +60,56 @@ class CanvasContainer extends Component<IProps, IState> {
   };
 
   produceViewBox() {
-    const { viewBox } = this.state;
+    const {
+      viewBox,
+      scaleFactor,
+      translateFromOrigin: { x, y },
+    } = this.state;
     if (viewBox) {
       const { width, height } = viewBox;
-      return `0 0 ${Math.round(width)} ${Math.round(height)}`;
+      return `${x} ${y} ${Math.round(width / scaleFactor)} ${Math.round(
+        height / scaleFactor,
+      )}`;
     } else {
       return '0 0 1500 1500';
     }
+  }
+
+  handleZoom = (inOrOut: 'in' | 'out') => () => {
+    const { scaleFactor } = this.state;
+    const targetScaleFactor =
+      inOrOut === 'in'
+        ? scaleFactor + SCALE_FACTOR_STEP
+        : scaleFactor - SCALE_FACTOR_STEP;
+
+    performAnimation({
+      startValue: scaleFactor,
+      endValue: targetScaleFactor,
+      duration: 300,
+      callback: (newScaleFactor: number) =>
+        this.setState({ scaleFactor: newScaleFactor }),
+      cubicBezierFunction: BezierEasing(1, 0.02, 0.66, 0.74),
+    });
+  };
+
+  handlePanning = (deltaX: number, deltaY: number) => {
+    const {
+      translateFromOrigin: { x, y },
+    } = this.state;
+    this.setState({
+      translateFromOrigin: {
+        x: x - deltaX,
+        y: y - deltaY,
+      },
+    });
+  };
+
+  getHTMLTransform() {
+    const {
+      translateFromOrigin: { x, y },
+      scaleFactor,
+    } = this.state;
+    return `translate(${-x * scaleFactor}px, ${-y * scaleFactor}px)`;
   }
 
   render() {
@@ -68,7 +123,15 @@ class CanvasContainer extends Component<IProps, IState> {
         >
           {children}
         </svg>
-        <div id='html-overlay'></div>
+        <div
+          id='html-overlay'
+          style={{ transform: this.getHTMLTransform() }}
+        ></div>
+        <PanZoomController
+          onZoomIn={this.handleZoom('in')}
+          onZoomOut={this.handleZoom('out')}
+          onPanning={this.handlePanning}
+        />
       </div>
     );
   }

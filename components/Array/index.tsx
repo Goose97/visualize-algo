@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { pick, groupBy, flatMap } from 'lodash';
 
-import { Line, AutoTransformGroup } from 'components';
+import { Line, AutoTransformGroup, CanvasObserver } from 'components';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import { getProgressDirection, keyExist } from 'utils';
 import { IProps, IState } from './index.d';
@@ -225,9 +225,10 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
   componentDidMount() {
     const { interactive } = this.props;
     if (interactive) this.injectHTMLIntoCanvas();
+    CanvasObserver.register(this.injectHTMLIntoCanvas);
   }
 
-  injectHTMLIntoCanvas() {
+  injectHTMLIntoCanvas = () => {
     const { arrayModel } = this.state;
     const { handleExecuteApi } = this.props;
     setTimeout(() => {
@@ -238,7 +239,7 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
         apiHandler: handleExecuteApi,
       });
     }, 0);
-  }
+  };
 
   // Use IFEE to store private variable in closure
   renderSeparationLine = (() => {

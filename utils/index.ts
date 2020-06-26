@@ -1,6 +1,7 @@
 import { pick } from 'lodash';
-import { GRAPH_NODE_RADIUS } from '../constants';
+import BezierEasing from 'bezier-easing';
 
+import { GRAPH_NODE_RADIUS } from '../constants';
 import { ObjectType, Action, StepInstruction, PointCoordinate } from 'types';
 
 export const classNameHelper = (object: ObjectType<string | boolean>) => {
@@ -140,4 +141,34 @@ export const caculateDistanceToALine = (
   const s = (ab + bc + ca) / 2;
   const area = Math.sqrt(s * (s - ab) * (s - bc) * (s - ca));
   return (area * 2) / bc;
+};
+
+interface PerformAnimationParams {
+  startValue: number;
+  endValue: number;
+  duration: number;
+  callback: (newValue: number) => void;
+  cubicBezierFunction?: (progress: number) => number;
+}
+export const performAnimation = (params: PerformAnimationParams) => {
+  const { duration, callback, endValue, startValue } = params;
+  const cubicBezierFunction =
+    params.cubicBezierFunction || BezierEasing(0.25, 0.1, 0.25, 1);
+  const originTime = performance.now();
+  const updateValueThroughFrame = () => {
+    window.requestAnimationFrame((currentTime: number) => {
+      const timeProgress = (currentTime - originTime) / duration;
+      const animationProgess =
+        timeProgress > 1 ? 1 : cubicBezierFunction(timeProgress);
+      if (animationProgess >= 1) callback(endValue);
+      else {
+        const currentValue =
+          animationProgess * (endValue - startValue) + startValue;
+        callback(currentValue);
+        updateValueThroughFrame();
+      }
+    });
+  };
+
+  updateValueThroughFrame();
 };
