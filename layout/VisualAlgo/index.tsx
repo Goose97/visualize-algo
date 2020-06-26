@@ -147,6 +147,7 @@ export class VisualAlgo extends Component<IProps, IState> {
     this.saveMouseStartPoint(e);
     this.saveWidthWhenStart(e);
     this.startTrackingMouseMove();
+    this.setState({ isCollapsing: false });
   };
 
   saveMouseStartPoint(e: React.MouseEvent) {
@@ -210,14 +211,14 @@ export class VisualAlgo extends Component<IProps, IState> {
     const visualizationScreen = (
       <div className='fx-3 fx-col visual-container shadow'>
         <div className='fx fx-between px-8 py-2'>
-          <ApiController
+          {/* <ApiController
             {...pick(this.props, [
               'apiList',
               'parameterInput',
               'onApiChange',
               'actionButton',
             ])}
-          />
+          /> */}
           <ProgressControl
             onForward={this.increaseCurrentStep}
             onFastForward={this.goToFinalStep}

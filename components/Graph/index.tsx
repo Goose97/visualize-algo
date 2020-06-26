@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { flatMap, groupBy, pick, isFunction, uniqBy } from 'lodash';
 
-import { GraphMemoryBlock, GraphLikeEdges } from 'components';
+import { GraphMemoryBlock, GraphLikeEdges, CanvasObserver } from 'components';
 import { GraphHTML } from 'components/Graph/GraphHTML';
 import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
 import transformGraphModel from 'transformers/Graph';
@@ -66,6 +66,7 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
     // graphModel ---- action1 ----> graphModel1 ---- action2 ----> graphMode2 ---- action3 ----> graphModel3
     const { graphModel } = this.state;
     const { currentStep, instructions } = this.props;
+    if (!instructions) return;
     const actionsToMakeAtThisStep = instructions[currentStep!];
     if (!actionsToMakeAtThisStep || !actionsToMakeAtThisStep.length) return;
 
@@ -110,22 +111,14 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
   handleFastForward() {
     const { graphModel } = this.state;
     const { instructions, saveStepSnapshots } = this.props;
+    if (!instructions) return;
     let allActions: ActionWithStep<Graph.Method>[] = [];
     for (let i = 0; i < instructions.length; i++) {
       // Replace visit action with vist + focus
       // also add step attribute to each action
-      const replacedActions: ActionWithStep<Graph.Method>[] = flatMap(
-        instructions[i],
-        action => {
-          const { name, params } = action;
-          return name === 'visit'
-            ? [
-                { name: 'visited', params: params.slice(0, 1), step: i },
-                { name: 'focus', params: params.slice(1), step: i },
-              ]
-            : { ...action, step: i };
-        },
-      );
+      const replacedActions: ActionWithStep<
+        Graph.Method
+      >[] = flatMap(instructions[i], action => ({ ...action, step: i }));
 
       allActions.push(...replacedActions);
     }
@@ -212,6 +205,7 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
   componentDidMount() {
     const { interactive } = this.props;
     if (interactive) this.injectHTMLIntoCanvas();
+    CanvasObserver.register(this.injectHTMLIntoCanvas);
   }
 
   injectHTMLIntoCanvas() {

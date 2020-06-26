@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import produce from 'immer';
 import { omit, flatMap, groupBy, pick, isFunction, isEqual } from 'lodash';
 
+import { CanvasObserver } from 'components';
 import transformLinkedListModel from 'transformers/LinkedList';
 import HeadPointer from './HeadPointer';
 import LinkedListHTML from './LinkedListHTML';
@@ -63,6 +64,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
   componentDidMount() {
     const { interactive } = this.props;
     if (interactive) this.injectHTMLIntoCanvas();
+    CanvasObserver.register(this.injectHTMLIntoCanvas);
   }
 
   injectHTMLIntoCanvas() {

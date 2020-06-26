@@ -75,10 +75,9 @@ export class InitArrayInput extends Component<PropsWithHoc, IState> {
   };
 
   generateRandomData() {
-    return [7, 8, 5, 2, 4, 6, 3];
-    return Array(5)
+    return Array(8)
       .fill(0)
-      .map(() => Math.round(Math.random() * 10));
+      .map(() => Math.round(Math.random() * 20));
   }
 
   render() {

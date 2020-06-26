@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import BezierEasing from 'bezier-easing';
 
-import { PanZoomController } from 'components';
+import { PanZoomController, CanvasObserver } from 'components';
 import { performAnimation } from 'utils';
 
 interface IProps {}
@@ -30,6 +30,7 @@ class CanvasContainer extends Component<IProps, IState> {
   componentDidMount() {
     this.setUpEventListener();
     this.caculateViewBox();
+    CanvasObserver.initiate();
   }
 
   setUpEventListener() {

@@ -160,7 +160,7 @@ export const performAnimation = (params: PerformAnimationParams) => {
       const timeProgress = (currentTime - originTime) / duration;
       const animationProgess =
         timeProgress > 1 ? 1 : cubicBezierFunction(timeProgress);
-      if (animationProgess > 1) callback(endValue);
+      if (animationProgess >= 1) callback(endValue);
       else {
         const currentValue =
           animationProgess * (endValue - startValue) + startValue;
