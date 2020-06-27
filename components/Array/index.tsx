@@ -21,7 +21,6 @@ type PropsWithHoc = IProps & WithReverseStep<Array.Model>;
 export class ArrayDS extends Component<PropsWithHoc, IState> {
   private initialArrayModel: Array.Model;
   private wrapperRef: React.RefObject<SVGUseElement>;
-  private arrayBlockRef: React.RefObject<any>[];
 
   constructor(props: PropsWithHoc) {
     super(props);
@@ -33,9 +32,6 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
       insertionSort: {},
     };
     this.wrapperRef = React.createRef();
-    this.arrayBlockRef = window
-      .Array(this.initArrayModel.length)
-      .map(() => React.createRef());
   }
 
   initArrayModel(props: PropsWithHoc): Array.Model {
@@ -70,12 +66,19 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
       reverseToStep,
       saveStepSnapshots,
       totalStep,
+      executedApiCount,
     } = this.props;
     const { arrayModel } = this.state;
 
     if (keyExist(this.props, ['currentStep', 'totalStep', 'instructions'])) {
       switch (
-        getProgressDirection(currentStep!, prevProps.currentStep!, totalStep!)
+        getProgressDirection(
+          currentStep!,
+          prevProps.currentStep!,
+          totalStep!,
+          executedApiCount !== prevProps.executedApiCount &&
+            prevProps.executedApiCount !== 0,
+        )
       ) {
         case 'forward':
           saveStepSnapshots(arrayModel, currentStep!);
@@ -92,6 +95,10 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
 
         case 'fastBackward':
           this.handleFastBackward();
+          break;
+
+        case 'switch':
+          this.handleSwitchApi();
           break;
       }
     }
@@ -220,6 +227,13 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     this.setState({ arrayModel: newLinkedListModel, isVisible: false }, () =>
       this.setState({ isVisible: true }),
     );
+  }
+
+  handleSwitchApi() {
+    const { keepStateWhenSwitchingApi } = this.props;
+    if (!keepStateWhenSwitchingApi) {
+      this.handleFastBackward();
+    }
   }
 
   componentDidMount() {

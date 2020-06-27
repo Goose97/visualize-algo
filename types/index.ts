@@ -53,6 +53,8 @@ export interface BaseDSProps {
   interactive?: boolean;
   controlled?: boolean;
   handleExecuteApi?: (apiName: string, params?: ObjectType<any>) => void;
+  executedApiCount?: number;
+  keepStateWhenSwitchingApi?: boolean;
 }
 
 export interface BaseDSPageState {

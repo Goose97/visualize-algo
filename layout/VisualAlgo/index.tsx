@@ -1,13 +1,7 @@
 import React, { Component } from 'react';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { pick } from 'lodash';
 
-import {
-  CodeBlock,
-  ExplanationBlock,
-  ProgressControl,
-  ApiController,
-} from '../../components';
+import { CodeBlock, ExplanationBlock, ProgressControl } from '../../components';
 import {
   promiseSetState,
   compactObject,
@@ -51,15 +45,9 @@ export class VisualAlgo extends Component<IProps, IState> {
     return null;
   }
 
-  resetState() {
-    return promiseSetState.call(this, {
-      currentStep: -1,
-      autoPlay: false,
-    });
-  }
-
-  componentDidUpdate(_prevProps: IProps, prevState: IState) {
+  componentDidUpdate = async (_prevProps: IProps, prevState: IState) => {
     const { currentStep, autoPlay } = this.state;
+    // currentStep === -1 means we are resetting for a new instruction sequence
     if (currentStep !== prevState.currentStep && currentStep !== -1) {
       this.handleStepChange(currentStep);
     }
@@ -67,7 +55,7 @@ export class VisualAlgo extends Component<IProps, IState> {
     if (autoPlay !== prevState.autoPlay) {
       this.handleAutoPlayChange(autoPlay);
     }
-  }
+  };
 
   handleAutoPlayChange(newAutoPlayState: boolean) {
     if (newAutoPlayState) this.increaseCurrentStep();
@@ -78,6 +66,7 @@ export class VisualAlgo extends Component<IProps, IState> {
     const { autoPlay } = this.state;
     const { stepDescription, onStepChange } = this.props;
     if (newStep >= stepDescription.length) return;
+
     const { codeLine, explanationStep, duration } = stepDescription[newStep];
     const newState = compactObject({ codeLine, explanationStep });
     //@ts-ignore
@@ -108,6 +97,11 @@ export class VisualAlgo extends Component<IProps, IState> {
     } else {
       this.setState({ autoPlay: isPlaying });
     }
+  }
+
+  resetForNewApi() {
+    this.cancelNextStepConsumation();
+    return promiseSetState.call(this, { currentStep: -1 });
   }
 
   increaseCurrentStep = () => {
@@ -211,14 +205,6 @@ export class VisualAlgo extends Component<IProps, IState> {
     const visualizationScreen = (
       <div className='fx-3 fx-col visual-container shadow'>
         <div className='fx fx-between px-8 py-2'>
-          {/* <ApiController
-            {...pick(this.props, [
-              'apiList',
-              'parameterInput',
-              'onApiChange',
-              'actionButton',
-            ])}
-          /> */}
           <ProgressControl
             onForward={this.increaseCurrentStep}
             onFastForward={this.goToFinalStep}

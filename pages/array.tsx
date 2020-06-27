@@ -11,18 +11,23 @@ import { Array } from 'types/ds/Array.d';
 interface IState extends BaseDSPageState {
   data?: number[];
   currentApi?: Array.Api;
+  executedApiCount: number;
 }
 
 interface IProps {}
 
 export class ArrayPage extends Component<IProps, IState> {
+  private visualAlgoRef: React.RefObject<any>;
   constructor(props: IProps) {
     super(props);
 
     this.state = {
       stepDescription: [],
       autoPlay: false,
+      executedApiCount: 0,
     };
+
+    this.visualAlgoRef = React.createRef();
   }
 
   handleStepChange = (stepIndex: number) => {
@@ -33,10 +38,27 @@ export class ArrayPage extends Component<IProps, IState> {
     this.setState({ autoPlay: newPlayingState });
   };
 
-  handleExecuteApi = (api: Array.Api, params: ObjectType<any>) => {
+  handleExecuteApi = async (api: Array.Api, params: ObjectType<any>) => {
+    const { executedApiCount } = this.state;
     const stepDescription = this.generateStepDescription(api, params);
-    this.setState({ stepDescription, autoPlay: true, currentApi: api });
+    const isSwitchingToNewApi = executedApiCount !== 0;
+    if (isSwitchingToNewApi) await this.resetVisualAlgoState();
+
+    this.setState({
+      stepDescription,
+      autoPlay: true,
+      currentApi: api,
+      executedApiCount: executedApiCount + 1,
+      currentStep: -1,
+    });
   };
+
+  resetVisualAlgoState() {
+    const component = this.visualAlgoRef.current;
+    if (component) {
+      component.resetForNewApi();
+    }
+  }
 
   generateStepDescription(currentApi: Array.Api, params: ObjectType<any>) {
     const { data } = this.state;
@@ -51,6 +73,7 @@ export class ArrayPage extends Component<IProps, IState> {
       currentApi,
       stepDescription,
       autoPlay,
+      executedApiCount,
     } = this.state;
     const arrayInstruction = extractInstructionFromDescription(
       stepDescription,
@@ -65,6 +88,8 @@ export class ArrayPage extends Component<IProps, IState> {
         onStepChange={this.handleStepChange}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
+        executedApiCount={executedApiCount}
+        ref={this.visualAlgoRef}
       >
         {data ? (
           <CanvasContainer>
@@ -79,6 +104,7 @@ export class ArrayPage extends Component<IProps, IState> {
               //@ts-ignore
               handleExecuteApi={this.handleExecuteApi}
               interactive
+              executedApiCount={executedApiCount}
             />
           </CanvasContainer>
         ) : (
