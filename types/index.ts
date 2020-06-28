@@ -32,6 +32,7 @@ export interface BaseMemoryBlockProps {
   focus?: boolean;
   value: string | number | null;
   highlight?: boolean;
+  circleAround?: boolean;
   blur?: boolean;
   label?: string[] | LabelWithDirection[];
   labelDirection?: 'top' | 'left' | 'right' | 'bottom';

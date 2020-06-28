@@ -105,6 +105,7 @@ export class ArrayPage extends Component<IProps, IState> {
               handleExecuteApi={this.handleExecuteApi}
               interactive
               executedApiCount={executedApiCount}
+              currentApi={currentApi}
             />
           </CanvasContainer>
         ) : (
