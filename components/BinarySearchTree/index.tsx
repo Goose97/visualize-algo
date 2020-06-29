@@ -114,6 +114,7 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
       controlled,
       initialData,
       dropdownDisabled,
+      interactive,
     } = this.props;
     const { bstModel } = this.state;
 
@@ -148,7 +149,7 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
       }
     }
 
-    if (dropdownDisabled !== prevProps.dropdownDisabled) {
+    if (interactive && dropdownDisabled !== prevProps.dropdownDisabled) {
       this.injectHTMLIntoCanvas();
     }
   }
@@ -413,8 +414,10 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
 
   componentDidMount() {
     const { interactive } = this.props;
-    if (interactive) this.injectHTMLIntoCanvas();
-    CanvasObserver.register(this.injectHTMLIntoCanvas);
+    if (interactive) {
+      this.injectHTMLIntoCanvas();
+      CanvasObserver.register(this.injectHTMLIntoCanvas);
+    }
   }
 
   injectHTMLIntoCanvas = () => {

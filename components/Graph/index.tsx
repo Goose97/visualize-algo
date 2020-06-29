@@ -32,6 +32,7 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
       saveStepSnapshots,
       totalStep,
       dropdownDisabled,
+      interactive,
     } = this.props;
     const { graphModel } = this.state;
 
@@ -59,7 +60,7 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
       }
     }
 
-    if (dropdownDisabled !== prevProps.dropdownDisabled) {
+    if (interactive && dropdownDisabled !== prevProps.dropdownDisabled) {
       this.injectHTMLIntoCanvas();
     }
   }
@@ -209,8 +210,10 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
 
   componentDidMount() {
     const { interactive } = this.props;
-    if (interactive) this.injectHTMLIntoCanvas();
-    CanvasObserver.register(this.injectHTMLIntoCanvas);
+    if (interactive) {
+      this.injectHTMLIntoCanvas();
+      CanvasObserver.register(this.injectHTMLIntoCanvas);
+    }
   }
 
   injectHTMLIntoCanvas = () => {
