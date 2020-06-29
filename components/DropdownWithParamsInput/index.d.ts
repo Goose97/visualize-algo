@@ -11,6 +11,7 @@ export interface IProps {
   options: Option[];
   requiredApiParams?: ObjectType<ParamsType>;
   handler?: (apiName: string, params?: ObjectType<any>) => void;
+  disabled?: boolean;
 }
 
 export interface IState {

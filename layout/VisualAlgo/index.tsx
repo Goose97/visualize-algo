@@ -133,6 +133,7 @@ export class VisualAlgo extends Component<IProps, IState> {
   caculateProgress() {
     const { currentStep } = this.state;
     const { stepDescription } = this.props;
+    if (!stepDescription.length) return 0;
     const total = stepDescription.length - 1;
     return (currentStep * 100) / total;
   }
@@ -193,7 +194,7 @@ export class VisualAlgo extends Component<IProps, IState> {
   };
 
   render() {
-    const { children, code, explanation } = this.props;
+    const { children, code, explanation, disableProgressControl } = this.props;
     const {
       codeLine,
       explanationStep,
@@ -214,6 +215,7 @@ export class VisualAlgo extends Component<IProps, IState> {
             onStop={() => this.handleTogglePlay(false)}
             autoPlay={autoPlay}
             progress={this.caculateProgress()}
+            disabled={disableProgressControl}
           />
         </div>
         <div className='fx-1'>{children}</div>

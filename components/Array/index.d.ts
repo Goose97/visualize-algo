@@ -25,3 +25,9 @@ export interface ArrayMemoryBlockProps extends BaseMemoryBlockProps {
   className?: string;
   isInsertionSorting?: boolean;
 }
+
+export interface SortSeperationLineProps {
+  initialX: number;
+  currentX: number;
+  currentApi?: Array.Api;
+}

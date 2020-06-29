@@ -44,6 +44,7 @@ export interface HTMLRendererParams<T = {}> {
   wrapperElement: SVGGElement | null;
   coordinate: PointCoordinate;
   apiHandler?: (apiName: string, params?: ObjectType<any>) => void;
+  disabled?: boolean;
 }
 
 export interface BaseDSProps {
@@ -56,6 +57,7 @@ export interface BaseDSProps {
   handleExecuteApi?: (apiName: string, params?: ObjectType<any>) => void;
   executedApiCount?: number;
   keepStateWhenSwitchingApi?: boolean;
+  dropdownDisabled?: boolean;
 }
 
 export interface BaseDSPageState {

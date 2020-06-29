@@ -18,16 +18,16 @@ const options: Array<{ label: string; value: string }> = [
 
 const requiredParams = {
   dfs: {
-    'startAt': 'number',
+    startAt: 'number',
   },
   bfs: {
-    'startAt': 'number',
+    startAt: 'number',
   },
 };
 
 export class GraphHTML {
   static renderToView(params: HTMLRendererParams<Graph.Model>) {
-    const { wrapperElement, coordinate, apiHandler, model } = params;
+    const { wrapperElement, coordinate, apiHandler, model, disabled } = params;
     if (wrapperElement) {
       const { width, height } = wrapperElement.getBoundingClientRect();
       // const dropdownForEachTreeNode = model.map(({ value, x, y, key }) => (
@@ -45,6 +45,7 @@ export class GraphHTML {
             options={options}
             requiredApiParams={requiredParams}
             handler={apiHandler}
+            disabled={disabled}
           />
           {/* {dropdownForEachTreeNode} */}
         </div>

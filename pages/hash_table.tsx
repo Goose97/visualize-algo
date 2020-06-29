@@ -94,6 +94,7 @@ export class HashTablePage extends Component<IProps, IState> {
               handleExecuteApi={this.handleExecuteApi}
               collisionResolution={collisionResolution}
               interactive
+              dropdownDisabled={autoPlay}
             />
           </CanvasContainer>
         ) : (

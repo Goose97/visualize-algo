@@ -80,6 +80,7 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
       reverseToStep,
       saveStepSnapshots,
       totalStep,
+      dropdownDisabled,
     } = this.props;
     const { hashTableModel } = this.state;
 
@@ -104,6 +105,10 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
           this.handleFastBackward();
           break;
       }
+    }
+
+    if (dropdownDisabled !== prevProps.dropdownDisabled) {
+      this.injectHTMLIntoCanvas();
     }
   }
 
@@ -231,15 +236,16 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
     CanvasObserver.register(this.injectHTMLIntoCanvas);
   }
 
-  injectHTMLIntoCanvas() {
+  injectHTMLIntoCanvas = () => {
     const { hashTableModel } = this.state;
-    const { handleExecuteApi } = this.props;
+    const { handleExecuteApi, dropdownDisabled } = this.props;
     setTimeout(() => {
       HashTableHTML.renderToView({
         model: hashTableModel,
         wrapperElement: this.wrapperRef.current,
         coordinate: pick(this.props, ['x', 'y']),
         apiHandler: handleExecuteApi,
+        disabled: dropdownDisabled,
       });
     }, 0);
   }

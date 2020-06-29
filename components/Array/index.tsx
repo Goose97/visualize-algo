@@ -7,6 +7,7 @@ import { getProgressDirection, keyExist } from 'utils';
 import { IProps, IState } from './index.d';
 import { Action } from 'types';
 import ArrayMemoryBlock from './ArrayMemoryBlock';
+import SortSeperationLine from './SortSeperationLine';
 import ArrayHTML from './ArrayHTML';
 import transformArrayModel from 'transformers/Array';
 import { Array } from 'types/ds/Array';
@@ -21,6 +22,7 @@ type PropsWithHoc = IProps & WithReverseStep<Array.Model>;
 export class ArrayDS extends Component<PropsWithHoc, IState> {
   private initialArrayModel: Array.Model;
   private wrapperRef: React.RefObject<SVGUseElement>;
+  private sortingLineInitialX?: number; // save initial X so we can perform animation
 
   constructor(props: PropsWithHoc) {
     super(props);
@@ -67,6 +69,8 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
       saveStepSnapshots,
       totalStep,
       executedApiCount,
+      dropdownDisabled,
+      currentApi,
     } = this.props;
     const { arrayModel } = this.state;
 
@@ -101,6 +105,17 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
           this.handleSwitchApi();
           break;
       }
+    }
+
+    if (dropdownDisabled !== prevProps.dropdownDisabled) {
+      this.injectHTMLIntoCanvas();
+    }
+
+    if (currentApi !== prevProps.currentApi) {
+      this.setState({
+        sortingState: {},
+      });
+      this.sortingLineInitialX = undefined;
     }
   }
 
@@ -247,32 +262,24 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
 
   injectHTMLIntoCanvas = () => {
     const { arrayModel } = this.state;
-    const { handleExecuteApi } = this.props;
+    const { handleExecuteApi, dropdownDisabled } = this.props;
     setTimeout(() => {
       ArrayHTML.renderToView({
         model: arrayModel,
         wrapperElement: this.wrapperRef.current,
         coordinate: pick(this.props, ['x', 'y']),
         apiHandler: handleExecuteApi,
+        disabled: dropdownDisabled,
       });
     }, 0);
   };
 
-  // Use IFEE to store private variable in closure
-  renderSeparationLine = (() => {
-    let initialX: number;
-
-    const getRenderSequence = () => {
-      const { currentApi } = this.props;
-      switch (currentApi!) {
-        case 'bubbleSort':
-          return ['unsorted', 'line', 'sorted'];
-        case 'insertionSort':
-          return ['sorted', 'line', 'unsorted'];
-        case 'selectionSort':
-          return ['sorted', 'line', 'unsorted'];
-      }
-    };
+  renderSeparationLine = () => {
+    const {
+      sortingState: { currentSortingElementIndex },
+    } = this.state;
+    const { currentApi } = this.props;
+    if (currentSortingElementIndex == null) return null;
 
     // Because line could appear before or after the block, we need to plus one if needed
     const getActualLineIndex = () => {
@@ -289,56 +296,17 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
       }
     };
 
-    const getXCoordinationBySequenceIndex = (index: number, text: string) => {
-      switch (index) {
-        case 0: {
-          const offset = text.length * 10;
-          return initialX - offset;
-        }
+    const x = ARRAY_BLOCK_WIDTH * getActualLineIndex();
+    if (this.sortingLineInitialX === undefined) this.sortingLineInitialX = x;
 
-        case 1:
-          return initialX;
-        case 2:
-          return initialX + 10;
-      }
-    };
-
-    return () => {
-      const {
-        sortingState: { currentSortingElementIndex },
-      } = this.state;
-      if (currentSortingElementIndex == null) return null;
-
-      const x = ARRAY_BLOCK_WIDTH * getActualLineIndex();
-      if (initialX === undefined) initialX = x;
-      const y1 = ARRAY_BLOCK_HEIGHT + LINE_HEIGHT;
-      const y2 = -LINE_HEIGHT;
-
-      return (
-        <AutoTransformGroup origin={{ x, y: 0 }}>
-          {getRenderSequence()!.map((item, index) => {
-            const x = getXCoordinationBySequenceIndex(index, item)!;
-            if (item === 'sorted')
-              return (
-                <text x={x} y={y2} key={item}>
-                  Sorted
-                </text>
-              );
-
-            if (item === 'unsorted')
-              return (
-                <text x={x} y={y2} key={item}>
-                  Unsorted
-                </text>
-              );
-
-            if (item === 'line')
-              return <Line x1={x} x2={x} y1={y1} y2={y2} key={item} />;
-          })}
-        </AutoTransformGroup>
-      );
-    };
-  })();
+    return (
+      <SortSeperationLine
+        currentApi={currentApi}
+        initialX={this.sortingLineInitialX}
+        currentX={x}
+      />
+    );
+  };
 
   renderCurrentSortingItem() {
     const {

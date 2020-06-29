@@ -35,7 +35,7 @@ const requiredParams = {
 
 export class LinkedListHTML {
   static renderToView(params: HTMLRendererParams<LinkedList.Model>) {
-    const { wrapperElement, coordinate, model, apiHandler } = params;
+    const { wrapperElement, coordinate, model, apiHandler, disabled } = params;
     if (wrapperElement) {
       const { width, height } = wrapperElement.getBoundingClientRect();
       const dropdownForEachTreeNode = model.map(({ x, y, key }) => (
@@ -53,6 +53,7 @@ export class LinkedListHTML {
             options={options}
             requiredApiParams={requiredParams}
             handler={apiHandler}
+            disabled={disabled}
           />
           {dropdownForEachTreeNode}
         </div>

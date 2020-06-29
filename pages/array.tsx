@@ -90,6 +90,7 @@ export class ArrayPage extends Component<IProps, IState> {
         onPlayingChange={this.handlePlayingChange}
         executedApiCount={executedApiCount}
         ref={this.visualAlgoRef}
+        disableProgressControl={!currentApi}
       >
         {data ? (
           <CanvasContainer>
@@ -106,6 +107,7 @@ export class ArrayPage extends Component<IProps, IState> {
               interactive
               executedApiCount={executedApiCount}
               currentApi={currentApi}
+              dropdownDisabled={autoPlay}
             />
           </CanvasContainer>
         ) : (

@@ -96,7 +96,7 @@ export class DropdownWithParamsInput extends Component<IProps, IState> {
   }
 
   render() {
-    const { options } = this.props;
+    const { options, disabled } = this.props;
     const { isMenuVisible } = this.state;
     return (
       <CustomDropDown
@@ -104,6 +104,7 @@ export class DropdownWithParamsInput extends Component<IProps, IState> {
         options={options}
         onVisibleChange={visible => this.setState({ isMenuVisible: visible })}
         visible={isMenuVisible}
+        disabled={disabled}
       />
     );
   }

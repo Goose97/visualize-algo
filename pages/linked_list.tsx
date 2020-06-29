@@ -82,6 +82,7 @@ export class LinkedListPage extends Component<IProps, IState> {
               //@ts-ignore
               handleExecuteApi={this.handleExecuteApi}
               interactive
+              dropdownDisabled={autoPlay}
             />
           </CanvasContainer>
         ) : (

@@ -27,7 +27,7 @@ const requiredParams = {
 
 export class HashTableHTML {
   static renderToView(params: HTMLRendererParams<HashTable.Model>) {
-    const { wrapperElement, coordinate, apiHandler, model } = params;
+    const { wrapperElement, coordinate, apiHandler, disabled } = params;
     if (wrapperElement) {
       const memoryBlocks = wrapperElement.querySelector(
         '.hash-table__memory-blocks',
@@ -47,6 +47,7 @@ export class HashTableHTML {
             options={options}
             requiredApiParams={requiredParams}
             handler={apiHandler}
+            disabled={disabled}
           />
         </div>
       );
