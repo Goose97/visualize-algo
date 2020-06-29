@@ -2,6 +2,7 @@ import React from 'react';
 
 import { HTMLRenderer, DropdownWithParamsInput } from 'components';
 import BSTNodeApiDropdown from './BSTNodeApiDropdown';
+import { getCanvasScaleFactor } from 'utils';
 import { HTMLRendererParams } from 'types';
 import { BST } from 'types/ds/BST';
 
@@ -49,12 +50,15 @@ export class BinarySearchTreeHTML {
     const { wrapperElement, coordinate, apiHandler, model, disabled } = params;
     if (wrapperElement) {
       const { width, height } = wrapperElement.getBoundingClientRect();
+      const scaledFactor = getCanvasScaleFactor();
+
       const dropdownForEachTreeNode = model.map(({ value, x, y, key }) => (
         <BSTNodeApiDropdown
           value={value}
           handler={apiHandler}
           coordinate={{ x, y }}
           key={key}
+          scale={scaledFactor}
         />
       ));
 
@@ -69,7 +73,16 @@ export class BinarySearchTreeHTML {
           {dropdownForEachTreeNode}
         </div>
       );
-      HTMLRenderer.inject(elementToRender, coordinate, `bst-html__wrapper`);
+
+      const scaledCoordinate = {
+        x: coordinate.x * scaledFactor,
+        y: coordinate.y * scaledFactor,
+      };
+      HTMLRenderer.inject(
+        elementToRender,
+        scaledCoordinate,
+        `bst-html__wrapper`,
+      );
     }
   }
 }

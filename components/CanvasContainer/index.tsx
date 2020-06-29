@@ -113,9 +113,10 @@ class CanvasContainer extends Component<IProps, IState> {
   }
 
   render() {
+    const { scaleFactor } = this.state;
     const { children } = this.props;
     return (
-      <div className='canvas-container'>
+      <div className='canvas-container' scale-factor={scaleFactor}>
         <svg
           viewBox={this.produceViewBox()}
           preserveAspectRatio='xMinYMin slice'
