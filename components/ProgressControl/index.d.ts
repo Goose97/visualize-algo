@@ -8,4 +8,5 @@ export interface IProps {
   onForward: () => void;
   onFastForward: () => void;
   progress: number;
+  disabled?: boolean;
 }

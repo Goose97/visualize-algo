@@ -88,6 +88,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
               //@ts-ignore
               handleExecuteApi={this.handleExecuteApi}
               interactive
+              dropdownDisabled={autoPlay}
             />
 
             <ArrayDS

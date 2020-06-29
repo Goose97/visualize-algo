@@ -3,6 +3,7 @@ import { Dropdown, Menu } from 'antd';
 import { isFunction } from 'lodash';
 
 import { IProps } from './index.d';
+import { classNameHelper } from 'utils/';
 
 const ellipsisSvg = (
   <svg x='0px' y='0px' viewBox='0 0 426.667 426.667' width={20}>
@@ -42,7 +43,12 @@ export class CustomDropDown extends Component<IProps> {
   };
 
   render() {
-    const { overlay } = this.props;
+    const { overlay, disabled } = this.props;
+    const className = classNameHelper({
+      base: 'dropdown__trigger il-bl',
+      disabled,
+    });
+
     return (
       <Dropdown
         {...this.props}
@@ -50,7 +56,7 @@ export class CustomDropDown extends Component<IProps> {
         overlayClassName='dropdown__overlay'
         trigger={['click']}
       >
-        <div className='dropdown__trigger il-bl'>{ellipsisSvg}</div>
+        <div className={className}>{ellipsisSvg}</div>
       </Dropdown>
     );
   }

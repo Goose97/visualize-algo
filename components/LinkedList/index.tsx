@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 import produce from 'immer';
-import { omit, flatMap, groupBy, pick, isFunction, isEqual } from 'lodash';
+import {
+  omit,
+  flatMap,
+  groupBy,
+  pick,
+  isFunction,
+  isEqual,
+  drop,
+} from 'lodash';
 
 import { CanvasObserver } from 'components';
 import transformLinkedListModel from 'transformers/LinkedList';
@@ -63,13 +71,15 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
 
   componentDidMount() {
     const { interactive } = this.props;
-    if (interactive) this.injectHTMLIntoCanvas();
-    CanvasObserver.register(this.injectHTMLIntoCanvas);
+    if (interactive) {
+      this.injectHTMLIntoCanvas();
+      CanvasObserver.register(this.injectHTMLIntoCanvas);
+    }
   }
 
-  injectHTMLIntoCanvas() {
+  injectHTMLIntoCanvas = () => {
     const { linkedListModel } = this.state;
-    const { handleExecuteApi } = this.props;
+    const { handleExecuteApi, dropdownDisabled } = this.props;
     setTimeout(() => {
       LinkedListHTML.renderToView({
         model: linkedListModel,
@@ -83,9 +93,10 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
           );
           handleExecuteApi(apiName, paramsToInvoke);
         },
+        disabled: dropdownDisabled,
       });
     }, 0);
-  }
+  };
 
   produceParametersToExecuteApi = (
     apiName: string,
@@ -143,6 +154,8 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
       totalStep,
       controlled,
       data,
+      dropdownDisabled,
+      interactive,
     } = this.props;
     const { linkedListModel } = this.state;
 
@@ -178,6 +191,10 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
           linkedListModel: data ? this.initLinkedListModel(data) : [],
         });
       }
+    }
+
+    if (interactive && dropdownDisabled !== prevProps.dropdownDisabled) {
+      this.injectHTMLIntoCanvas();
     }
   }
 

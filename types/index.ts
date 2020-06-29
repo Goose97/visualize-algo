@@ -32,6 +32,7 @@ export interface BaseMemoryBlockProps {
   focus?: boolean;
   value: string | number | null;
   highlight?: boolean;
+  circleAround?: boolean;
   blur?: boolean;
   label?: string[] | LabelWithDirection[];
   labelDirection?: 'top' | 'left' | 'right' | 'bottom';
@@ -43,6 +44,7 @@ export interface HTMLRendererParams<T = {}> {
   wrapperElement: SVGGElement | null;
   coordinate: PointCoordinate;
   apiHandler?: (apiName: string, params?: ObjectType<any>) => void;
+  disabled?: boolean;
 }
 
 export interface BaseDSProps {
@@ -53,6 +55,9 @@ export interface BaseDSProps {
   interactive?: boolean;
   controlled?: boolean;
   handleExecuteApi?: (apiName: string, params?: ObjectType<any>) => void;
+  executedApiCount?: number;
+  keepStateWhenSwitchingApi?: boolean;
+  dropdownDisabled?: boolean;
 }
 
 export interface BaseDSPageState {

@@ -8,6 +8,7 @@ interface OwnProps {
   onPlayingChange: (isPlaying: boolean) => void;
   code: string;
   explanation: string[];
+  disableProgressControl?: boolean;
 }
 
 export type IProps = OwnProps & ProgressController & ApiController;

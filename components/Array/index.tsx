@@ -7,6 +7,7 @@ import { getProgressDirection, keyExist } from 'utils';
 import { IProps, IState } from './index.d';
 import { Action } from 'types';
 import ArrayMemoryBlock from './ArrayMemoryBlock';
+import SortSeperationLine from './SortSeperationLine';
 import ArrayHTML from './ArrayHTML';
 import transformArrayModel from 'transformers/Array';
 import { Array } from 'types/ds/Array';
@@ -21,7 +22,7 @@ type PropsWithHoc = IProps & WithReverseStep<Array.Model>;
 export class ArrayDS extends Component<PropsWithHoc, IState> {
   private initialArrayModel: Array.Model;
   private wrapperRef: React.RefObject<SVGUseElement>;
-  private arrayBlockRef: React.RefObject<any>[];
+  private sortingLineInitialX?: number; // save initial X so we can perform animation
 
   constructor(props: PropsWithHoc) {
     super(props);
@@ -30,12 +31,9 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     this.state = {
       arrayModel: this.initialArrayModel,
       isVisible: true,
-      insertionSort: {},
+      sortingState: {},
     };
     this.wrapperRef = React.createRef();
-    this.arrayBlockRef = window
-      .Array(this.initArrayModel.length)
-      .map(() => React.createRef());
   }
 
   initArrayModel(props: PropsWithHoc): Array.Model {
@@ -70,12 +68,22 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
       reverseToStep,
       saveStepSnapshots,
       totalStep,
+      executedApiCount,
+      dropdownDisabled,
+      currentApi,
+      interactive,
     } = this.props;
     const { arrayModel } = this.state;
 
     if (keyExist(this.props, ['currentStep', 'totalStep', 'instructions'])) {
       switch (
-        getProgressDirection(currentStep!, prevProps.currentStep!, totalStep!)
+        getProgressDirection(
+          currentStep!,
+          prevProps.currentStep!,
+          totalStep!,
+          executedApiCount !== prevProps.executedApiCount &&
+            prevProps.executedApiCount !== 0,
+        )
       ) {
         case 'forward':
           saveStepSnapshots(arrayModel, currentStep!);
@@ -93,7 +101,22 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
         case 'fastBackward':
           this.handleFastBackward();
           break;
+
+        case 'switch':
+          this.handleSwitchApi();
+          break;
       }
+    }
+
+    if (interactive && dropdownDisabled !== prevProps.dropdownDisabled) {
+      this.injectHTMLIntoCanvas();
+    }
+
+    if (currentApi !== prevProps.currentApi) {
+      this.setState({
+        sortingState: {},
+      });
+      this.sortingLineInitialX = undefined;
     }
   }
 
@@ -143,17 +166,18 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
   }
 
   setUnsortedLine = (currentModel: Array.Model, [key]: [number]) => {
-    const { insertionSort } = this.state;
+    const { sortingState } = this.state;
     const elementWithLine = currentModel.find(
       ({ key: itemKey }) => itemKey === key,
     );
     if (!elementWithLine) return currentModel;
 
     this.setState({
-      insertionSort: Object.assign({}, insertionSort, {
-        currentSortingElementIndex: elementWithLine.index + 1,
+      sortingState: Object.assign({}, sortingState, {
+        currentSortingElementIndex: elementWithLine.index,
       }),
     });
+
     return currentModel;
   };
 
@@ -161,12 +185,12 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     currentModel: Array.Model,
     [key]: [number],
   ) => {
-    const { insertionSort } = this.state;
+    const { sortingState } = this.state;
     const currentSortingElement = currentModel.find(
       ({ key: itemKey }) => key === itemKey,
     );
     this.setState({
-      insertionSort: Object.assign({}, insertionSort, {
+      sortingState: Object.assign({}, sortingState, {
         currentSortingElementKey: currentSortingElement?.key,
       }),
     });
@@ -174,9 +198,9 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
   };
 
   unsetCurrentInsertionSortNode = (currentModel: Array.Model) => {
-    const { insertionSort } = this.state;
+    const { sortingState } = this.state;
     this.setState({
-      insertionSort: Object.assign({}, insertionSort, {
+      sortingState: Object.assign({}, sortingState, {
         currentSortingElementKey: null,
       }),
     });
@@ -184,8 +208,10 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
   };
 
   resetAll = (currentModel: Array.Model) => {
-    this.setState({ insertionSort: {} });
-    return currentModel;
+    this.setState({
+      sortingState: {},
+    });
+    return transformArrayModel(currentModel, 'resetAll', []);
   };
 
   handleReverse = (stateOfPreviousStep: Array.Model) => {
@@ -222,56 +248,72 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     );
   }
 
+  handleSwitchApi() {
+    const { keepStateWhenSwitchingApi } = this.props;
+    if (!keepStateWhenSwitchingApi) {
+      this.handleFastBackward();
+    }
+  }
+
   componentDidMount() {
     const { interactive } = this.props;
-    if (interactive) this.injectHTMLIntoCanvas();
-    CanvasObserver.register(this.injectHTMLIntoCanvas);
+    if (interactive) {
+      this.injectHTMLIntoCanvas();
+      CanvasObserver.register(this.injectHTMLIntoCanvas);
+    }
   }
 
   injectHTMLIntoCanvas = () => {
     const { arrayModel } = this.state;
-    const { handleExecuteApi } = this.props;
+    const { handleExecuteApi, dropdownDisabled } = this.props;
     setTimeout(() => {
       ArrayHTML.renderToView({
         model: arrayModel,
         wrapperElement: this.wrapperRef.current,
         coordinate: pick(this.props, ['x', 'y']),
         apiHandler: handleExecuteApi,
+        disabled: dropdownDisabled,
       });
     }, 0);
   };
 
-  // Use IFEE to store private variable in closure
-  renderSeparationLine = (() => {
-    let initialX: number;
+  renderSeparationLine = () => {
+    const {
+      sortingState: { currentSortingElementIndex },
+    } = this.state;
+    const { currentApi } = this.props;
+    if (currentSortingElementIndex == null) return null;
 
-    return () => {
+    // Because line could appear before or after the block, we need to plus one if needed
+    const getActualLineIndex = () => {
       const {
-        insertionSort: { currentSortingElementIndex },
+        sortingState: { currentSortingElementIndex },
       } = this.state;
-      if (!currentSortingElementIndex) return null;
-
-      const x = ARRAY_BLOCK_WIDTH * currentSortingElementIndex;
-      if (initialX === undefined) initialX = x;
-      const y1 = ARRAY_BLOCK_HEIGHT + LINE_HEIGHT;
-      const y2 = -LINE_HEIGHT;
-      return (
-        <AutoTransformGroup origin={{ x, y: 0 }}>
-          <text x={initialX - 60} y={y2}>
-            Sorted
-          </text>
-          <Line x1={initialX} x2={initialX} y1={y1} y2={y2} />
-          <text x={initialX + 10} y={y2}>
-            Unsorted
-          </text>
-        </AutoTransformGroup>
-      );
+      const { currentApi } = this.props;
+      switch (currentApi!) {
+        case 'selectionSort':
+        case 'bubbleSort':
+          return currentSortingElementIndex!;
+        case 'insertionSort':
+          return currentSortingElementIndex! + 1;
+      }
     };
-  })();
+
+    const x = ARRAY_BLOCK_WIDTH * getActualLineIndex();
+    if (this.sortingLineInitialX === undefined) this.sortingLineInitialX = x;
+
+    return (
+      <SortSeperationLine
+        currentApi={currentApi}
+        initialX={this.sortingLineInitialX}
+        currentX={x}
+      />
+    );
+  };
 
   renderCurrentSortingItem() {
     const {
-      insertionSort: { currentSortingElementIndex, currentSortingElementKey },
+      sortingState: { currentSortingElementIndex, currentSortingElementKey },
     } = this.state;
     const { blockType } = this.props;
 
@@ -301,13 +343,23 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     return arrayModel.find(({ key: keyToFind }) => key === keyToFind);
   }
 
+  checkIndexState(index: number, stateProperty: keyof Array.Node) {
+    const { arrayModel } = this.state;
+    const arrayItem = arrayModel.find(
+      ({ index: itemIndex }) => index === itemIndex,
+    );
+    if (!arrayItem) return false;
+    return !!arrayItem[stateProperty];
+  }
+
   render() {
     const {
       arrayModel,
       isVisible,
-      insertionSort: { currentSortingElementKey },
+      sortingState: { currentSortingElementKey },
     } = this.state;
     const { blockType } = this.props;
+
     const hollowArrayMemoryBlock = arrayModel.map(({ key }, index) => (
       <ArrayMemoryBlock
         key={key}
@@ -315,6 +367,8 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
         value={null}
         index={index}
         blockType={blockType}
+        blur={this.checkIndexState(index, 'blur')}
+        focus={this.checkIndexState(index, 'focus')}
       />
     ));
 
@@ -326,6 +380,7 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
           blockType={blockType}
           className='array-memory-block--only-value'
           isInsertionSorting={currentSortingElementKey === key}
+          labelDirection='bottom'
         />
       );
     });

@@ -25,7 +25,7 @@ export const arrayInstruction = (
 
 const selectionSortInstruction = (data: number[], params: Array.SortParams) => {
   let instructions = new Instructions();
-  instructions.setDuration(500);
+  instructions.setDuration(750);
   let array = initArray(data);
   const codeLines = getCodeLine('selectionSort');
   let len = array.length;
@@ -37,8 +37,10 @@ const selectionSortInstruction = (data: number[], params: Array.SortParams) => {
     instructions.setCodeLine(codeLines.iteration);
     min = i;
     instructions.pushActionsAndEndStep('array', [
-      { name: 'label', params: [array[i].key, 'current'] },
+      { name: 'setUnsortedLine', params: [array[i].key] },
+      { name: 'label', params: [array[i].key, 'min'] },
     ]);
+
     for (j = i + 1; j < len; j++) {
       instructions.pushActionsAndEndStep('array', [
         { name: 'resetFocusAll', params: [] },
@@ -53,37 +55,35 @@ const selectionSortInstruction = (data: number[], params: Array.SortParams) => {
           { name: 'resetFocus', params: [array[min].key] },
           { name: 'unlabel', params: [array[min].key] },
           { name: 'label', params: [array[j].key, 'min'] },
-          { name: 'label', params: [array[i].key, 'current'] },
         ]);
         instructions.setCodeLine(codeLines.updateMin);
         min = j;
       }
     }
+
     if (min !== i) {
       instructions.pushActionsAndEndStep('array', [
         { name: 'swap', params: [array[min].key, array[i].key] },
         { name: 'resetFocusAll', params: [] },
-        { name: 'unlabel', params: [array[min].key] },
-        { name: 'unlabel', params: [array[i].key] },
+        { name: 'unlabelAll', params: [] },
       ]);
       instructions.setCodeLine(codeLines.swap);
       let tmp = array[i];
       array[i] = array[min];
       array[min] = tmp;
     }
-    instructions.pushActionsAndEndStep('array', [
-      { name: 'complete', params: [array[i].key] },
-      { name: 'resetFocusAll', params: [] },
-      { name: 'unlabel', params: [array[min].key] },
-    ]);
   }
+
+  instructions.pushActionsAndEndStep('array', [
+    { name: 'resetAll', params: [] },
+  ]);
 
   return instructions.get();
 };
 
 const bubbleSortInstruction = (data: number[], params: Array.SortParams) => {
   let instructions = new Instructions();
-  instructions.setDuration(500);
+  instructions.setDuration(750);
   let array = initArray(data);
   const codeLines = getCodeLine('bubbleSort');
 
@@ -114,15 +114,14 @@ const bubbleSortInstruction = (data: number[], params: Array.SortParams) => {
 
       if (j + 1 === stop) {
         instructions.pushActionsAndEndStep('array', [
-          { name: 'complete', params: [array[j + 1].key] },
+          { name: 'setUnsortedLine', params: [array[j + 1].key] },
         ]);
       }
     }
   }
 
   instructions.pushActionsAndEndStep('array', [
-    { name: 'complete', params: [array[0].key] },
-    { name: 'resetFocusAll', params: [] },
+    { name: 'resetAll', params: [] },
   ]);
 
   return instructions.get();
@@ -130,7 +129,7 @@ const bubbleSortInstruction = (data: number[], params: Array.SortParams) => {
 
 const insertionSortInstruction = (data: number[], params: Array.SortParams) => {
   let instructions = new Instructions();
-  instructions.setDuration(1000);
+  instructions.setDuration(750);
   let array = initArray(data);
   const codeLines = getCodeLine('insertionSort');
   const swapArrayNodes = (indexA: number, indexB: number) => {
@@ -144,11 +143,11 @@ const insertionSortInstruction = (data: number[], params: Array.SortParams) => {
   let i, j, keyValue;
   for (i = 1; i < len; i++) {
     instructions.pushActionsAndEndStep('array', [
-      { name: 'highlight', params: [array[i].key] },
+      { name: 'focus', params: [array[i].key] },
       { name: 'setUnsortedLine', params: [array[i - 1].key] },
     ]);
     instructions.pushActionsAndEndStep('array', [
-      { name: 'dehighlight', params: [array[i].key] },
+      { name: 'resetFocus', params: [array[i].key] },
       { name: 'setCurrentInsertionSortNode', params: [array[i].key] },
     ]);
 

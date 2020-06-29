@@ -50,7 +50,9 @@ export const getProgressDirection = (
   currentStep: number,
   previousStep: number,
   totalStep: number,
+  switchingApi?: boolean,
 ) => {
+  if (switchingApi) return 'switch';
   if (previousStep === undefined) return 'forward';
   if (currentStep === previousStep) return 'stay';
   if (currentStep > previousStep) {

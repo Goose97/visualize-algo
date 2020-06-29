@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { pick } from 'lodash';
 
 import { MemoryBlock, AutoTransformGroup } from 'components';
 import {
@@ -80,17 +81,18 @@ class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   }
 
   render() {
-    const {
-      value,
-      visible,
-      focus,
-      visited,
-      label,
-      blockType,
-      className,
-      highlight,
-      transform,
-    } = this.props;
+    const { value, visible, blockType } = this.props;
+    const propsToPass = [
+      'focus',
+      'visited',
+      'label',
+      'className',
+      'highlight',
+      'blur',
+      'transform',
+      'labelDirection',
+    ];
+    
     return (
       <AutoTransformGroup origin={this.calculatePosition()}>
         <MemoryBlock
@@ -99,15 +101,10 @@ class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
             blockType,
             this.parseValueToNumber(value),
           )}
-          value={value}
-          visible={!!visible}
-          focus={focus}
-          visited={visited}
-          label={label}
           type='rectangle'
-          className={className}
-          transform={transform}
-          highlight={highlight}
+          {...pick(this.props, propsToPass)}
+          visible={!!visible}
+          value={value}
         />
       </AutoTransformGroup>
     );

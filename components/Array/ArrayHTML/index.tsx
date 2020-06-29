@@ -22,13 +22,17 @@ const options: Array<{ label: string; value: string }> = [
 
 export class ArrayHTML {
   static renderToView(params: HTMLRendererParams<Array.Model>) {
-    const { wrapperElement, coordinate, apiHandler } = params;
+    const { wrapperElement, coordinate, apiHandler, disabled } = params;
     if (wrapperElement) {
       const { width, height } = wrapperElement.getBoundingClientRect();
 
       const elementToRender = (
         <div style={{ width, height }} className='array-html__wrapper'>
-          <DropdownWithParamsInput options={options} handler={apiHandler} />
+          <DropdownWithParamsInput
+            options={options}
+            handler={apiHandler}
+            disabled={disabled}
+          />
         </div>
       );
       HTMLRenderer.inject(elementToRender, coordinate, `array-html__wrapper`);

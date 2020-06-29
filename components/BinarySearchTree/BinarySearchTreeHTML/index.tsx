@@ -46,7 +46,7 @@ const requiredParams = {
 
 export class BinarySearchTreeHTML {
   static renderToView(params: HTMLRendererParams<BST.Model>) {
-    const { wrapperElement, coordinate, apiHandler, model } = params;
+    const { wrapperElement, coordinate, apiHandler, model, disabled } = params;
     if (wrapperElement) {
       const { width, height } = wrapperElement.getBoundingClientRect();
       const dropdownForEachTreeNode = model.map(({ value, x, y, key }) => (
@@ -64,6 +64,7 @@ export class BinarySearchTreeHTML {
             options={options}
             requiredApiParams={requiredParams}
             handler={apiHandler}
+            disabled={disabled}
           />
           {dropdownForEachTreeNode}
         </div>
