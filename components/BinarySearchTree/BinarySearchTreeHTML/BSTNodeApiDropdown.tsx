@@ -66,15 +66,40 @@ export class BSTNodeApiDropdown extends Component<
     });
   }
 
+  getWidthHeightAndCoordinate() {
+    const { coordinate, scale } = this.props;
+    try {
+      const treeNode = document.querySelector(
+        '#binary-search-tree .memory-block__wrapper',
+      );
+      //@ts-ignore
+      const { width, height } = treeNode?.getBoundingClientRect();
+      return {
+        //@ts-ignore
+        width: width + 30,
+        //@ts-ignore
+        height: height + 30,
+        //@ts-ignore
+        top: coordinate.y * scale,
+        //@ts-ignore
+        left: coordinate.x * scale,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        width: 2 * GRAPH_NODE_RADIUS + 30,
+        height: 2 * GRAPH_NODE_RADIUS + 20,
+        top: coordinate.y,
+        left: coordinate.x,
+      };
+    }
+  }
+
   render() {
     const { isMenuVisible } = this.state;
-    const { coordinate } = this.props;
     const style: React.CSSProperties = {
-      width: 2 * GRAPH_NODE_RADIUS + 30,
-      height: 2 * GRAPH_NODE_RADIUS + 20,
       position: 'absolute',
-      top: coordinate.y,
-      left: coordinate.x,
+      ...this.getWidthHeightAndCoordinate(),
     };
 
     return (
