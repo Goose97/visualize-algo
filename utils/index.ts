@@ -174,3 +174,14 @@ export const performAnimation = (params: PerformAnimationParams) => {
 
   updateValueThroughFrame();
 };
+
+export const getCanvasScaleFactor = () => {
+  try {
+    const canvasContainer = document.querySelector('.canvas-container');
+    //@ts-ignore
+    return parseFloat(canvasContainer?.getAttribute('scale-factor') || 1);
+  } catch (e) {
+    console.log(e);
+    return 1;
+  }
+};

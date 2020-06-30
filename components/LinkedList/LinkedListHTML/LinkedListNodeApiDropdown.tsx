@@ -109,15 +109,40 @@ export class LinkedListNodeApiDropdown extends Component<
     );
   }
 
+  getWidthHeightAndCoordinate() {
+    const { coordinate, scale } = this.props;
+    try {
+      const linkedListNode = document.querySelector(
+        'g > .linked-list-block__wrapper',
+      );
+      //@ts-ignore
+      const { width, height } = linkedListNode?.getBoundingClientRect();
+      return {
+        //@ts-ignore
+        width: width + 40,
+        //@ts-ignore
+        height: height + 30,
+        //@ts-ignore
+        top: coordinate.y * scale,
+        //@ts-ignore
+        left: coordinate.x * scale,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        width: LINKED_LIST_BLOCK_WIDTH + 30,
+        height: LINKED_LIST_BLOCK_HEIGHT + 20,
+        top: coordinate.y,
+        left: coordinate.x,
+      };
+    }
+  }
+
   render() {
     const { isMenuVisible } = this.state;
-    const { coordinate } = this.props;
     const style: React.CSSProperties = {
-      width: LINKED_LIST_BLOCK_WIDTH + 40,
-      height: LINKED_LIST_BLOCK_HEIGHT + 30,
+      ...this.getWidthHeightAndCoordinate(),
       position: 'absolute',
-      top: coordinate.y,
-      left: coordinate.x,
     };
 
     return (
