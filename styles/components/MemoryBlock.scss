@@ -9,7 +9,6 @@
   .memory-block__text {
     @extend .has-transition;
     @extend .f-big-2;
-    font-weight: 400;
   }
 
   .memory-block__separate-line {
@@ -38,7 +37,7 @@
       fill: $primary-color;
 
       &.value-text {
-        font-weight: 600;
+        @extend .f-semi-bold;
         fill: $white-text-color-1;
       }
     }
