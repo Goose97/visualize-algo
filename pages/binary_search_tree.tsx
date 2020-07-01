@@ -16,28 +16,48 @@ import { code, explanation } from 'codes/BST';
 interface IState extends BaseDSPageState {
   data?: Array<number | null>;
   currentApi?: BST.Api;
+  executedApiCount: number;
 }
 
 interface IProps {}
 
 export class BinarySearchTreePage extends Component<IProps, IState> {
+  private visualAlgoRef: React.RefObject<any>;
   constructor(props: IProps) {
     super(props);
 
     this.state = {
       stepDescription: [],
       autoPlay: false,
+      executedApiCount: 0,
     };
+    this.visualAlgoRef = React.createRef();
   }
 
   handleStepChange = (stepIndex: number) => {
     this.setState({ currentStep: stepIndex });
   };
 
-  handleExecuteApi = (api: BST.Api, params: ObjectType<any>) => {
+  handleExecuteApi = async (api: BST.Api, params: ObjectType<any>) => {
+    const { executedApiCount } = this.state;
     const stepDescription = this.generateStepDescription(api, params);
-    this.setState({ stepDescription, autoPlay: true, currentApi: api });
+    const isSwitchingToNewApi = executedApiCount !== 0;
+    if (isSwitchingToNewApi) await this.resetVisualAlgoState();
+    this.setState({
+      stepDescription,
+      autoPlay: true,
+      currentApi: api,
+      executedApiCount: executedApiCount + 1,
+      currentStep: -1,
+    });
   };
+
+  resetVisualAlgoState() {
+    const component = this.visualAlgoRef.current;
+    if (component) {
+      component.resetForNewApi();
+    }
+  }
 
   generateStepDescription(currentApi: BST.Api, params: any) {
     const { data } = this.state;
@@ -56,6 +76,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
       currentApi,
       stepDescription,
       autoPlay,
+      executedApiCount,
     } = this.state;
     const bstInstruction = extractInstructionFromDescription(
       stepDescription,
@@ -74,7 +95,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
         onStepChange={this.handleStepChange}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
-        // ref={this.ref}
+        ref={this.visualAlgoRef}
       >
         {data ? (
           <CanvasContainer>
@@ -89,6 +110,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
               handleExecuteApi={this.handleExecuteApi}
               interactive
               dropdownDisabled={autoPlay}
+              executedApiCount={executedApiCount}
             />
 
             <ArrayDS

@@ -88,7 +88,6 @@ export class ArrayPage extends Component<IProps, IState> {
         onStepChange={this.handleStepChange}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
-        executedApiCount={executedApiCount}
         ref={this.visualAlgoRef}
         disableProgressControl={!currentApi}
       >

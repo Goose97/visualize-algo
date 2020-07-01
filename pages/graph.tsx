@@ -22,6 +22,7 @@ import { QUEUE_BLOCK_WIDTH } from '../constants';
 interface IState extends BaseDSPageState {
   data?: Graph.Model;
   currentApi?: Graph.Api;
+  executedApiCount: number;
 }
 
 interface IProps {}
@@ -30,23 +31,43 @@ interface IProps {}
 // '[{"x":0,"y":0,"key":1,"adjacentNodes":[5,3,6],"value":1,"visible":true},{"x":74,"y":144,"key":2,"adjacentNodes":[5,4],"value":2,"visible":true},{"x":316,"y":175,"key":3,"adjacentNodes":[5,1],"value":3,"visible":true},{"x":370,"y":41,"key":4,"adjacentNodes":[5,2,6],"value":4,"visible":true},{"x":206,"y":237,"key":5,"adjacentNodes":[1,2,3,4],"value":5,"visible":true},{"x":531,"y":91,"key":6,"adjacentNodes":[1,4],"value":6,"visible":true}]';
 
 export class BinarySearchTreePage extends Component<IProps, IState> {
+  private visualAlgoRef: React.RefObject<any>;
+
   constructor(props: IProps) {
     super(props);
 
     this.state = {
       stepDescription: [],
       autoPlay: false,
+      executedApiCount: 0,
     };
+    this.visualAlgoRef = React.createRef();
   }
 
   handleStepChange = (stepIndex: number) => {
     this.setState({ currentStep: stepIndex });
   };
 
-  handleExecuteApi = (api: Graph.Api, params: ObjectType<any>) => {
+  handleExecuteApi = async (api: Graph.Api, params: ObjectType<any>) => {
+    const { executedApiCount } = this.state;
     const stepDescription = this.generateStepDescription(api, params);
-    this.setState({ stepDescription, autoPlay: true, currentApi: api });
+    const isSwitchingToNewApi = executedApiCount !== 0;
+    if (isSwitchingToNewApi) await this.resetVisualAlgoState();
+    this.setState({
+      stepDescription,
+      autoPlay: true,
+      currentApi: api,
+      executedApiCount: executedApiCount + 1,
+      currentStep: -1,
+    });
   };
+
+  resetVisualAlgoState() {
+    const component = this.visualAlgoRef.current;
+    if (component) {
+      component.resetForNewApi();
+    }
+  }
 
   generateStepDescription(currentApi: Graph.Api, params: any) {
     const { data } = this.state;
@@ -161,6 +182,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
       currentApi,
       stepDescription,
       autoPlay,
+      executedApiCount,
     } = this.state;
     const graphInstruction = extractInstructionFromDescription(
       stepDescription,
@@ -175,7 +197,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
         onStepChange={this.handleStepChange}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
-        // ref={this.ref}
+        ref={this.visualAlgoRef}
       >
         {data ? (
           <CanvasContainer>
@@ -190,6 +212,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
               handleExecuteApi={this.handleExecuteApi}
               interactive
               dropdownDisabled={autoPlay}
+              executedApiCount={executedApiCount}
             />
 
             {this.renderExtraDSForApi()}

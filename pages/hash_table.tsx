@@ -13,11 +13,14 @@ interface IState extends BaseDSPageState {
   data?: ObjectType<string | number>;
   currentApi?: HashTable.Api;
   collisionResolution: 'chaining' | 'linearProbe';
+  executedApiCount: number;
 }
 
 interface IProps {}
 
 export class HashTablePage extends Component<IProps, IState> {
+  private visualAlgoRef: React.RefObject<any>;
+
   constructor(props: IProps) {
     super(props);
 
@@ -30,7 +33,9 @@ export class HashTablePage extends Component<IProps, IState> {
         l: 3,
       },
       collisionResolution: 'chaining',
+      executedApiCount: 0,
     };
+    this.visualAlgoRef = React.createRef();
   }
 
   handleStepChange = (stepIndex: number) => {
@@ -41,15 +46,30 @@ export class HashTablePage extends Component<IProps, IState> {
     this.setState({ autoPlay: newPlayingState });
   };
 
-  handleExecuteApi = (api: HashTable.Api, params: ObjectType<any>) => {
-    const { collisionResolution } = this.state;
+  handleExecuteApi = async (api: HashTable.Api, params: ObjectType<any>) => {
+    const { collisionResolution, executedApiCount } = this.state;
     const stepDescription = this.generateStepDescription(api, {
       ...params,
       collisionResolution,
     });
-    console.log('stepDescription', stepDescription);
-    this.setState({ stepDescription, autoPlay: true, currentApi: api });
+    const isSwitchingToNewApi = executedApiCount !== 0;
+    if (isSwitchingToNewApi) await this.resetVisualAlgoState();
+
+    this.setState({
+      stepDescription,
+      autoPlay: true,
+      currentApi: api,
+      executedApiCount: executedApiCount + 1,
+      currentStep: -1,
+    });
   };
+
+  resetVisualAlgoState() {
+    const component = this.visualAlgoRef.current;
+    if (component) {
+      component.resetForNewApi();
+    }
+  }
 
   generateStepDescription(currentApi: HashTable.Api, params: ObjectType<any>) {
     const { data } = this.state;
@@ -65,6 +85,7 @@ export class HashTablePage extends Component<IProps, IState> {
       stepDescription,
       autoPlay,
       collisionResolution,
+      executedApiCount,
     } = this.state;
     const hashTableInstruction = extractInstructionFromDescription(
       stepDescription,
@@ -79,6 +100,7 @@ export class HashTablePage extends Component<IProps, IState> {
         onStepChange={this.handleStepChange}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
+        ref={this.visualAlgoRef}
       >
         {data ? (
           <CanvasContainer>
@@ -95,6 +117,7 @@ export class HashTablePage extends Component<IProps, IState> {
               collisionResolution={collisionResolution}
               interactive
               dropdownDisabled={autoPlay}
+              executedApiCount={executedApiCount}
             />
           </CanvasContainer>
         ) : (

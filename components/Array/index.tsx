@@ -331,7 +331,7 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
       <ArrayMemoryBlock
         visible
         value={null}
-        index={currentSortingElementIndex}
+        index={currentSortingElementIndex + 1}
         blockType={blockType}
         transform='translate(0, 100)'
       />

@@ -7,31 +7,31 @@ const availableTopics = [
   {
     title: 'Linked List',
     description:
-      'A linked list is a series of connected "nodes" that contains the "address" of the next node. Basic operation: search, insert, delete node',
+      'A linked list is a series of connected "nodes" that contains the "address" of the next node. Basic operation: search, insert, delete node.',
     key: 'linked_list',
   },
   {
     title: 'Array',
     description:
-      'Data structure to store a collection of the same type data in continuous memory locations. Learn about some basic array sorting algorithm',
+      'Data structure to store a collection of the same type data in continuous memory locations. Learn about some basic array sorting algorithm.',
     key: 'array',
   },
   {
     title: 'Binary Search Tree',
     description:
-      'A tree based data structure that quickly allows us to maintain a sorted list of numbers. Basic operation: search, insert, delete node',
+      'A tree based data structure that quickly allows us to maintain a sorted list of numbers. Basic operation: search, insert, delete node.',
     key: 'binary_search_tree',
   },
   {
     title: 'Graph',
     description:
-      'A graph data structure is a collection of nodes that have data and are connected to other nodes. Learn about some basic graph traversing algorithms',
+      'A graph data structure is a collection of nodes that have data and are connected to other nodes. Learn about some basic graph traversing algorithms.',
     key: 'graph',
   },
   {
     title: 'Hash Table',
     description:
-      'Hash table is a data structure that represents data in the form of key-value pairs. Basic operation: get key value, insert or update key',
+      'Hash table is a data structure that represents data in the form of key-value pairs. Basic operation: get key value, insert or update key.',
     key: 'hash_table',
   },
 ];

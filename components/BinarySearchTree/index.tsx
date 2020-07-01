@@ -115,13 +115,20 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
       initialData,
       dropdownDisabled,
       interactive,
+      executedApiCount,
     } = this.props;
     const { bstModel } = this.state;
 
     // Update according to algorithm progression
     if (keyExist(this.props, ['currentStep', 'totalStep', 'instructions'])) {
       switch (
-        getProgressDirection(currentStep!, prevProps.currentStep!, totalStep!)
+        getProgressDirection(
+          currentStep!,
+          prevProps.currentStep!,
+          totalStep!,
+          executedApiCount !== prevProps.executedApiCount &&
+            prevProps.executedApiCount !== 0,
+        )
       ) {
         case 'forward':
           saveStepSnapshots(bstModel, currentStep!);
@@ -138,6 +145,10 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
 
         case 'fastBackward':
           this.handleFastBackward();
+          break;
+
+        case 'switch':
+          this.handleSwitchApi();
           break;
       }
     }
@@ -357,6 +368,13 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
 
   handleFastBackward() {
     this.updateWithoutAnimation(this.initialBSTModel);
+  }
+
+  handleSwitchApi() {
+    const { keepStateWhenSwitchingApi } = this.props;
+    if (!keepStateWhenSwitchingApi) {
+      this.handleFastBackward();
+    }
   }
 
   updateWithoutAnimation(newBSTModel: BST.Model) {

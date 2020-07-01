@@ -11,12 +11,13 @@ import { Action, ObjectType, BaseDSPageState } from 'types';
 interface IState extends BaseDSPageState {
   data?: number[];
   currentApi?: LinkedList.Api;
+  executedApiCount: number;
 }
 
 interface IProps {}
 
 export class LinkedListPage extends Component<IProps, IState> {
-  private ref: React.RefObject<any>;
+  private visualAlgoRef: React.RefObject<any>;
 
   constructor(props: IProps) {
     super(props);
@@ -24,18 +25,35 @@ export class LinkedListPage extends Component<IProps, IState> {
     this.state = {
       stepDescription: [],
       autoPlay: false,
+      executedApiCount: 0,
     };
-    this.ref = React.createRef();
+    this.visualAlgoRef = React.createRef();
   }
 
   handleStepChange = (stepIndex: number) => {
     this.setState({ currentStep: stepIndex });
   };
 
-  handleExecuteApi = (api: LinkedList.Api, params: ObjectType<any>) => {
+  handleExecuteApi = async (api: LinkedList.Api, params: ObjectType<any>) => {
+    const { executedApiCount } = this.state;
     const stepDescription = this.generateStepDescription(api, params);
-    this.setState({ stepDescription, autoPlay: true, currentApi: api });
+    const isSwitchingToNewApi = executedApiCount !== 0;
+    if (isSwitchingToNewApi) await this.resetVisualAlgoState();
+    this.setState({
+      stepDescription,
+      autoPlay: true,
+      currentApi: api,
+      executedApiCount: executedApiCount + 1,
+      currentStep: -1,
+    });
   };
+
+  resetVisualAlgoState() {
+    const component = this.visualAlgoRef.current;
+    if (component) {
+      component.resetForNewApi();
+    }
+  }
 
   generateStepDescription(currentApi: LinkedList.Api, parameters: any) {
     const { data } = this.state;
@@ -54,6 +72,7 @@ export class LinkedListPage extends Component<IProps, IState> {
       currentApi,
       stepDescription,
       autoPlay,
+      executedApiCount,
     } = this.state;
     const linkedListInstruction = extractInstructionFromDescription(
       stepDescription,
@@ -68,7 +87,7 @@ export class LinkedListPage extends Component<IProps, IState> {
         onStepChange={this.handleStepChange}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
-        ref={this.ref}
+        ref={this.visualAlgoRef}
       >
         {data ? (
           <CanvasContainer>
@@ -83,6 +102,7 @@ export class LinkedListPage extends Component<IProps, IState> {
               handleExecuteApi={this.handleExecuteApi}
               interactive
               dropdownDisabled={autoPlay}
+              executedApiCount={executedApiCount}
             />
           </CanvasContainer>
         ) : (

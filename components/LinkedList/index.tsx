@@ -156,13 +156,20 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
       data,
       dropdownDisabled,
       interactive,
+      executedApiCount,
     } = this.props;
     const { linkedListModel } = this.state;
 
     // Update according to algorithm progression
     if (keyExist(this.props, ['currentStep', 'totalStep', 'instructions'])) {
       switch (
-        getProgressDirection(currentStep!, prevProps.currentStep!, totalStep!)
+        getProgressDirection(
+          currentStep!,
+          prevProps.currentStep!,
+          totalStep!,
+          executedApiCount !== prevProps.executedApiCount &&
+            prevProps.executedApiCount !== 0,
+        )
       ) {
         case 'forward':
           this.checkIfHTMLNeedToRerender(prevProps.currentStep!);
@@ -180,6 +187,10 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
 
         case 'fastBackward':
           this.handleFastBackward();
+          break;
+
+        case 'switch':
+          this.handleSwitchApi();
           break;
       }
     }
@@ -515,6 +526,13 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
 
   handleFastBackward() {
     this.updateWithoutAnimation(this.initialLinkedListModel);
+  }
+
+  handleSwitchApi() {
+    const { keepStateWhenSwitchingApi } = this.props;
+    if (!keepStateWhenSwitchingApi) {
+      this.handleFastBackward();
+    }
   }
 
   updateWithoutAnimation(newLinkedListModel: LinkedList.Model) {
