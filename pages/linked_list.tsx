@@ -112,6 +112,7 @@ export class LinkedListPage extends Component<IProps, IState> {
                 this.setState({ data: linkedListData })
               }
               text='Create new linked list'
+              defaultLength={5}
             />
           </div>
         )}

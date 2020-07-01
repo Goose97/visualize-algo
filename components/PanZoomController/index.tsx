@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { Popover } from 'antd';
+import { QuestionOutlined } from '@ant-design/icons';
 
 import { IProps } from './index.d';
 import { PointCoordinate } from 'types';
@@ -61,11 +63,23 @@ export class PanZoomController extends Component<IProps> {
     });
   }
 
+  renderHelperPopover() {
+    const content = <div>Drag the screen to move data structure</div>;
+    return (
+      <Popover content={content} placement='right'>
+        <div className='mb-4 fx-center f-big-1 shadow-1'>
+          <QuestionOutlined />
+        </div>
+      </Popover>
+    );
+  }
+
   render() {
     const { onZoomIn, onZoomOut } = this.props;
 
     return (
       <div className='zoom-controller__wrapper' ref={this.wrapperRef}>
+        {this.renderHelperPopover()}
         <div
           className='mb-4 fx-center f-big-1 shadow-1 clickable'
           onClick={onZoomIn}

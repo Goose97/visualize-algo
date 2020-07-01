@@ -181,13 +181,13 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
       </text>
     );
 
-    // const highlightCircle = highlight && (
-    //   <HighlightCircle
-    //     x={x + width / 2}
-    //     y={y + height / 2}
-    //     radius={width / 2 + 15}
-    //   />
-    // );
+    const highlightCircle = circleAround && (
+      <HighlightCircle
+        x={x + width / 2}
+        y={y + height / 2}
+        radius={width / 2 + 15}
+      />
+    );
 
     return (
       <g className={this.produceClassName()} transform={transform}>
@@ -195,7 +195,7 @@ export class MemoryBlock extends Component<PropsWithHoc, IState> {
         {valueText}
         {this.renderLabelText()}
         {children}
-        {/* {highlightCircle} */}
+        {highlightCircle}
       </g>
     );
   }
