@@ -2,6 +2,7 @@ import React from 'react';
 
 import { HTMLRenderer, DropdownWithParamsInput } from 'components';
 // import BSTNodeApiDropdown from './BSTNodeApiDropdown';
+import { getCanvasScaleFactor } from 'utils';
 import { HTMLRendererParams } from 'types';
 import { Graph } from 'types/ds/Graph';
 
@@ -30,6 +31,7 @@ export class GraphHTML {
     const { wrapperElement, coordinate, apiHandler, model, disabled } = params;
     if (wrapperElement) {
       const { width, height } = wrapperElement.getBoundingClientRect();
+      const scaledFactor = getCanvasScaleFactor();
       // const dropdownForEachTreeNode = model.map(({ value, x, y, key }) => (
       //   <BSTNodeApiDropdown
       //     value={value}
@@ -51,7 +53,15 @@ export class GraphHTML {
         </div>
       );
 
-      HTMLRenderer.inject(elementToRender, coordinate, `graph-html__wrapper`);
+      const scaledCoordinate = {
+        x: coordinate.x * scaledFactor,
+        y: coordinate.y * scaledFactor,
+      };
+      HTMLRenderer.inject(
+        elementToRender,
+        scaledCoordinate,
+        `graph-html__wrapper`,
+      );
     }
   }
 }

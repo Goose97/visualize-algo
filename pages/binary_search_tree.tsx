@@ -12,6 +12,7 @@ import { bstInstruction } from 'instructions/BST';
 import { BaseDSPageState, Action, ObjectType } from 'types';
 import { BST } from 'types/ds/BST';
 import { code, explanation } from 'codes/BST';
+import { DEFAULT_SIDEBAR_WIDTH } from '../constants';
 
 interface IState extends BaseDSPageState {
   data?: Array<number | null>;
@@ -30,6 +31,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
       stepDescription: [],
       autoPlay: false,
       executedApiCount: 0,
+      sideBarWidth: DEFAULT_SIDEBAR_WIDTH,
     };
     this.visualAlgoRef = React.createRef();
   }
@@ -69,6 +71,11 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
     this.setState({ autoPlay: newPlayingState });
   };
 
+  handleSideBarWidthChange = (newWidth: number) => {
+    const { data } = this.state;
+    if (!data) this.setState({ sideBarWidth: newWidth });
+  };
+
   render() {
     const {
       data,
@@ -77,6 +84,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
       stepDescription,
       autoPlay,
       executedApiCount,
+      sideBarWidth,
     } = this.state;
     const bstInstruction = extractInstructionFromDescription(
       stepDescription,
@@ -96,6 +104,7 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
         ref={this.visualAlgoRef}
+        onSideBarWidthChange={this.handleSideBarWidthChange}
       >
         {data ? (
           <CanvasContainer>
@@ -124,7 +133,10 @@ export class BinarySearchTreePage extends Component<IProps, IState> {
             />
           </CanvasContainer>
         ) : (
-          <div className='h-full fx-center linked-list-page__init-button'>
+          <div
+            className='h-full fx-center linked-list-page__init-button'
+            style={{ transform: `translateX(-${(sideBarWidth || 0) / 2}px)` }}
+          >
             <InitBSTInput
               onSubmit={bstData => this.setState({ data: bstData })}
             />

@@ -7,13 +7,15 @@ import {
   compactObject,
   classNameHelper,
   performAnimation,
+  AnimationTaskQueue,
 } from 'utils';
 import { IProps, IState } from './index.d';
 import { PointCoordinate } from 'types';
-
-const DEFAULT_WAIT = 1500;
-const DEFAULT_SIDEBAR_WIDTH = 300;
-const SIDEBAR_COLLAPSE_WIDTH = 30;
+import {
+  DEFAULT_WAIT,
+  DEFAULT_SIDEBAR_WIDTH,
+  SIDEBAR_COLLAPSE_WIDTH,
+} from '../../constants';
 
 export class VisualAlgo extends Component<IProps, IState> {
   private nextStepTimeoutToken?: NodeJS.Timeout;
@@ -21,6 +23,7 @@ export class VisualAlgo extends Component<IProps, IState> {
   private startWidth?: number;
   private widthBeforeCollapse?: number;
   private codeAndExplanationRef: React.RefObject<HTMLDivElement>;
+  private animationQueue: AnimationTaskQueue<number>;
 
   constructor(props: IProps) {
     super(props);
@@ -33,6 +36,9 @@ export class VisualAlgo extends Component<IProps, IState> {
     };
 
     this.codeAndExplanationRef = React.createRef();
+    this.animationQueue = new AnimationTaskQueue({
+      callback: this.handleAnimationQueueTask,
+    });
   }
 
   static getDerivedStateFromProps(props: IProps, state: IState) {
@@ -46,7 +52,8 @@ export class VisualAlgo extends Component<IProps, IState> {
   }
 
   componentDidUpdate = async (_prevProps: IProps, prevState: IState) => {
-    const { currentStep, autoPlay } = this.state;
+    const { onSideBarWidthChange } = this.props;
+    const { currentStep, autoPlay, sideBarWidth } = this.state;
     // currentStep === -1 means we are resetting for a new instruction sequence
     if (currentStep !== prevState.currentStep && currentStep !== -1) {
       this.handleStepChange(currentStep);
@@ -54,6 +61,10 @@ export class VisualAlgo extends Component<IProps, IState> {
 
     if (autoPlay !== prevState.autoPlay) {
       this.handleAutoPlayChange(autoPlay);
+    }
+
+    if (sideBarWidth !== prevState.sideBarWidth) {
+      onSideBarWidthChange && onSideBarWidthChange(sideBarWidth);
     }
   };
 
@@ -165,9 +176,15 @@ export class VisualAlgo extends Component<IProps, IState> {
   }
 
   trackingMouseCallback = (e: MouseEvent) => {
+    // Prevent dragging to select text
+    e.preventDefault();
     if (!this.mouseStart || !this.startWidth) return;
     const deltaX = e.clientX - this.mouseStart.x;
-    this.setState({ sideBarWidth: this.startWidth - deltaX });
+    this.animationQueue.enqueue(this.startWidth - deltaX);
+  };
+
+  handleAnimationQueueTask = (newWidth: number) => {
+    this.setState({ sideBarWidth: newWidth });
   };
 
   stopTrackingMouseMove = () => {

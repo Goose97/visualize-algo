@@ -4,6 +4,12 @@
       font-size: 30px;
       margin-bottom: 0;
     }
+
+    .home-page-title__sub-title {
+      span {
+        color: $primary-color;
+      }
+    }
   }
 
   .home-page-cards__wrapper {

@@ -7,6 +7,7 @@ import { linkedListInstruction } from 'instructions/LinkedList';
 import { LinkedList } from 'types/ds/LinkedList';
 import { code, explanation } from 'codes/LinkedList';
 import { Action, ObjectType, BaseDSPageState } from 'types';
+import { DEFAULT_SIDEBAR_WIDTH } from '../constants';
 
 interface IState extends BaseDSPageState {
   data?: number[];
@@ -26,6 +27,7 @@ export class LinkedListPage extends Component<IProps, IState> {
       stepDescription: [],
       autoPlay: false,
       executedApiCount: 0,
+      sideBarWidth: DEFAULT_SIDEBAR_WIDTH,
     };
     this.visualAlgoRef = React.createRef();
   }
@@ -65,6 +67,11 @@ export class LinkedListPage extends Component<IProps, IState> {
     this.setState({ autoPlay: newPlayingState });
   };
 
+  handleSideBarWidthChange = (newWidth: number) => {
+    const { data } = this.state;
+    if (!data) this.setState({ sideBarWidth: newWidth });
+  };
+
   render() {
     const {
       data,
@@ -73,6 +80,7 @@ export class LinkedListPage extends Component<IProps, IState> {
       stepDescription,
       autoPlay,
       executedApiCount,
+      sideBarWidth,
     } = this.state;
     const linkedListInstruction = extractInstructionFromDescription(
       stepDescription,
@@ -88,6 +96,7 @@ export class LinkedListPage extends Component<IProps, IState> {
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
         ref={this.visualAlgoRef}
+        onSideBarWidthChange={this.handleSideBarWidthChange}
       >
         {data ? (
           <CanvasContainer>
@@ -106,7 +115,10 @@ export class LinkedListPage extends Component<IProps, IState> {
             />
           </CanvasContainer>
         ) : (
-          <div className='h-full fx-center linked-list-page__init-button'>
+          <div
+            className='h-full fx-center linked-list-page__init-button'
+            style={{ transform: `translateX(-${(sideBarWidth || 0) / 2}px)` }}
+          >
             <InitArrayInput
               onSubmit={linkedListData =>
                 this.setState({ data: linkedListData })

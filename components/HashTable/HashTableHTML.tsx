@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { HTMLRenderer, DropdownWithParamsInput } from 'components';
+import { getCanvasScaleFactor } from 'utils';
 import { HTMLRendererParams } from 'types';
 import { HashTable } from 'types/ds/HashTable';
 
@@ -34,6 +35,8 @@ export class HashTableHTML {
       );
       if (!memoryBlocks) return;
 
+      const scaledFactor = getCanvasScaleFactor();
+
       const {
         height,
         left: wrapperLeft,
@@ -51,9 +54,14 @@ export class HashTableHTML {
           />
         </div>
       );
+
+      const scaledCoordinate = {
+        x: coordinate.x * scaledFactor,
+        y: coordinate.y * scaledFactor,
+      };
       HTMLRenderer.inject(
         elementToRender,
-        coordinate,
+        scaledCoordinate,
         `hash-table-html__wrapper`,
       );
     }

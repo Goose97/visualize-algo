@@ -8,6 +8,9 @@ import { hashTableInstruction } from 'instructions/HashTable';
 import { code, explanation } from '../codes/HashTable';
 import { Action, ObjectType, BaseDSPageState } from 'types';
 import { HashTable } from 'types/ds/HashTable.d';
+import { DEFAULT_SIDEBAR_WIDTH } from '../constants';
+import { ConsoleSqlOutlined } from '@ant-design/icons';
+import { faChessKing } from '@fortawesome/free-solid-svg-icons';
 
 interface IState extends BaseDSPageState {
   data?: ObjectType<string | number>;
@@ -34,6 +37,7 @@ export class HashTablePage extends Component<IProps, IState> {
       },
       collisionResolution: 'chaining',
       executedApiCount: 0,
+      sideBarWidth: DEFAULT_SIDEBAR_WIDTH,
     };
     this.visualAlgoRef = React.createRef();
   }
@@ -77,6 +81,11 @@ export class HashTablePage extends Component<IProps, IState> {
     return hashTableInstruction(data!, currentApi, params);
   }
 
+  handleSideBarWidthChange = (newWidth: number) => {
+    const { data } = this.state;
+    if (!data) this.setState({ sideBarWidth: newWidth });
+  };
+
   render() {
     const {
       data,
@@ -86,6 +95,7 @@ export class HashTablePage extends Component<IProps, IState> {
       autoPlay,
       collisionResolution,
       executedApiCount,
+      sideBarWidth,
     } = this.state;
     const hashTableInstruction = extractInstructionFromDescription(
       stepDescription,
@@ -101,6 +111,7 @@ export class HashTablePage extends Component<IProps, IState> {
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
         ref={this.visualAlgoRef}
+        onSideBarWidthChange={this.handleSideBarWidthChange}
       >
         {data ? (
           <CanvasContainer>
@@ -121,7 +132,10 @@ export class HashTablePage extends Component<IProps, IState> {
             />
           </CanvasContainer>
         ) : (
-          <div className='h-full fx-center linked-list-page__init-button'>
+          <div
+            className='h-full fx-center linked-list-page__init-button'
+            style={{ transform: `translateX(-${(sideBarWidth || 0) / 2}px)` }}
+          >
             {/* <InitHashTableInput
               onSubmit={hashTableData => this.setState({ data: hashTableData })}
               text='Create new hashTable'

@@ -33,3 +33,8 @@ export const HASH_TABLE_UNIVERSAL_KEY_SIZE = 10;
 export const HASH_TABLE_HASH_FUNC_X = 3 * HASH_TABLE_KEYS_WIDTH;
 export const HASH_TABLE_ARRAY_X =
   HASH_TABLE_HASH_FUNC_X + HASH_TABLE_FUNC_WIDTH + 200;
+
+// Visual algo constants
+export const DEFAULT_WAIT = 1500;
+export const DEFAULT_SIDEBAR_WIDTH = 300;
+export const SIDEBAR_COLLAPSE_WIDTH = 30;

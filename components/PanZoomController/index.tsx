@@ -3,17 +3,28 @@ import { Popover } from 'antd';
 import { QuestionOutlined } from '@ant-design/icons';
 
 import { IProps } from './index.d';
+import { AnimationTaskQueue } from 'utils';
 import { PointCoordinate } from 'types';
 export class PanZoomController extends Component<IProps> {
   private wrapperRef: React.RefObject<HTMLDivElement>;
-  private panningTaskQueue: PointCoordinate[];
-  private isPanningTaskQueueRunning: boolean;
+  private animationQueue: AnimationTaskQueue<PointCoordinate>;
 
   constructor(props: any) {
     super(props);
     this.wrapperRef = React.createRef();
-    this.panningTaskQueue = [];
-    this.isPanningTaskQueueRunning = false;
+    this.animationQueue = new AnimationTaskQueue({
+      callback: this.handleAnimationQueueTask,
+      isAdditiveTask: true,
+      combineTaskCallback: (tasks: PointCoordinate[]) =>
+        tasks.reduce(
+          ({ x, y }, acc) => ({
+            x: acc.x + x,
+            y: acc.y + y,
+          }),
+          { x: 0, y: 0 },
+        ),
+      taskQueueMax: 5,
+    });
   }
 
   componentDidMount() {
@@ -38,30 +49,16 @@ export class PanZoomController extends Component<IProps> {
 
   trackingMouseMove: EventListener = e => {
     const { movementX, movementY } = e as MouseEvent;
-    this.enqueuePanningTaskQueue({
+    this.animationQueue.enqueue({
       x: movementX,
       y: movementY,
     });
   };
 
-  enqueuePanningTaskQueue(task: PointCoordinate) {
-    this.panningTaskQueue.push(task);
-    if (!this.isPanningTaskQueueRunning) this.dequeuePanningTaskQueue();
-  }
-
-  dequeuePanningTaskQueue() {
+  handleAnimationQueueTask = ({ x, y }: any) => {
     const { onPanning } = this.props;
-    const nextTask = this.panningTaskQueue.shift();
-    if (!nextTask) {
-      this.isPanningTaskQueueRunning = false;
-      return;
-    }
-
-    window.requestAnimationFrame(() => {
-      onPanning(nextTask.x, nextTask.y);
-      this.dequeuePanningTaskQueue();
-    });
-  }
+    onPanning(x, y);
+  };
 
   renderHelperPopover() {
     const content = <div>Drag the screen to move data structure</div>;
