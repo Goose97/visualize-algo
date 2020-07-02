@@ -7,16 +7,18 @@ import { linkedListInstruction } from 'instructions/LinkedList';
 import { LinkedList } from 'types/ds/LinkedList';
 import { code, explanation } from 'codes/LinkedList';
 import { Action, ObjectType, BaseDSPageState } from 'types';
+import { DEFAULT_SIDEBAR_WIDTH } from '../constants';
 
 interface IState extends BaseDSPageState {
   data?: number[];
   currentApi?: LinkedList.Api;
+  executedApiCount: number;
 }
 
 interface IProps {}
 
 export class LinkedListPage extends Component<IProps, IState> {
-  private ref: React.RefObject<any>;
+  private visualAlgoRef: React.RefObject<any>;
 
   constructor(props: IProps) {
     super(props);
@@ -24,18 +26,36 @@ export class LinkedListPage extends Component<IProps, IState> {
     this.state = {
       stepDescription: [],
       autoPlay: false,
+      executedApiCount: 0,
+      sideBarWidth: DEFAULT_SIDEBAR_WIDTH,
     };
-    this.ref = React.createRef();
+    this.visualAlgoRef = React.createRef();
   }
 
   handleStepChange = (stepIndex: number) => {
     this.setState({ currentStep: stepIndex });
   };
 
-  handleExecuteApi = (api: LinkedList.Api, params: ObjectType<any>) => {
+  handleExecuteApi = async (api: LinkedList.Api, params: ObjectType<any>) => {
+    const { executedApiCount } = this.state;
     const stepDescription = this.generateStepDescription(api, params);
-    this.setState({ stepDescription, autoPlay: true, currentApi: api });
+    const isSwitchingToNewApi = executedApiCount !== 0;
+    if (isSwitchingToNewApi) await this.resetVisualAlgoState();
+    this.setState({
+      stepDescription,
+      autoPlay: true,
+      currentApi: api,
+      executedApiCount: executedApiCount + 1,
+      currentStep: -1,
+    });
   };
+
+  resetVisualAlgoState() {
+    const component = this.visualAlgoRef.current;
+    if (component) {
+      component.resetForNewApi();
+    }
+  }
 
   generateStepDescription(currentApi: LinkedList.Api, parameters: any) {
     const { data } = this.state;
@@ -47,6 +67,11 @@ export class LinkedListPage extends Component<IProps, IState> {
     this.setState({ autoPlay: newPlayingState });
   };
 
+  handleSideBarWidthChange = (newWidth: number) => {
+    const { data } = this.state;
+    if (!data) this.setState({ sideBarWidth: newWidth });
+  };
+
   render() {
     const {
       data,
@@ -54,6 +79,8 @@ export class LinkedListPage extends Component<IProps, IState> {
       currentApi,
       stepDescription,
       autoPlay,
+      executedApiCount,
+      sideBarWidth,
     } = this.state;
     const linkedListInstruction = extractInstructionFromDescription(
       stepDescription,
@@ -68,7 +95,8 @@ export class LinkedListPage extends Component<IProps, IState> {
         onStepChange={this.handleStepChange}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
-        ref={this.ref}
+        ref={this.visualAlgoRef}
+        onSideBarWidthChange={this.handleSideBarWidthChange}
       >
         {data ? (
           <CanvasContainer>
@@ -83,15 +111,20 @@ export class LinkedListPage extends Component<IProps, IState> {
               handleExecuteApi={this.handleExecuteApi}
               interactive
               dropdownDisabled={autoPlay}
+              executedApiCount={executedApiCount}
             />
           </CanvasContainer>
         ) : (
-          <div className='h-full fx-center linked-list-page__init-button'>
+          <div
+            className='h-full fx-center linked-list-page__init-button'
+            style={{ transform: `translateX(-${(sideBarWidth || 0) / 2}px)` }}
+          >
             <InitArrayInput
               onSubmit={linkedListData =>
                 this.setState({ data: linkedListData })
               }
               text='Create new linked list'
+              defaultLength={5}
             />
           </div>
         )}

@@ -29,7 +29,14 @@ export class GraphMemoryBlock extends Component<IProps> {
     return (
       <AutoTransformGroup origin={pick(this.props, ['x', 'y'])}>
         <MemoryBlock
-          {...pick(this.props, ['focus', 'visited', 'visible', 'label', 'highlight'])}
+          {...pick(this.props, [
+            'focus',
+            'visited',
+            'visible',
+            'label',
+            'highlight',
+            'circleAround',
+          ])}
           {...this.initialCoordinate}
           value={value}
           width={GRAPH_NODE_RADIUS * 2}

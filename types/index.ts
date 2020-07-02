@@ -64,4 +64,5 @@ export interface BaseDSPageState {
   currentStep?: number;
   stepDescription: StepInstruction[];
   autoPlay: boolean;
+  sideBarWidth?: number;
 }

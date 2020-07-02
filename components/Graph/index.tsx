@@ -14,6 +14,7 @@ type PropsWithHoc = IProps & WithReverseStep<Graph.Model>;
 
 export class GraphDS extends Component<PropsWithHoc, IState> {
   private wrapperRef: React.RefObject<SVGUseElement>;
+  private initialGraphModel: Graph.Model;
 
   constructor(props: PropsWithHoc) {
     super(props);
@@ -22,6 +23,7 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
       graphModel: props.initialData!,
       isVisible: true,
     };
+    this.initialGraphModel = props.initialData!;
     this.wrapperRef = React.createRef();
   }
 
@@ -33,13 +35,20 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
       totalStep,
       dropdownDisabled,
       interactive,
+      executedApiCount,
     } = this.props;
     const { graphModel } = this.state;
 
     // Update according to algorithm progression
     if (keyExist(this.props, ['currentStep', 'totalStep', 'instructions'])) {
       switch (
-        getProgressDirection(currentStep!, prevProps.currentStep!, totalStep!)
+        getProgressDirection(
+          currentStep!,
+          prevProps.currentStep!,
+          totalStep!,
+          executedApiCount !== prevProps.executedApiCount &&
+            prevProps.executedApiCount !== 0,
+        )
       ) {
         case 'forward':
           saveStepSnapshots(graphModel, currentStep!);
@@ -56,6 +65,10 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
 
         case 'fastBackward':
           this.handleFastBackward();
+          break;
+
+        case 'switch':
+          this.handleSwitchApi();
           break;
       }
     }
@@ -147,6 +160,13 @@ export class GraphDS extends Component<PropsWithHoc, IState> {
 
   handleFastBackward() {
     this.updateWithoutAnimation(this.initialGraphModel);
+  }
+
+  handleSwitchApi() {
+    const { keepStateWhenSwitchingApi } = this.props;
+    if (!keepStateWhenSwitchingApi) {
+      this.handleFastBackward();
+    }
   }
 
   updateWithoutAnimation(newGraphModel: Graph.Model) {

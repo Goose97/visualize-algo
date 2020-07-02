@@ -8,16 +8,22 @@ import { hashTableInstruction } from 'instructions/HashTable';
 import { code, explanation } from '../codes/HashTable';
 import { Action, ObjectType, BaseDSPageState } from 'types';
 import { HashTable } from 'types/ds/HashTable.d';
+import { DEFAULT_SIDEBAR_WIDTH } from '../constants';
+import { ConsoleSqlOutlined } from '@ant-design/icons';
+import { faChessKing } from '@fortawesome/free-solid-svg-icons';
 
 interface IState extends BaseDSPageState {
   data?: ObjectType<string | number>;
   currentApi?: HashTable.Api;
   collisionResolution: 'chaining' | 'linearProbe';
+  executedApiCount: number;
 }
 
 interface IProps {}
 
 export class HashTablePage extends Component<IProps, IState> {
+  private visualAlgoRef: React.RefObject<any>;
+
   constructor(props: IProps) {
     super(props);
 
@@ -30,7 +36,10 @@ export class HashTablePage extends Component<IProps, IState> {
         l: 3,
       },
       collisionResolution: 'chaining',
+      executedApiCount: 0,
+      sideBarWidth: DEFAULT_SIDEBAR_WIDTH,
     };
+    this.visualAlgoRef = React.createRef();
   }
 
   handleStepChange = (stepIndex: number) => {
@@ -41,21 +50,41 @@ export class HashTablePage extends Component<IProps, IState> {
     this.setState({ autoPlay: newPlayingState });
   };
 
-  handleExecuteApi = (api: HashTable.Api, params: ObjectType<any>) => {
-    const { collisionResolution } = this.state;
+  handleExecuteApi = async (api: HashTable.Api, params: ObjectType<any>) => {
+    const { collisionResolution, executedApiCount } = this.state;
     const stepDescription = this.generateStepDescription(api, {
       ...params,
       collisionResolution,
     });
-    console.log('stepDescription', stepDescription);
-    this.setState({ stepDescription, autoPlay: true, currentApi: api });
+    const isSwitchingToNewApi = executedApiCount !== 0;
+    if (isSwitchingToNewApi) await this.resetVisualAlgoState();
+
+    this.setState({
+      stepDescription,
+      autoPlay: true,
+      currentApi: api,
+      executedApiCount: executedApiCount + 1,
+      currentStep: -1,
+    });
   };
+
+  resetVisualAlgoState() {
+    const component = this.visualAlgoRef.current;
+    if (component) {
+      component.resetForNewApi();
+    }
+  }
 
   generateStepDescription(currentApi: HashTable.Api, params: ObjectType<any>) {
     const { data } = this.state;
     if (!currentApi) return [];
     return hashTableInstruction(data!, currentApi, params);
   }
+
+  handleSideBarWidthChange = (newWidth: number) => {
+    const { data } = this.state;
+    if (!data) this.setState({ sideBarWidth: newWidth });
+  };
 
   render() {
     const {
@@ -65,6 +94,8 @@ export class HashTablePage extends Component<IProps, IState> {
       stepDescription,
       autoPlay,
       collisionResolution,
+      executedApiCount,
+      sideBarWidth,
     } = this.state;
     const hashTableInstruction = extractInstructionFromDescription(
       stepDescription,
@@ -79,6 +110,8 @@ export class HashTablePage extends Component<IProps, IState> {
         onStepChange={this.handleStepChange}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
+        ref={this.visualAlgoRef}
+        onSideBarWidthChange={this.handleSideBarWidthChange}
       >
         {data ? (
           <CanvasContainer>
@@ -95,10 +128,14 @@ export class HashTablePage extends Component<IProps, IState> {
               collisionResolution={collisionResolution}
               interactive
               dropdownDisabled={autoPlay}
+              executedApiCount={executedApiCount}
             />
           </CanvasContainer>
         ) : (
-          <div className='h-full fx-center linked-list-page__init-button'>
+          <div
+            className='h-full fx-center linked-list-page__init-button'
+            style={{ transform: `translateX(-${(sideBarWidth || 0) / 2}px)` }}
+          >
             {/* <InitHashTableInput
               onSubmit={hashTableData => this.setState({ data: hashTableData })}
               text='Create new hashTable'

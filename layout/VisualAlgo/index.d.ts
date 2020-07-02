@@ -9,6 +9,7 @@ interface OwnProps {
   code: string;
   explanation: string[];
   disableProgressControl?: boolean;
+  onSideBarWidthChange?: (newWidth: number) => void;
 }
 
 export type IProps = OwnProps & ProgressController & ApiController;

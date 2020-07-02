@@ -7,6 +7,7 @@ import { arrayInstruction } from 'instructions/Array';
 import { code, explanation } from 'codes/Array';
 import { Action, ObjectType, BaseDSPageState } from 'types';
 import { Array } from 'types/ds/Array.d';
+import { DEFAULT_SIDEBAR_WIDTH } from '../constants';
 
 interface IState extends BaseDSPageState {
   data?: number[];
@@ -25,6 +26,7 @@ export class ArrayPage extends Component<IProps, IState> {
       stepDescription: [],
       autoPlay: false,
       executedApiCount: 0,
+      sideBarWidth: DEFAULT_SIDEBAR_WIDTH,
     };
 
     this.visualAlgoRef = React.createRef();
@@ -66,6 +68,11 @@ export class ArrayPage extends Component<IProps, IState> {
     return arrayInstruction(data!, currentApi, params);
   }
 
+  handleSideBarWidthChange = (newWidth: number) => {
+    const { data } = this.state;
+    if (!data) this.setState({ sideBarWidth: newWidth });
+  };
+
   render() {
     const {
       data,
@@ -74,6 +81,7 @@ export class ArrayPage extends Component<IProps, IState> {
       stepDescription,
       autoPlay,
       executedApiCount,
+      sideBarWidth,
     } = this.state;
     const arrayInstruction = extractInstructionFromDescription(
       stepDescription,
@@ -88,9 +96,9 @@ export class ArrayPage extends Component<IProps, IState> {
         onStepChange={this.handleStepChange}
         autoPlay={autoPlay}
         onPlayingChange={this.handlePlayingChange}
-        executedApiCount={executedApiCount}
         ref={this.visualAlgoRef}
         disableProgressControl={!currentApi}
+        onSideBarWidthChange={this.handleSideBarWidthChange}
       >
         {data ? (
           <CanvasContainer>
@@ -111,7 +119,10 @@ export class ArrayPage extends Component<IProps, IState> {
             />
           </CanvasContainer>
         ) : (
-          <div className='h-full fx-center linked-list-page__init-button'>
+          <div
+            className='h-full fx-center linked-list-page__init-button'
+            style={{ transform: `translateX(-${(sideBarWidth || 0) / 2}px)` }}
+          >
             <InitArrayInput
               onSubmit={arrayData => this.setState({ data: arrayData })}
               text='Create new array'

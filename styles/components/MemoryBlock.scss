@@ -14,7 +14,7 @@
   .memory-block__separate-line {
     @extend .default-stroke;
   }
-  
+
   &.visited {
     .memory-block__block,
     .memory-block__separate-line {
@@ -61,5 +61,5 @@
 
   &.blur * {
     @extend .deemphasized;
-  }  
+  }
 }

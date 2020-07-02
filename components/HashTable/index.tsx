@@ -82,12 +82,19 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
       totalStep,
       dropdownDisabled,
       interactive,
+      executedApiCount,
     } = this.props;
     const { hashTableModel } = this.state;
 
     if (keyExist(this.props, ['currentStep', 'totalStep', 'instructions'])) {
       switch (
-        getProgressDirection(currentStep!, prevProps.currentStep!, totalStep!)
+        getProgressDirection(
+          currentStep!,
+          prevProps.currentStep!,
+          totalStep!,
+          executedApiCount !== prevProps.executedApiCount &&
+            prevProps.executedApiCount !== 0,
+        )
       ) {
         case 'forward':
           saveStepSnapshots(hashTableModel, currentStep!);
@@ -104,6 +111,10 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
 
         case 'fastBackward':
           this.handleFastBackward();
+          break;
+
+        case 'switch':
+          this.handleSwitchApi();
           break;
       }
     }
@@ -211,6 +222,13 @@ export class HashTableDS extends Component<PropsWithHoc, IState> {
 
   handleFastBackward() {
     this.updateWithoutAnimation(this.initialLinkedListModel);
+  }
+
+  handleSwitchApi() {
+    const { keepStateWhenSwitchingApi } = this.props;
+    if (!keepStateWhenSwitchingApi) {
+      this.handleFastBackward();
+    }
   }
 
   updateWithoutAnimation(newLinkedListModel: HashTable.Model) {

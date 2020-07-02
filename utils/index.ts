@@ -185,3 +185,72 @@ export const getCanvasScaleFactor = () => {
     return 1;
   }
 };
+
+interface AnimationTaskQueueConstructor<T> {
+  callback: (task: T) => void;
+  isAdditiveTask?: boolean;
+  combineTaskCallback?: (tasks: T[]) => T;
+  taskQueueMax?: number; // if task queue reach this number of tasks, we start discarding tasks
+}
+export class AnimationTaskQueue<T> {
+  private taskQueue: any[];
+  private isRunning: boolean;
+  private callback: AnimationTaskQueueConstructor<T>['callback'];
+  private isAdditive: boolean;
+  private taskQueueMax: number;
+  private combineTaskCallback: AnimationTaskQueueConstructor<
+    T
+  >['combineTaskCallback'];
+
+  constructor(initObject: AnimationTaskQueueConstructor<T>) {
+    const {
+      callback,
+      isAdditiveTask,
+      combineTaskCallback,
+      taskQueueMax,
+    } = initObject;
+    this.taskQueue = [];
+    this.isRunning = false;
+    this.callback = callback;
+    this.isAdditive = isAdditiveTask;
+    this.combineTaskCallback = combineTaskCallback;
+    this.taskQueueMax = taskQueueMax || 2;
+  }
+
+  enqueue(task: any) {
+    this.taskQueue.push(task);
+    if (!this.isRunning) {
+      this.isRunning = true;
+      this.dequeue();
+    }
+  }
+
+  // Drop some tasks if tasks fill up too fast
+  // If task is additive (meaning drop task will alter result), we must combine many task into one
+  dequeue() {
+    if (this.taskQueue.length > this.taskQueueMax) this.discardTasks();
+
+    const nextTask = this.taskQueue.shift();
+    if (!nextTask) {
+      this.isRunning = false;
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      this.callback(nextTask);
+      this.dequeue();
+    });
+  }
+
+  discardTasks() {
+    // if task is additive, must combine them
+    // otherwise just drop them
+    if (this.isAdditive) {
+      const discardTasks = this.taskQueue.splice(0, this.taskQueueMax);
+      const combinedTask = this.combineTaskCallback!(discardTasks);
+      this.taskQueue.unshift(combinedTask);
+    } else {
+      this.taskQueue.splice(0, this.taskQueueMax);
+    }
+  }
+}
