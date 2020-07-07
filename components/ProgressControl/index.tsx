@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlay,
@@ -12,7 +12,7 @@ import {
 import { classNameHelper } from 'utils';
 import { IProps } from './index.d';
 
-export class ProgressControl extends Component<IProps> {
+export class ProgressControl extends PureComponent<IProps> {
   handleControlProgress = (index: number) => () => {
     const handlerFunction = this.getHandlerFunction(index);
     handlerFunction && !this.isButtonDisabled(index) && handlerFunction();

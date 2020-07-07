@@ -49,6 +49,8 @@ export class PanZoomController extends Component<IProps> {
 
   trackingMouseMove: EventListener = e => {
     const { movementX, movementY } = e as MouseEvent;
+    e.stopPropagation();
+    e.preventDefault();
     this.animationQueue.enqueue({
       x: movementX,
       y: movementY,

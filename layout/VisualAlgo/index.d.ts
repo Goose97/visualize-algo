@@ -28,5 +28,4 @@ export interface IState extends CoreState {
   currentStep: number;
   autoPlay: boolean;
   isCollapsing: boolean;
-  sideBarWidth?: number;
 }
