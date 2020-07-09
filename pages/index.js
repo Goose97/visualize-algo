@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Router, { withRouter } from 'next/router';
 
-import { TopicCard } from 'components';
+import { TopicCard, HomePageTitle } from 'components';
 
 const availableTopics = [
   {
@@ -47,13 +47,7 @@ class Home extends Component {
   render() {
     return (
       <div className='home-page__wrapper'>
-        <div className='home-page-title__wrapper fx-center py-12 fx-col'>
-          <h2 className='home-page-title__title'>Animated Algo</h2>
-          <span className='home-page-title__sub-title f-big-1'>
-            Learn data structure the{' '}
-            <span className='f-big-1 italic'>interactive</span> way
-          </span>
-        </div>
+        <HomePageTitle />
 
         <div className='home-page-cards__wrapper px-12 py-4'>
           {availableTopics.map(({ title, description, key }) => (

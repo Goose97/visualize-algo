@@ -30,3 +30,4 @@ export { default as HighlightCircle } from './HighlightCircle';
 export { default as PanZoomController } from './PanZoomController';
 export { default as CanvasObserver } from './CanvasObserver';
 export { default as TopicCard } from './TopicCard';
+export { default as HomePageTitle } from './HomePageTitle';
