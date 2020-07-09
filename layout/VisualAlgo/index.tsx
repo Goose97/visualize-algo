@@ -24,6 +24,7 @@ export class VisualAlgo extends Component<IProps, IState> {
   private widthBeforeCollapse?: number;
   private codeAndExplanationRef: React.RefObject<HTMLDivElement>;
   private animationQueue: AnimationTaskQueue<number>;
+  private sideBarWidth: number;
 
   constructor(props: IProps) {
     super(props);
@@ -32,13 +33,13 @@ export class VisualAlgo extends Component<IProps, IState> {
       currentStep: -1,
       autoPlay: false,
       isCollapsing: false,
-      sideBarWidth: DEFAULT_SIDEBAR_WIDTH,
     };
 
     this.codeAndExplanationRef = React.createRef();
     this.animationQueue = new AnimationTaskQueue({
-      callback: this.handleAnimationQueueTask,
+      callback: this.updateSidebarWidth,
     });
+    this.sideBarWidth = DEFAULT_SIDEBAR_WIDTH;
   }
 
   static getDerivedStateFromProps(props: IProps, state: IState) {
@@ -52,8 +53,7 @@ export class VisualAlgo extends Component<IProps, IState> {
   }
 
   componentDidUpdate = async (_prevProps: IProps, prevState: IState) => {
-    const { onSideBarWidthChange } = this.props;
-    const { currentStep, autoPlay, sideBarWidth } = this.state;
+    const { currentStep, autoPlay } = this.state;
     // currentStep === -1 means we are resetting for a new instruction sequence
     if (currentStep !== prevState.currentStep && currentStep !== -1) {
       this.handleStepChange(currentStep);
@@ -61,10 +61,6 @@ export class VisualAlgo extends Component<IProps, IState> {
 
     if (autoPlay !== prevState.autoPlay) {
       this.handleAutoPlayChange(autoPlay);
-    }
-
-    if (sideBarWidth !== prevState.sideBarWidth) {
-      onSideBarWidthChange && onSideBarWidthChange(sideBarWidth);
     }
   };
 
@@ -183,8 +179,14 @@ export class VisualAlgo extends Component<IProps, IState> {
     this.animationQueue.enqueue(this.startWidth - deltaX);
   };
 
-  handleAnimationQueueTask = (newWidth: number) => {
-    this.setState({ sideBarWidth: newWidth });
+  updateSidebarWidth = (newWidth: number) => {
+    const { onSideBarWidthChange } = this.props;
+    const sideBarDiv = this.codeAndExplanationRef.current;
+    if (sideBarDiv) {
+      sideBarDiv.style.width = `${newWidth}px`;
+      this.sideBarWidth = newWidth;
+      onSideBarWidthChange && onSideBarWidthChange(newWidth);
+    }
   };
 
   stopTrackingMouseMove = () => {
@@ -192,17 +194,15 @@ export class VisualAlgo extends Component<IProps, IState> {
   };
 
   handleCollapse = () => {
-    const { isCollapsing, sideBarWidth } = this.state;
-    if (!isCollapsing) this.widthBeforeCollapse = sideBarWidth;
+    const { isCollapsing } = this.state;
+    if (!isCollapsing) this.widthBeforeCollapse = this.sideBarWidth;
     performAnimation({
-      startValue: sideBarWidth!,
+      startValue: this.sideBarWidth,
       endValue: isCollapsing
         ? this.widthBeforeCollapse!
         : SIDEBAR_COLLAPSE_WIDTH,
       duration: 300,
-      callback: (newWidth: number) => {
-        this.setState({ sideBarWidth: newWidth });
-      },
+      callback: this.updateSidebarWidth,
     });
 
     this.setState({
@@ -210,15 +210,12 @@ export class VisualAlgo extends Component<IProps, IState> {
     });
   };
 
+  handlePlay = this.handleTogglePlay.bind(this, true);
+  handleStop = this.handleTogglePlay.bind(this, false);
+
   render() {
     const { children, code, explanation, disableProgressControl } = this.props;
-    const {
-      codeLine,
-      explanationStep,
-      autoPlay,
-      isCollapsing,
-      sideBarWidth,
-    } = this.state;
+    const { codeLine, explanationStep, autoPlay, isCollapsing } = this.state;
 
     const visualizationScreen = (
       <div className='fx-3 fx-col visual-container shadow'>
@@ -228,8 +225,8 @@ export class VisualAlgo extends Component<IProps, IState> {
             onFastForward={this.goToFinalStep}
             onBackward={this.decreaseCurrentStep}
             onFastBackward={this.goToFirstStep}
-            onPlay={() => this.handleTogglePlay(true)}
-            onStop={() => this.handleTogglePlay(false)}
+            onPlay={this.handlePlay}
+            onStop={this.handleStop}
             autoPlay={autoPlay}
             progress={this.caculateProgress()}
             disabled={disableProgressControl}
@@ -245,7 +242,7 @@ export class VisualAlgo extends Component<IProps, IState> {
     const codeAndExplanation = (
       <div
         className={className}
-        style={{ width: sideBarWidth }}
+        style={{ width: this.sideBarWidth }}
         ref={this.codeAndExplanationRef}
       >
         <div

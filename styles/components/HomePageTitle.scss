@@ -1,0 +1,21 @@
+.home-page-title__wrapper {
+  .home-page-title__title {
+    font-size: 30px;
+    margin-bottom: 0;
+  }
+
+  .home-page-title__sub-title {
+    overflow-y: hidden;
+    height: 2rem;
+
+    span {
+      color: $primary-color;
+      text-align: center;
+    }
+
+    .home-page-title__switching-words {
+      display: inline-flex;
+      flex-direction: column;
+    }
+  }
+}

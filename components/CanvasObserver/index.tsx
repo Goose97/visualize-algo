@@ -34,7 +34,7 @@ class CanvasObserver {
 
   triggerRegisteredCallbacks = debounce(() => {
     this.regisiteredCallback.forEach(callback => callback());
-  }, 100);
+  }, 300);
 }
 
 const singletonCanvasObserver = new CanvasObserver();
