@@ -64,26 +64,6 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
     htmlInput?.focus();
   };
 
-  handleRandomizeData = () => {
-    const randomData = this.generateRandomData();
-    let textToMatchThoseData = randomData
-      .map(item => (item === null ? 'null' : item.toString()))
-      .join(', ');
-    textToMatchThoseData = `[${textToMatchThoseData}]`;
-    this.setState({ input: randomData, textInput: textToMatchThoseData });
-  };
-
-  generateRandomData() {
-    return [4, 1, 8, -3, 2, 6, 9, null, -2, null, null, null, null, null, null];
-    return Array(8)
-      .fill(0)
-      .map(() => {
-        const value = Math.round(Math.random() * 12);
-        if (value > 10) return null;
-        else return value;
-      });
-  }
-
   renderGhostNode() {
     return (
       <g
@@ -336,19 +316,6 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
       </div>
     );
 
-    const inputTextArea = (
-      <div className='init-bst-modal__input fx-3'>
-        <TextArea
-          onChange={this.handleChange}
-          placeholder='[1,2,3,null,4,5]'
-          value={textInput}
-        />
-        <Button type='secondary' onClick={this.handleRandomizeData}>
-          Generate random data
-        </Button>
-      </div>
-    );
-
     return (
       <Button
         type='primary'
@@ -362,10 +329,7 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
           onCancel={() => this.setState({ isModalVisible: false })}
           onOk={this.handleOk}
         >
-          <div className='init-bst-modal__wrapper fx'>
-            {previewWindow}
-            {inputTextArea}
-          </div>
+          <div className='init-bst-modal__wrapper fx'>{previewWindow}</div>
         </CustomModal>
       </Button>
     );

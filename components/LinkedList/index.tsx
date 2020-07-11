@@ -1,14 +1,6 @@
 import React, { Component } from 'react';
 import produce from 'immer';
-import {
-  omit,
-  flatMap,
-  groupBy,
-  pick,
-  isFunction,
-  isEqual,
-  drop,
-} from 'lodash';
+import { omit, flatMap, groupBy, pick, isFunction, isEqual } from 'lodash';
 
 import { CanvasObserver } from 'components';
 import transformLinkedListModel from 'transformers/LinkedList';

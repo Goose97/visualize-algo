@@ -112,6 +112,7 @@ export class LinkedListPage extends Component<IProps, IState> {
               interactive
               dropdownDisabled={autoPlay}
               executedApiCount={executedApiCount}
+              keepStateWhenSwitchingApi
             />
           </CanvasContainer>
         ) : (

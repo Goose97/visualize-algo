@@ -1,137 +1,67 @@
 import React, { Component } from 'react';
 
 import { CanvasContainer, ArrayDS, InitArrayInput } from 'components';
-import { VisualAlgo } from 'layout';
+import withDSPage, { WithDSPage } from 'hocs/withDSPage';
 import { extractInstructionFromDescription } from 'utils';
 import { arrayInstruction } from 'instructions/Array';
 import { code, explanation } from 'codes/Array';
-import { Action, ObjectType, BaseDSPageState } from 'types';
+import { Action } from 'types';
 import { Array } from 'types/ds/Array.d';
-import { DEFAULT_SIDEBAR_WIDTH } from '../constants';
 
-interface IState extends BaseDSPageState {
-  data?: number[];
-  currentApi?: Array.Api;
-  executedApiCount: number;
-}
-
-interface IProps {}
-
-export class ArrayPage extends Component<IProps, IState> {
-  private visualAlgoRef: React.RefObject<any>;
-  constructor(props: IProps) {
+export class ArrayPage extends Component<WithDSPage<Array.Api>> {
+  constructor(props: WithDSPage<Array.Api>) {
     super(props);
 
-    this.state = {
-      stepDescription: [],
-      autoPlay: false,
-      executedApiCount: 0,
-      sideBarWidth: DEFAULT_SIDEBAR_WIDTH,
-    };
-
-    this.visualAlgoRef = React.createRef();
+    this.state = {};
   }
-
-  handleStepChange = (stepIndex: number) => {
-    this.setState({ currentStep: stepIndex });
-  };
-
-  handlePlayingChange = (newPlayingState: boolean) => {
-    this.setState({ autoPlay: newPlayingState });
-  };
-
-  handleExecuteApi = async (api: Array.Api, params: ObjectType<any>) => {
-    const { executedApiCount } = this.state;
-    const stepDescription = this.generateStepDescription(api, params);
-    const isSwitchingToNewApi = executedApiCount !== 0;
-    if (isSwitchingToNewApi) await this.resetVisualAlgoState();
-
-    this.setState({
-      stepDescription,
-      autoPlay: true,
-      currentApi: api,
-      executedApiCount: executedApiCount + 1,
-      currentStep: -1,
-    });
-  };
-
-  resetVisualAlgoState() {
-    const component = this.visualAlgoRef.current;
-    if (component) {
-      component.resetForNewApi();
-    }
-  }
-
-  generateStepDescription(currentApi: Array.Api, params: ObjectType<any>) {
-    const { data } = this.state;
-    if (!currentApi) return [];
-    return arrayInstruction(data!, currentApi, params);
-  }
-
-  handleSideBarWidthChange = (newWidth: number) => {
-    const { data } = this.state;
-    if (!data) this.setState({ sideBarWidth: newWidth });
-  };
 
   render() {
     const {
-      data,
-      currentStep,
-      currentApi,
-      stepDescription,
-      autoPlay,
-      executedApiCount,
       sideBarWidth,
-    } = this.state;
+      autoPlay,
+      currentStep,
+      stepDescription,
+      data,
+      onDataChange,
+      currentApi,
+      executedApiCount,
+      onExecuteApi,
+    } = this.props;
     const arrayInstruction = extractInstructionFromDescription(
       stepDescription,
       'array',
     ) as Action<Array.Method>[][];
 
-    return (
-      <VisualAlgo
-        code={currentApi && code[currentApi]}
-        explanation={currentApi && explanation[currentApi]}
-        stepDescription={stepDescription}
-        onStepChange={this.handleStepChange}
-        autoPlay={autoPlay}
-        onPlayingChange={this.handlePlayingChange}
-        ref={this.visualAlgoRef}
-        disableProgressControl={!currentApi}
-        onSideBarWidthChange={this.handleSideBarWidthChange}
+    return data ? (
+      <CanvasContainer>
+        <ArrayDS
+          x={100}
+          y={200}
+          blockType='block'
+          initialData={data}
+          currentStep={currentStep}
+          instructions={arrayInstruction}
+          totalStep={stepDescription.length - 1}
+          handleExecuteApi={onExecuteApi}
+          interactive
+          executedApiCount={executedApiCount}
+          currentApi={currentApi}
+          dropdownDisabled={autoPlay}
+        />
+      </CanvasContainer>
+    ) : (
+      <div
+        className='h-full fx-center linked-list-page__init-button'
+        style={{ transform: `translateX(-${(sideBarWidth || 0) / 2}px)` }}
       >
-        {data ? (
-          <CanvasContainer>
-            <ArrayDS
-              x={100}
-              y={200}
-              blockType='block'
-              initialData={data}
-              currentStep={currentStep}
-              instructions={arrayInstruction}
-              totalStep={stepDescription.length - 1}
-              //@ts-ignore
-              handleExecuteApi={this.handleExecuteApi}
-              interactive
-              executedApiCount={executedApiCount}
-              currentApi={currentApi}
-              dropdownDisabled={autoPlay}
-            />
-          </CanvasContainer>
-        ) : (
-          <div
-            className='h-full fx-center linked-list-page__init-button'
-            style={{ transform: `translateX(-${(sideBarWidth || 0) / 2}px)` }}
-          >
-            <InitArrayInput
-              onSubmit={arrayData => this.setState({ data: arrayData })}
-              text='Create new array'
-            />
-          </div>
-        )}
-      </VisualAlgo>
+        <InitArrayInput onSubmit={onDataChange} text='Create new array' />
+      </div>
     );
   }
 }
 
-export default ArrayPage;
+export default withDSPage<Array.Api>({
+  code,
+  explanation,
+  instructionGenerator: arrayInstruction,
+})(ArrayPage);
