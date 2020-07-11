@@ -1,150 +1,94 @@
 import React, { Component } from 'react';
 
-// import { CanvasContainer, HashTableDS, InitHashTableInput } from 'components';
 import { CanvasContainer, HashTableDS } from 'components';
-import { VisualAlgo } from 'layout';
+import withDSPage, { WithDSPage } from 'hocs/withDSPage';
 import { extractInstructionFromDescription } from 'utils';
 import { hashTableInstruction } from 'instructions/HashTable';
 import { code, explanation } from '../codes/HashTable';
-import { Action, ObjectType, BaseDSPageState } from 'types';
+import { Action, ObjectType } from 'types';
 import { HashTable } from 'types/ds/HashTable.d';
-import { DEFAULT_SIDEBAR_WIDTH } from '../constants';
-import { ConsoleSqlOutlined } from '@ant-design/icons';
-import { faChessKing } from '@fortawesome/free-solid-svg-icons';
 
-interface IState extends BaseDSPageState {
-  data?: ObjectType<string | number>;
-  currentApi?: HashTable.Api;
+interface IState {
   collisionResolution: 'chaining' | 'linearProbe';
-  executedApiCount: number;
 }
 
-interface IProps {}
-
-export class HashTablePage extends Component<IProps, IState> {
-  private visualAlgoRef: React.RefObject<any>;
-
-  constructor(props: IProps) {
+export class HashTablePage extends Component<
+  WithDSPage<HashTable.Api>,
+  IState
+> {
+  constructor(props: WithDSPage<HashTable.Api>) {
     super(props);
 
     this.state = {
-      stepDescription: [],
-      autoPlay: false,
-      data: {
-        a: 1,
-        b: 2,
-        l: 3,
-      },
       collisionResolution: 'chaining',
-      executedApiCount: 0,
-      sideBarWidth: DEFAULT_SIDEBAR_WIDTH,
     };
-    this.visualAlgoRef = React.createRef();
   }
 
-  handleStepChange = (stepIndex: number) => {
-    this.setState({ currentStep: stepIndex });
-  };
-
-  handlePlayingChange = (newPlayingState: boolean) => {
-    this.setState({ autoPlay: newPlayingState });
-  };
-
-  handleExecuteApi = async (api: HashTable.Api, params: ObjectType<any>) => {
-    const { collisionResolution, executedApiCount } = this.state;
-    const stepDescription = this.generateStepDescription(api, {
-      ...params,
-      collisionResolution,
+  componentDidMount() {
+    const { onDataChange } = this.props;
+    onDataChange({
+      a: 1,
+      b: 2,
+      l: 3,
     });
-    const isSwitchingToNewApi = executedApiCount !== 0;
-    if (isSwitchingToNewApi) await this.resetVisualAlgoState();
-
-    this.setState({
-      stepDescription,
-      autoPlay: true,
-      currentApi: api,
-      executedApiCount: executedApiCount + 1,
-      currentStep: -1,
-    });
-  };
-
-  resetVisualAlgoState() {
-    const component = this.visualAlgoRef.current;
-    if (component) {
-      component.resetForNewApi();
-    }
   }
 
-  generateStepDescription(currentApi: HashTable.Api, params: ObjectType<any>) {
-    const { data } = this.state;
-    if (!currentApi) return [];
-    return hashTableInstruction(data!, currentApi, params);
-  }
-
-  handleSideBarWidthChange = (newWidth: number) => {
-    const { data } = this.state;
-    if (!data) this.setState({ sideBarWidth: newWidth });
+  handleExecuteApi = (api: HashTable.Api, params: ObjectType<any>) => {
+    const { onExecuteApi } = this.props;
+    const { collisionResolution } = this.state;
+    onExecuteApi(api, { ...params, collisionResolution });
   };
 
   render() {
     const {
       data,
+      onDataChange,
       currentStep,
-      currentApi,
       stepDescription,
       autoPlay,
-      collisionResolution,
       executedApiCount,
       sideBarWidth,
-    } = this.state;
+    } = this.props;
+    const { collisionResolution } = this.state;
     const hashTableInstruction = extractInstructionFromDescription(
       stepDescription,
       'hashTable',
     ) as Action<HashTable.Method>[][];
 
-    return (
-      <VisualAlgo
-        code={currentApi && code[currentApi]}
-        explanation={currentApi && explanation[currentApi]}
-        stepDescription={stepDescription}
-        onStepChange={this.handleStepChange}
-        autoPlay={autoPlay}
-        onPlayingChange={this.handlePlayingChange}
-        ref={this.visualAlgoRef}
-        onSideBarWidthChange={this.handleSideBarWidthChange}
+    return data ? (
+      <CanvasContainer>
+        <HashTableDS
+          x={100}
+          y={200}
+          blockType='block'
+          initialData={data}
+          currentStep={currentStep}
+          instructions={hashTableInstruction}
+          totalStep={stepDescription.length - 1}
+          //@ts-ignore
+          handleExecuteApi={this.handleExecuteApi}
+          collisionResolution={collisionResolution}
+          interactive
+          dropdownDisabled={autoPlay}
+          executedApiCount={executedApiCount}
+        />
+      </CanvasContainer>
+    ) : (
+      <div
+        className='h-full fx-center linked-list-page__init-button'
+        style={{ transform: `translateX(-${(sideBarWidth || 0) / 2}px)` }}
       >
-        {data ? (
-          <CanvasContainer>
-            <HashTableDS
-              x={100}
-              y={200}
-              blockType='block'
-              initialData={data}
-              currentStep={currentStep}
-              instructions={hashTableInstruction}
-              totalStep={stepDescription.length - 1}
-              //@ts-ignore
-              handleExecuteApi={this.handleExecuteApi}
-              collisionResolution={collisionResolution}
-              interactive
-              dropdownDisabled={autoPlay}
-              executedApiCount={executedApiCount}
-            />
-          </CanvasContainer>
-        ) : (
-          <div
-            className='h-full fx-center linked-list-page__init-button'
-            style={{ transform: `translateX(-${(sideBarWidth || 0) / 2}px)` }}
-          >
-            {/* <InitHashTableInput
-              onSubmit={hashTableData => this.setState({ data: hashTableData })}
-              text='Create new hashTable'
-            /> */}
-          </div>
-        )}
-      </VisualAlgo>
+        {/* <InitHashTableInput
+            onSubmit={hashTableData => this.setState({ data: hashTableData })}
+            text='Create new hashTable'
+          /> */}
+      </div>
     );
   }
 }
 
-export default HashTablePage;
+export default withDSPage<HashTable.Api>({
+  code,
+  explanation,
+  instructionGenerator: hashTableInstruction,
+})(HashTablePage);

@@ -17,7 +17,8 @@ interface IState extends BaseDSPageState {
   executedApiCount: number;
 }
 interface DSPageParams<ApiType> {
-  code: ObjectType<string>;
+  //@ts-ignore
+  code: Record<ApiType, string[]>;
   explanation: ObjectType<string[]>;
   instructionGenerator: (
     data: any[],
@@ -73,7 +74,7 @@ function withDSPage<ApiType = string>(initObject: DSPageParams<ApiType>) {
         }
       }
 
-      generateStepDescription(currentApi: string, params: ObjectType<any>) {
+      generateStepDescription(currentApi: ApiType, params: ObjectType<any>) {
         const { instructionGenerator } = initObject;
         const { data } = this.state;
         if (!currentApi) return [];
@@ -90,21 +91,14 @@ function withDSPage<ApiType = string>(initObject: DSPageParams<ApiType>) {
       };
 
       render() {
-        const {
-          data,
-          currentStep,
-          currentApi,
-          stepDescription,
-          autoPlay,
-          executedApiCount,
-          sideBarWidth,
-        } = this.state;
+        const { currentApi, stepDescription, autoPlay } = this.state;
         const { code, explanation } = initObject;
         //@ts-ignore
         const { innerRef, ...rest } = this.props;
 
         return (
           <VisualAlgo
+            //@ts-ignore
             code={currentApi && code[currentApi]}
             explanation={currentApi && explanation[currentApi]}
             stepDescription={stepDescription}
@@ -126,8 +120,6 @@ function withDSPage<ApiType = string>(initObject: DSPageParams<ApiType>) {
         );
       }
     }
-
-    // return WrapperComponent;
 
     return React.forwardRef((props: P, ref) => (
       //@ts-ignore

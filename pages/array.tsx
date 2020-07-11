@@ -9,12 +9,6 @@ import { Action } from 'types';
 import { Array } from 'types/ds/Array.d';
 
 export class ArrayPage extends Component<WithDSPage<Array.Api>> {
-  constructor(props: WithDSPage<Array.Api>) {
-    super(props);
-
-    this.state = {};
-  }
-
   render() {
     const {
       sideBarWidth,
