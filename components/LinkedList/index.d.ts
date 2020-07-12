@@ -16,10 +16,8 @@ export interface IProps extends BaseDSProps {
 }
 
 export interface IState {
-  linkedListModel: LinkedList.Model;
   nodeAboutToAppear: Set<number>;
   nodeAboutToVisit?: number;
-  isVisible: boolean;
 }
 
 export type LinkedListPointerProps = Pick<

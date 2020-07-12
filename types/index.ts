@@ -53,11 +53,14 @@ export interface BaseDSProps {
   currentStep?: number;
   totalStep?: number;
   interactive?: boolean;
-  controlled?: boolean;
   handleExecuteApi?: (apiName: string, params?: ObjectType<any>) => void;
   executedApiCount?: number;
   keepStateWhenSwitchingApi?: boolean;
   dropdownDisabled?: boolean;
+  instructions: Action<string>[][];
+  initialData?: any;
+  data?: any; // In case of controlled component
+  controlled?: boolean;
 }
 
 export interface BaseDSPageState {

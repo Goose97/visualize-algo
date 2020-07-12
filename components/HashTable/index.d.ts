@@ -11,8 +11,6 @@ import { HashTable } from 'types/ds/HashTable';
 import { LinkedList } from 'types/ds/LinkedList';
 
 export interface IState {
-  hashTableModel: HashTable.Model;
-  isVisible: boolean;
   keyAboutToBeAdded: string[];
   keyAboutToBeDeleted: string[];
 }

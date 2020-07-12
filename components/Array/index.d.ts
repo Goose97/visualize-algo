@@ -3,7 +3,6 @@ import { PointCoordinate, BaseDSProps, BaseMemoryBlockProps } from 'types';
 import { Array } from 'types/ds/Array';
 
 export interface IState {
-  arrayModel: Array.Model;
   isVisible: boolean;
   sortingState: {
     currentSortingElementIndex?: number;

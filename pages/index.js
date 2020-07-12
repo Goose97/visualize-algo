@@ -56,6 +56,7 @@ class Home extends Component {
               description={description}
               onClick={() => Router.push(`/${key}`)}
               imgSrc={`/images/${key}.png`}
+              key={key}
             />
           ))}
         </div>
