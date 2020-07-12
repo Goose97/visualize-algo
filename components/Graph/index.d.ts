@@ -11,8 +11,3 @@ export interface IProps extends BaseDSProps {
   initialData?: Graph.Model;
   data?: Graph.Model;
 }
-
-export interface IState {
-  graphModel: Graph.Model;
-  isVisible: boolean;
-}

@@ -1,43 +1,47 @@
 import React, { Component } from 'react';
-import { flatMap, pick, isEqual, groupBy } from 'lodash';
+import { flatMap, pick } from 'lodash';
 
-import { GraphMemoryBlock, GraphLikeEdges, CanvasObserver } from 'components';
+import { GraphMemoryBlock, GraphLikeEdges } from 'components';
 import BinarySearchTreeHTML from './BinarySearchTreeHTML';
+import withDSCore, { WithDSCore } from 'hocs/withDSCore';
 import { IProps, IState, LevelOrderTraversalQueue } from './index.d';
 import { BST } from 'types/ds/BST';
 import transformBSTModel from 'transformers/BST';
-import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
-import { getProgressDirection, keyExist } from 'utils';
 import {
   caculateTreeHeight,
   caculateChildCoordinate,
   isNodeCoordinateCollideWithOtherNode,
   produceInitialBSTData,
 } from './helper';
-import { ObjectType, PointCoordinate, Action, ActionWithStep } from 'types';
+import { ObjectType, PointCoordinate, Action } from 'types';
 
-type PropsWithHoc = IProps & WithReverseStep<BST.Model>;
+type PropsWithHoc = IProps & WithDSCore<BST.Model>;
 
 export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
-  private initialBSTModel: BST.Model;
   private wrapperRef: React.RefObject<SVGUseElement>;
 
   constructor(props: PropsWithHoc) {
     super(props);
-    this.initialBSTModel = this.initBSTModel();
     this.state = {
       nodeAboutToVisit: new Set([]),
-      bstModel: this.initialBSTModel,
-      isVisible: true,
     };
     this.wrapperRef = React.createRef();
+
+    // Register custom transformer
+    props.registerCustomTransformer({
+      visit: this.visit,
+      insert: this.insert,
+    });
+
+    // Register HTML injector
+    props.registerHTMLInjector(this.injectHTMLIntoCanvas);
   }
 
-  initBSTModel(): BST.Model {
-    const { initialData } = this.props;
-    const bstModelWithoutCoordinate = produceInitialBSTData(initialData);
-    const nodeCoordinateByKey = this.getCoordinationsOfTreeNodes(
+  static initBSTModel(props: IProps): BST.Model {
+    const bstModelWithoutCoordinate = produceInitialBSTData(props.initialData);
+    const nodeCoordinateByKey = BinarySearchTreeDS.getCoordinationsOfTreeNodes(
       bstModelWithoutCoordinate,
+      props,
     );
     return bstModelWithoutCoordinate.map(item => ({
       ...item,
@@ -46,15 +50,16 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
     }));
   }
 
-  getCoordinationsOfTreeNodes(
+  static getCoordinationsOfTreeNodes(
     bstModelWithoutCoordinate: Omit<BST.NodeModel, 'x' | 'y'>[],
+    props: IProps,
   ): ObjectType<PointCoordinate> {
     // Level order traversal tree and caculate
     const treeHeight = caculateTreeHeight(bstModelWithoutCoordinate);
     let result: ObjectType<PointCoordinate> = {};
     let root = {
       ...bstModelWithoutCoordinate[0],
-      ...pick(this.props, ['x', 'y']),
+      ...pick(props, ['x', 'y']),
       x: 0,
       y: 0,
       level: 1,
@@ -64,7 +69,7 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
       const { key, x, y, left, right, level } = queue.shift()!;
       result[key] = { x, y };
       if (left !== null) {
-        const leftChild = this.findNodeInTreeByKey(
+        const leftChild = BinarySearchTreeDS.findNodeInTreeByKey(
           bstModelWithoutCoordinate,
           left,
         );
@@ -76,7 +81,7 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
       }
 
       if (right !== null) {
-        const rightChild = this.findNodeInTreeByKey(
+        const rightChild = BinarySearchTreeDS.findNodeInTreeByKey(
           bstModelWithoutCoordinate,
           right,
         );
@@ -98,90 +103,11 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
     return result;
   }
 
-  findNodeInTreeByKey(
+  static findNodeInTreeByKey(
     currentModel: Omit<BST.NodeModel, 'x' | 'y'>[],
     nodeKey: number,
   ) {
     return currentModel.find(({ key }) => key === nodeKey)!;
-  }
-
-  componentDidUpdate(prevProps: IProps) {
-    const {
-      currentStep,
-      reverseToStep,
-      saveStepSnapshots,
-      totalStep,
-      controlled,
-      initialData,
-      dropdownDisabled,
-      interactive,
-      executedApiCount,
-    } = this.props;
-    const { bstModel } = this.state;
-
-    // Update according to algorithm progression
-    if (keyExist(this.props, ['currentStep', 'totalStep', 'instructions'])) {
-      switch (
-        getProgressDirection(
-          currentStep!,
-          prevProps.currentStep!,
-          totalStep!,
-          executedApiCount !== prevProps.executedApiCount &&
-            prevProps.executedApiCount !== 0,
-        )
-      ) {
-        case 'forward':
-          saveStepSnapshots(bstModel, currentStep!);
-          this.handleForward();
-          break;
-
-        case 'backward':
-          reverseToStep(currentStep!);
-          break;
-
-        case 'fastForward':
-          this.handleFastForward();
-          break;
-
-        case 'fastBackward':
-          this.handleFastBackward();
-          break;
-
-        case 'switch':
-          this.handleSwitchApi();
-          break;
-      }
-    }
-
-    // Update according to controlled data
-    if (controlled) {
-      if (!isEqual(initialData, prevProps.initialData)) {
-        this.setState({ bstModel: this.initBSTModel() });
-      }
-    }
-
-    if (interactive && dropdownDisabled !== prevProps.dropdownDisabled) {
-      this.injectHTMLIntoCanvas();
-    }
-  }
-
-  handleForward() {
-    // Treat each action as a transformation function which take a linkedListModel
-    // and return a new one. Consuming multiple actions is merely chaining those
-    // transformations together
-    // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
-    const { bstModel } = this.state;
-    const { currentStep, instructions } = this.props;
-    const actionsToMakeAtThisStep = instructions![currentStep!];
-    if (!actionsToMakeAtThisStep || !actionsToMakeAtThisStep.length) return;
-
-    // This consume pipeline have many side effect in each step. Each
-    // method handle each action has their own side effect
-    const newBSTModel = this.consumeMultipleActions(
-      actionsToMakeAtThisStep,
-      bstModel,
-    );
-    this.setState({ bstModel: newBSTModel });
   }
 
   consumeMultipleActions(
@@ -236,6 +162,7 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
     nodeKeyToVisit: number,
   ) {
     const { nodeAboutToVisit } = this.state;
+    const { updateModel } = this.props;
     const clonedState = new Set(nodeAboutToVisit);
     clonedState.delete(nodeKeyToVisit);
 
@@ -254,7 +181,8 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
       currentModel,
       true,
     );
-    this.setState({ bstModel: newModel, nodeAboutToVisit: clonedState });
+    this.setState({ nodeAboutToVisit: clonedState });
+    updateModel(newModel);
   }
 
   // params: [parentKey, valueToInsert]
@@ -294,7 +222,10 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
   };
 
   reallocateAllTreeNode(currentModel: BST.Model) {
-    const nodeCoordinateByKey = this.getCoordinationsOfTreeNodes(currentModel);
+    const nodeCoordinateByKey = BinarySearchTreeDS.getCoordinationsOfTreeNodes(
+      currentModel,
+      this.props,
+    );
     return currentModel.map(node => ({
       ...node,
       ...nodeCoordinateByKey[node.key],
@@ -321,86 +252,65 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
     };
   }
 
-  handleReverse = (stateOfPreviousStep: BST.Model) => {
-    this.setState({ bstModel: stateOfPreviousStep });
-  };
+  // handleFastForward() {
+  //   const { bstModel } = this.state;
+  //   const { instructions, saveStepSnapshots } = this.props;
+  //   if (!instructions) return;
 
-  handleFastForward() {
-    const { bstModel } = this.state;
-    const { instructions, saveStepSnapshots } = this.props;
-    if (!instructions) return;
+  //   let allActions: ActionWithStep<BST.Method>[] = [];
+  //   for (let i = 0; i < instructions.length; i++) {
+  //     // Replace visit action with vist + focus
+  //     // also add step attribute to each action
+  //     const replacedActions: ActionWithStep<BST.Method>[] = flatMap(
+  //       instructions[i],
+  //       action => {
+  //         const { name, params } = action;
+  //         return name === 'visit'
+  //           ? [
+  //               { name: 'visited', params: params.slice(0, 1), step: i },
+  //               { name: 'focus', params: params.slice(1), step: i },
+  //             ]
+  //           : { ...action, step: i };
+  //       },
+  //     );
 
-    let allActions: ActionWithStep<BST.Method>[] = [];
-    for (let i = 0; i < instructions.length; i++) {
-      // Replace visit action with vist + focus
-      // also add step attribute to each action
-      const replacedActions: ActionWithStep<BST.Method>[] = flatMap(
-        instructions[i],
-        action => {
-          const { name, params } = action;
-          return name === 'visit'
-            ? [
-                { name: 'visited', params: params.slice(0, 1), step: i },
-                { name: 'focus', params: params.slice(1), step: i },
-              ]
-            : { ...action, step: i };
-        },
-      );
+  //     allActions.push(...replacedActions);
+  //   }
 
-      allActions.push(...replacedActions);
-    }
+  //   const actionsGroupedByStep = groupBy(allActions, item => item.step);
 
-    const actionsGroupedByStep = groupBy(allActions, item => item.step);
-
-    // Loop through all the action one by one and keep updating the final model
-    let finalLinkedListModel = Object.entries(actionsGroupedByStep).reduce<
-      BST.Model
-    >((currentModel, [step, actionsToMakeAtThisStep]) => {
-      saveStepSnapshots(currentModel, +step);
-      return this.consumeMultipleActions(
-        actionsToMakeAtThisStep,
-        currentModel,
-        true,
-      );
-    }, bstModel);
-    this.updateWithoutAnimation(finalLinkedListModel);
-  }
-
-  handleFastBackward() {
-    this.updateWithoutAnimation(this.initialBSTModel);
-  }
-
-  handleSwitchApi() {
-    const { keepStateWhenSwitchingApi } = this.props;
-    if (!keepStateWhenSwitchingApi) {
-      this.handleFastBackward();
-    }
-  }
-
-  updateWithoutAnimation(newBSTModel: BST.Model) {
-    this.setState({ bstModel: newBSTModel, isVisible: false }, () =>
-      this.setState({ isVisible: true }),
-    );
-  }
+  //   // Loop through all the action one by one and keep updating the final model
+  //   let finalLinkedListModel = Object.entries(actionsGroupedByStep).reduce<
+  //     BST.Model
+  //   >((currentModel, [step, actionsToMakeAtThisStep]) => {
+  //     saveStepSnapshots(currentModel, +step);
+  //     return this.consumeMultipleActions(
+  //       actionsToMakeAtThisStep,
+  //       currentModel,
+  //       true,
+  //     );
+  //   }, bstModel);
+  //   this.updateWithoutAnimation(finalLinkedListModel);
+  // }
 
   renderNodes() {
-    const { bstModel } = this.state;
-    return bstModel.map(node => <GraphMemoryBlock {...node} />);
+    const { model } = this.props;
+    return model.map(node => <GraphMemoryBlock {...node} />);
   }
 
   renderPointerLinks() {
-    const { bstModel, nodeAboutToVisit } = this.state;
-    return flatMap(bstModel, node => {
+    const { model } = this.props;
+    const { nodeAboutToVisit } = this.state;
+    return flatMap(model, node => {
       const { left, right, key, visited } = node;
-      const fromNode = this.findNodeCoordinateByKey(bstModel, key);
+      const fromNode = this.findNodeCoordinateByKey(model, key);
 
       return [left, right].map(child => {
         if (!child) return null;
-        const { visited: childVisited } = this.findNodeInTreeByKey(
-          bstModel,
-          child,
-        );
-        const toNode = this.findNodeCoordinateByKey(bstModel, child);
+        const {
+          visited: childVisited,
+        } = BinarySearchTreeDS.findNodeInTreeByKey(model, child);
+        const toNode = this.findNodeCoordinateByKey(model, child);
 
         return (
           <GraphLikeEdges
@@ -408,7 +318,7 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
             from={pick(fromNode, ['x', 'y'])}
             to={pick(toNode, ['x', 'y'])}
             key={child}
-            visible={!!this.isNodeVisible(bstModel, child)}
+            visible={!!this.isNodeVisible(model, child)}
             visited={visited && childVisited}
             following={nodeAboutToVisit.has(child)}
             arrowDirection='right'
@@ -430,20 +340,11 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
     return !!currentModel.find(({ key }) => key === nodeKey)?.visible;
   }
 
-  componentDidMount() {
-    const { interactive } = this.props;
-    if (interactive) {
-      this.injectHTMLIntoCanvas();
-      CanvasObserver.register(this.injectHTMLIntoCanvas);
-    }
-  }
-
   injectHTMLIntoCanvas = () => {
-    const { bstModel } = this.state;
-    const { handleExecuteApi, dropdownDisabled } = this.props;
+    const { handleExecuteApi, dropdownDisabled, model } = this.props;
     setTimeout(() => {
       BinarySearchTreeHTML.renderToView({
-        model: bstModel,
+        model,
         wrapperElement: this.wrapperRef.current,
         coordinate: pick(this.props, ['x', 'y']),
         apiHandler: handleExecuteApi,
@@ -453,25 +354,25 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
   };
 
   render() {
-    const { isVisible } = this.state;
     return (
-      isVisible && (
-        <>
-          <use
-            href='#binary-search-tree'
-            {...pick(this.props, ['x', 'y'])}
-            ref={this.wrapperRef}
-          />
-          <defs>
-            <g id='binary-search-tree' x='0' y='0'>
-              {this.renderPointerLinks()}
-              {this.renderNodes()}
-            </g>
-          </defs>
-        </>
-      )
+      <>
+        <use
+          href='#binary-search-tree'
+          {...pick(this.props, ['x', 'y'])}
+          ref={this.wrapperRef}
+        />
+        <defs>
+          <g id='binary-search-tree' x='0' y='0'>
+            {this.renderPointerLinks()}
+            {this.renderNodes()}
+          </g>
+        </defs>
+      </>
     );
   }
 }
 
-export default withReverseStep<BST.Model, PropsWithHoc>(BinarySearchTreeDS);
+export default withDSCore<BST.Model, BST.Method>({
+  initModel: BinarySearchTreeDS.initBSTModel,
+  dataTransformer: transformBSTModel,
+})(BinarySearchTreeDS);

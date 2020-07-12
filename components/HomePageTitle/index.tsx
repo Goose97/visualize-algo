@@ -84,6 +84,7 @@ export class HomePageTitle extends Component<IProps, IState> {
               <span
                 className='f-big-1 italic'
                 style={{ transform: `translateY(${translateY}px)` }}
+                key={content}
               >
                 {content}
               </span>

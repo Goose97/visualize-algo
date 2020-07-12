@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { flatMap, groupBy, isFunction } from 'lodash';
+import { flatMap, groupBy, isFunction, isEqual } from 'lodash';
 
 import { CanvasObserver } from 'components';
 import { BaseDSProps, Action, ObjectType } from 'types';
@@ -8,11 +8,9 @@ import { keyExist, getProgressDirection } from 'utils';
 export interface WithDSCore<T> {
   model: T;
   isVisible: boolean;
-  saveReverseLog: (actionName: string, params: any[], step: number) => void;
-  saveStepSnapshots: (snapshot: T, step: number) => void;
-  reverseToStep: (targetStep: number) => void;
   registerCustomTransformer: (callbackObject: ObjectType<Function>) => void;
   registerHTMLInjector: (injector: () => void) => void;
+  updateModel: (model: T) => void;
 }
 
 interface IState<T> {
@@ -45,7 +43,7 @@ function withDSCore<Model, Method extends string>(
 ) {
   return <P extends BaseDSProps>(Page: React.ComponentType<P>) => {
     class WrapperComponent extends Component<
-      P & WithDSCore<Model>,
+      Omit<P, keyof WithDSCore<Model>>,
       IState<Model>
     > {
       // DS core stuff
@@ -60,10 +58,10 @@ function withDSCore<Model, Method extends string>(
       private stepSnapshots: SnapshotLog<Model>[];
       private ref: React.RefObject<React.ReactElement>;
 
-      constructor(props: P & WithDSCore<Model>) {
+      constructor(props: P) {
         super(props);
         this.state = {
-          model: initObject.initModel(props.initialData),
+          model: initObject.initModel(this.getPassingProps()),
           isVisible: true,
         };
 
@@ -83,14 +81,15 @@ function withDSCore<Model, Method extends string>(
         }
       }
 
-      componentDidUpdate(prevProps: P & WithDSCore<Model>) {
+      componentDidUpdate(prevProps: P) {
         const {
           currentStep,
-          reverseToStep,
           totalStep,
           executedApiCount,
           dropdownDisabled,
           interactive,
+          controlled,
+          data,
         } = this.props;
         const { model } = this.state;
 
@@ -112,7 +111,7 @@ function withDSCore<Model, Method extends string>(
               break;
 
             case 'backward':
-              reverseToStep(currentStep!);
+              this.reverseToStep(currentStep!);
               break;
 
             case 'fastForward':
@@ -135,6 +134,14 @@ function withDSCore<Model, Method extends string>(
           isFunction(this.htmlInjector)
         ) {
           this.htmlInjector();
+        }
+
+        // Update according to controlled data
+        if (controlled) {
+          if (!isEqual(data, prevProps.data)) {
+            const newModel = initObject.initModel(this.getPassingProps());
+            this.updateModel(newModel);
+          }
         }
       }
 
@@ -279,22 +286,24 @@ function withDSCore<Model, Method extends string>(
         return component || {};
       }
 
-      render() {
-        //@ts-ignore
-        const { innerRef, ...rest } = this.props;
-        const { isVisible } = this.state;
+      updateModel = (newModel: Model) => {
+        this.setState({ model: newModel });
+      };
 
-        return (
-          isVisible && (
-            <Page
-              {...(rest as P)}
-              {...this.state}
-              ref={this.ref}
-              registerCustomTransformer={this.registerCustomTransformer}
-              registerHTMLInjector={this.registerHTMLInjector}
-            />
-          )
-        );
+      getPassingProps() {
+        return {
+          ...this.props,
+          ...this.state,
+          registerCustomTransformer: this.registerCustomTransformer,
+          registerHTMLInjector: this.registerHTMLInjector,
+          updateModel: this.updateModel,
+        };
+      }
+
+      render() {
+        const { isVisible } = this.state;
+        //@ts-ignore
+        return isVisible && <Page {...this.getPassingProps()} ref={this.ref} />;
       }
     }
 

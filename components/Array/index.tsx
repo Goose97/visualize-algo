@@ -12,17 +12,14 @@ import { ARRAY_BLOCK_WIDTH } from '../../constants';
 
 type PropsWithHoc = IProps & WithDSCore<Array.Model>;
 
-export class ArrayDS extends Component<PropsWithHoc, IState> {
-  private initialArrayModel: Array.Model;
+class ArrayDS extends Component<PropsWithHoc, IState> {
   private wrapperRef: React.RefObject<SVGUseElement>;
   private sortingLineInitialX?: number; // save initial X so we can perform animation
 
   constructor(props: PropsWithHoc) {
     super(props);
 
-    this.initialArrayModel = [];
     this.state = {
-      arrayModel: this.initialArrayModel,
       isVisible: true,
       sortingState: {},
     };
@@ -41,8 +38,8 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     props.registerHTMLInjector(this.injectHTMLIntoCanvas);
   }
 
-  static initArrayModel(initialData: number[]): Array.Model {
-    return initialData.map((value, index) => ({
+  static initArrayModel(props: IProps): Array.Model {
+    return props.initialData.map((value, index) => ({
       value,
       index,
       visible: true,
@@ -63,11 +60,10 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
   }
 
   injectHTMLIntoCanvas = () => {
-    const { arrayModel } = this.state;
-    const { handleExecuteApi, dropdownDisabled } = this.props;
+    const { handleExecuteApi, dropdownDisabled, model } = this.props;
     setTimeout(() => {
       ArrayHTML.renderToView({
-        model: arrayModel,
+        model,
         wrapperElement: this.wrapperRef.current,
         coordinate: pick(this.props, ['x', 'y']),
         apiHandler: handleExecuteApi,
@@ -263,7 +259,7 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
   }
 }
 
-export default withDSCore({
+export default withDSCore<Array.Model, Array.Method>({
   initModel: ArrayDS.initArrayModel,
   dataTransformer: transformArrayModel,
 })(ArrayDS);
