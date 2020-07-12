@@ -1,23 +1,16 @@
 import React, { Component } from 'react';
-import { pick, groupBy, flatMap } from 'lodash';
+import { pick } from 'lodash';
 
-import { Line, AutoTransformGroup, CanvasObserver } from 'components';
-import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
-import { getProgressDirection, keyExist } from 'utils';
+import withDSCore, { WithDSCore } from 'hocs/withDSCore';
 import { IProps, IState } from './index.d';
-import { Action } from 'types';
 import ArrayMemoryBlock from './ArrayMemoryBlock';
 import SortSeperationLine from './SortSeperationLine';
 import ArrayHTML from './ArrayHTML';
 import transformArrayModel from 'transformers/Array';
 import { Array } from 'types/ds/Array';
-import {
-  ARRAY_BLOCK_WIDTH,
-  ARRAY_BLOCK_HEIGHT,
-  LINE_HEIGHT,
-} from '../../constants';
+import { ARRAY_BLOCK_WIDTH } from '../../constants';
 
-type PropsWithHoc = IProps & WithReverseStep<Array.Model>;
+type PropsWithHoc = IProps & WithDSCore<Array.Model>;
 
 export class ArrayDS extends Component<PropsWithHoc, IState> {
   private initialArrayModel: Array.Model;
@@ -27,17 +20,28 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
   constructor(props: PropsWithHoc) {
     super(props);
 
-    this.initialArrayModel = this.initArrayModel(props);
+    this.initialArrayModel = [];
     this.state = {
       arrayModel: this.initialArrayModel,
       isVisible: true,
       sortingState: {},
     };
     this.wrapperRef = React.createRef();
+
+    // Register custom transformer
+    props.registerCustomTransformer({
+      push: this.push,
+      setUnsortedLine: this.setUnsortedLine,
+      setCurrentInsertionSortNode: this.setCurrentInsertionSortNode,
+      unsetCurrentInsertionSortNode: this.unsetCurrentInsertionSortNode,
+      resetAll: this.resetAll,
+    });
+
+    // Register HTML injector
+    props.registerHTMLInjector(this.injectHTMLIntoCanvas);
   }
 
-  initArrayModel(props: PropsWithHoc): Array.Model {
-    const { initialData } = props;
+  static initArrayModel(initialData: number[]): Array.Model {
     return initialData.map((value, index) => ({
       value,
       index,
@@ -48,6 +52,31 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     }));
   }
 
+  componentDidUpdate(prevProps: IProps) {
+    const { currentApi } = this.props;
+    if (currentApi !== prevProps.currentApi) {
+      this.setState({
+        sortingState: {},
+      });
+      this.sortingLineInitialX = undefined;
+    }
+  }
+
+  injectHTMLIntoCanvas = () => {
+    const { arrayModel } = this.state;
+    const { handleExecuteApi, dropdownDisabled } = this.props;
+    setTimeout(() => {
+      ArrayHTML.renderToView({
+        model: arrayModel,
+        wrapperElement: this.wrapperRef.current,
+        coordinate: pick(this.props, ['x', 'y']),
+        apiHandler: handleExecuteApi,
+        disabled: dropdownDisabled,
+      });
+    }, 0);
+  };
+
+  // Custom transformers
   push(currentModel: Array.Model, params: [number]) {
     const biggestKey = currentModel.length
       ? Math.max(...currentModel.map(({ key }) => key))
@@ -58,111 +87,7 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
       index: currentModel.length,
       visible: true,
     };
-    const newModel = transformArrayModel(currentModel, 'push', [newArrayNode]);
-    return newModel;
-  }
-
-  componentDidUpdate(prevProps: IProps) {
-    const {
-      currentStep,
-      reverseToStep,
-      saveStepSnapshots,
-      totalStep,
-      executedApiCount,
-      dropdownDisabled,
-      currentApi,
-      interactive,
-    } = this.props;
-    const { arrayModel } = this.state;
-
-    if (keyExist(this.props, ['currentStep', 'totalStep', 'instructions'])) {
-      switch (
-        getProgressDirection(
-          currentStep!,
-          prevProps.currentStep!,
-          totalStep!,
-          executedApiCount !== prevProps.executedApiCount &&
-            prevProps.executedApiCount !== 0,
-        )
-      ) {
-        case 'forward':
-          saveStepSnapshots(arrayModel, currentStep!);
-          this.handleForward();
-          break;
-
-        case 'backward':
-          reverseToStep(currentStep!);
-          break;
-
-        case 'fastForward':
-          this.handleFastForward();
-          break;
-
-        case 'fastBackward':
-          this.handleFastBackward();
-          break;
-
-        case 'switch':
-          this.handleSwitchApi();
-          break;
-      }
-    }
-
-    if (interactive && dropdownDisabled !== prevProps.dropdownDisabled) {
-      this.injectHTMLIntoCanvas();
-    }
-
-    if (currentApi !== prevProps.currentApi) {
-      this.setState({
-        sortingState: {},
-      });
-      this.sortingLineInitialX = undefined;
-    }
-  }
-
-  handleForward() {
-    // Treat each action as a transformation function which take a linkedListModel
-    // and return a new one. Consuming multiple actions is merely chaining those
-    // transformations together
-    // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
-    const { arrayModel } = this.state;
-    const { currentStep, instructions } = this.props;
-    const actionsToMakeAtThisStep = instructions[currentStep!];
-    if (!actionsToMakeAtThisStep || !actionsToMakeAtThisStep.length) return;
-
-    // This consume pipeline have many side effect in each step. Each
-    // method handle each action has their own side effect
-
-    const newArrayModel = this.consumeMultipleActions(
-      actionsToMakeAtThisStep,
-      arrayModel,
-    );
-    this.setState({ arrayModel: newArrayModel });
-  }
-
-  consumeMultipleActions(
-    actionList: Action<Array.Method>[],
-    currentModel: Array.Model,
-    onlyTranformData?: boolean,
-  ): Array.Model {
-    // Treat each action as a transformation function which take a linkedListModel
-    // and return a new one. Consuming multiple actions is merely chaining those
-    // transformations together
-    // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
-    return actionList.reduce<Array.Model>((finalModel, action) => {
-      // the main function of a handler is doing side effect before transform model
-      // a handler must also return a new model
-      // if no handler is specify, just transform model right away
-      const { name, params } = action;
-      //@ts-ignore
-      const customHandler = this[name];
-
-      if (typeof customHandler === 'function') {
-        return customHandler(finalModel, params, onlyTranformData);
-      } else {
-        return transformArrayModel(finalModel, name, params);
-      }
-    }, currentModel);
+    return transformArrayModel(currentModel, 'push', [newArrayNode]);
   }
 
   setUnsortedLine = (currentModel: Array.Model, [key]: [number]) => {
@@ -212,69 +137,6 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
       sortingState: {},
     });
     return transformArrayModel(currentModel, 'resetAll', []);
-  };
-
-  handleReverse = (stateOfPreviousStep: Array.Model) => {
-    this.setState({ arrayModel: stateOfPreviousStep });
-  };
-
-  handleFastForward() {
-    const { arrayModel } = this.state;
-    const { instructions, saveStepSnapshots } = this.props;
-    const allActions = flatMap(instructions);
-    const actionsGroupedByStep = groupBy(allActions, item => item.step);
-
-    // Loop through all the action one by one and keep updating the final model
-    let finalArrayModel = Object.entries(actionsGroupedByStep).reduce<
-      Array.Model
-    >((currentModel, [step, actionsToMakeAtThisStep]) => {
-      saveStepSnapshots(currentModel, +step);
-      return this.consumeMultipleActions(
-        actionsToMakeAtThisStep,
-        currentModel,
-        true,
-      );
-    }, arrayModel);
-    this.updateWithoutAnimation(finalArrayModel);
-  }
-
-  handleFastBackward() {
-    this.updateWithoutAnimation(this.initialArrayModel);
-  }
-
-  updateWithoutAnimation(newLinkedListModel: Array.Model) {
-    this.setState({ arrayModel: newLinkedListModel, isVisible: false }, () =>
-      this.setState({ isVisible: true }),
-    );
-  }
-
-  handleSwitchApi() {
-    const { keepStateWhenSwitchingApi } = this.props;
-    if (!keepStateWhenSwitchingApi) {
-      this.handleFastBackward();
-    }
-  }
-
-  componentDidMount() {
-    const { interactive } = this.props;
-    if (interactive) {
-      this.injectHTMLIntoCanvas();
-      CanvasObserver.register(this.injectHTMLIntoCanvas);
-    }
-  }
-
-  injectHTMLIntoCanvas = () => {
-    const { arrayModel } = this.state;
-    const { handleExecuteApi, dropdownDisabled } = this.props;
-    setTimeout(() => {
-      ArrayHTML.renderToView({
-        model: arrayModel,
-        wrapperElement: this.wrapperRef.current,
-        coordinate: pick(this.props, ['x', 'y']),
-        apiHandler: handleExecuteApi,
-        disabled: dropdownDisabled,
-      });
-    }, 0);
   };
 
   renderSeparationLine = () => {
@@ -339,28 +201,24 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
   }
 
   findArrayNodeByKey(key: number) {
-    const { arrayModel } = this.state;
-    return arrayModel.find(({ key: keyToFind }) => key === keyToFind);
+    const { model } = this.props;
+    return model.find(({ key: keyToFind }) => key === keyToFind);
   }
 
   checkIndexState(index: number, stateProperty: keyof Array.Node) {
-    const { arrayModel } = this.state;
-    const arrayItem = arrayModel.find(
-      ({ index: itemIndex }) => index === itemIndex,
-    );
+    const { model } = this.props;
+    const arrayItem = model.find(({ index: itemIndex }) => index === itemIndex);
     if (!arrayItem) return false;
     return !!arrayItem[stateProperty];
   }
 
   render() {
     const {
-      arrayModel,
-      isVisible,
       sortingState: { currentSortingElementKey },
     } = this.state;
-    const { blockType } = this.props;
+    const { blockType, model } = this.props;
 
-    const hollowArrayMemoryBlock = arrayModel.map(({ key }, index) => (
+    const hollowArrayMemoryBlock = model.map(({ key }, index) => (
       <ArrayMemoryBlock
         key={key}
         visible
@@ -372,7 +230,7 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
       />
     ));
 
-    const arrayMemoryBlock = arrayModel.map(arrayNode => {
+    const arrayMemoryBlock = model.map(arrayNode => {
       const { key } = arrayNode;
       return (
         <ArrayMemoryBlock
@@ -386,25 +244,26 @@ export class ArrayDS extends Component<PropsWithHoc, IState> {
     });
 
     return (
-      isVisible && (
-        <>
-          <use
-            href='#array'
-            {...pick(this.props, ['x', 'y'])}
-            ref={this.wrapperRef}
-          />
-          <defs>
-            <g id='array'>
-              {this.renderCurrentSortingItem()}
-              {hollowArrayMemoryBlock}
-              {arrayMemoryBlock}
-              {this.renderSeparationLine()}
-            </g>
-          </defs>
-        </>
-      )
+      <>
+        <use
+          href='#array'
+          {...pick(this.props, ['x', 'y'])}
+          ref={this.wrapperRef}
+        />
+        <defs>
+          <g id='array'>
+            {this.renderCurrentSortingItem()}
+            {hollowArrayMemoryBlock}
+            {arrayMemoryBlock}
+            {this.renderSeparationLine()}
+          </g>
+        </defs>
+      </>
     );
   }
 }
 
-export default withReverseStep<Array.Model, PropsWithHoc>(ArrayDS);
+export default withDSCore({
+  initModel: ArrayDS.initArrayModel,
+  dataTransformer: transformArrayModel,
+})(ArrayDS);

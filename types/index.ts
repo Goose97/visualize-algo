@@ -58,6 +58,8 @@ export interface BaseDSProps {
   executedApiCount?: number;
   keepStateWhenSwitchingApi?: boolean;
   dropdownDisabled?: boolean;
+  initialData?: any;
+  instructions: Action<string>[][];
 }
 
 export interface BaseDSPageState {
