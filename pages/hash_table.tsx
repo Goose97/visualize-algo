@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { CanvasContainer, HashTableDS } from 'components';
+import { CanvasContainer, HashTableDS, InitHashTableInput } from 'components';
 import withDSPage, { WithDSPage } from 'hocs/withDSPage';
 import { extractInstructionFromDescription } from 'utils';
 import { hashTableInstruction } from 'instructions/HashTable';
@@ -24,14 +24,14 @@ export class HashTablePage extends Component<
     };
   }
 
-  componentDidMount() {
-    const { onDataChange } = this.props;
-    onDataChange({
-      a: 1,
-      b: 2,
-      l: 3,
-    });
-  }
+  // componentDidMount() {
+  //   const { onDataChange } = this.props;
+  //   onDataChange({
+  //     a: 1,
+  //     b: 2,
+  //     l: 3,
+  //   });
+  // }
 
   handleExecuteApi = (api: HashTable.Api, params: ObjectType<any>) => {
     const { onExecuteApi } = this.props;
@@ -78,6 +78,12 @@ export class HashTablePage extends Component<
         className='h-full fx-center linked-list-page__init-button'
         style={{ transform: `translateX(-${(sideBarWidth || 0) / 2}px)` }}
       >
+        <InitHashTableInput
+          onSubmit={(data, collisionResolution) => {
+            onDataChange(data);
+            this.setState({ collisionResolution });
+          }}
+        />
         {/* <InitHashTableInput
             onSubmit={hashTableData => this.setState({ data: hashTableData })}
             text='Create new hashTable'

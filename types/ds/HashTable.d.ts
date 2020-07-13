@@ -37,9 +37,11 @@ export declare namespace HashTable {
     | 'deleteValue'
     | 'resetAll';
 
+  export type CollisionResolution = 'chaining' | 'linearProbe';
+
   export interface InsertParams {
     key: string;
     value: number;
-    collisionResolution: 'chaining' | 'linearProbe';
+    collisionResolution: CollisionResolution;
   }
 }
