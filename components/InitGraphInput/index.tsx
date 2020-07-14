@@ -1,6 +1,5 @@
 import React, { Component, MouseEvent } from 'react';
 import ReactDOM from 'react-dom';
-import { Input } from 'antd';
 
 import { Button, CustomModal, GraphDS } from 'components';
 import withExtendClassName, {
@@ -15,8 +14,6 @@ import { IProps, IState } from './index.d';
 import { GRAPH_NODE_RADIUS } from '../../constants';
 import { PointCoordinate } from 'types';
 import { Graph } from 'types/ds/Graph';
-
-const { TextArea } = Input;
 
 type PropsWithHoc = IProps & WithExtendClassName;
 
@@ -160,7 +157,9 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
         return value != null ? parseInt(value) : 0;
       });
 
-      const inRangeOfLine = (mouseY - startY) * (mouseY - endY) < 0;
+      const inRangeOfLine =
+        (mouseY - startY) * (mouseY - endY) < 0 ||
+        (mouseX - startX) * (mouseX - endX) < 0;
       const distance = caculateDistanceToALine(
         { x: mouseX, y: mouseY },
         { x: startX, y: startY },
