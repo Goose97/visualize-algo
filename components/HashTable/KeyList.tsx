@@ -80,7 +80,7 @@ class KeyList extends Component<KeyListProps> {
           y={-20}
           dominantBaseline='middle'
           textAnchor='middle'
-          className='hash-table-key-list__title'
+          className='f-big-2 has-transition italic'
         >
           Keys
         </text>
