@@ -24,15 +24,6 @@ export class HashTablePage extends Component<
     };
   }
 
-  // componentDidMount() {
-  //   const { onDataChange } = this.props;
-  //   onDataChange({
-  //     a: 1,
-  //     b: 2,
-  //     l: 3,
-  //   });
-  // }
-
   handleExecuteApi = (api: HashTable.Api, params: ObjectType<any>) => {
     const { onExecuteApi } = this.props;
     const { collisionResolution } = this.state;
@@ -84,10 +75,6 @@ export class HashTablePage extends Component<
             this.setState({ collisionResolution });
           }}
         />
-        {/* <InitHashTableInput
-            onSubmit={hashTableData => this.setState({ data: hashTableData })}
-            text='Create new hashTable'
-          /> */}
       </div>
     );
   }

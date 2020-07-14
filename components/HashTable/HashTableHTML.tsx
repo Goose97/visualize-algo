@@ -1,4 +1,6 @@
 import React from 'react';
+import { Tooltip } from 'antd';
+import { QuestionCircleTwoTone } from '@ant-design/icons';
 
 import { HTMLRenderer, DropdownWithParamsInput } from 'components';
 import { getCanvasScaleFactor } from 'utils';
@@ -26,32 +28,50 @@ const requiredParams = {
   },
 };
 
+const hashFunctionTooltip = (
+  <span>
+    We use a simple version of hash function:{' '}
+    <em>f(key) = (sum of letters charcode) mod 10</em>
+  </span>
+);
+
 export class HashTableHTML {
   static renderToView(params: HTMLRendererParams<HashTable.Model>) {
-    const { wrapperElement, coordinate, apiHandler, disabled } = params;
+    const { wrapperElement } = params;
     if (wrapperElement) {
-      const memoryBlocks = wrapperElement.querySelector(
+      const { wrapperElement, coordinate, apiHandler, disabled } = params;
+      const memoryBlocks = wrapperElement!.querySelector(
         '.hash-table__memory-blocks',
       );
       if (!memoryBlocks) return;
-
       const scaledFactor = getCanvasScaleFactor();
 
       const {
         height,
         left: wrapperLeft,
-      } = wrapperElement.getBoundingClientRect();
+      } = wrapperElement!.getBoundingClientRect();
       const { left } = memoryBlocks.getBoundingClientRect();
       const width = left + 100 - wrapperLeft;
 
       const elementToRender = (
-        <div style={{ width, height }} className='hash-table-html__wrapper'>
+        <div
+          style={{ width, height }}
+          className='hash-table-html__wrapper relative'
+        >
           <DropdownWithParamsInput
             options={options}
             requiredApiParams={requiredParams}
             handler={apiHandler}
             disabled={disabled}
           />
+
+          <Tooltip title={hashFunctionTooltip}>
+            <QuestionCircleTwoTone
+              twoToneColor='orange'
+              className='absolute'
+              style={{ left: 410 * scaledFactor, top: -30 * scaledFactor }}
+            />
+          </Tooltip>
         </div>
       );
 

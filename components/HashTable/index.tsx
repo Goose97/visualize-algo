@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
-import { pick, groupBy, flatMap } from 'lodash';
+import { pick, groupBy } from 'lodash';
 
-import { CanvasObserver } from 'components';
 import withDSCore, { WithDSCore } from 'hocs/withDSCore';
-import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
-import { getProgressDirection, keyExist } from 'utils';
 import KeyList from './KeyList';
 import HashFunction from './HashFunction';
 import MemoryArray from './MemoryArray';
 import HashTableHTML from './HashTableHTML';
 import HashIndicationArrow from './HashIndicationArrow';
 import { IProps, IState } from './index.d';
-import { Action } from 'types';
 import transformHashTableModel from 'transformers/HashTable';
 import { HashTable } from 'types/ds/HashTable';
 import { caculateKeyHash, initLinearProbeHashTableData } from './helper';
