@@ -191,6 +191,10 @@ $default-dasharray: 8px;
 }
 
 .f-bold {
+  font-weight: 700;
+}
+
+.f-semi-bold {
   font-weight: 600;
 }
 
@@ -294,4 +298,24 @@ $default-dasharray: 8px;
 
 .success-color {
   color: $success-color;
+}
+
+.deemphasized {
+  opacity: 0.15;
+}
+
+.deemphasized-1 {
+  opacity: 0.35;
+}
+
+.deemphasized-2 {
+  opacity: 0.55;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
 }

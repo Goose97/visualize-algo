@@ -8,6 +8,8 @@ interface OwnProps {
   onPlayingChange: (isPlaying: boolean) => void;
   code: string;
   explanation: string[];
+  disableProgressControl?: boolean;
+  onSideBarWidthChange?: (newWidth: number) => void;
 }
 
 export type IProps = OwnProps & ProgressController & ApiController;
@@ -25,4 +27,5 @@ interface StepDescription {
 export interface IState extends CoreState {
   currentStep: number;
   autoPlay: boolean;
+  isCollapsing: boolean;
 }

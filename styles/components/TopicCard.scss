@@ -1,0 +1,15 @@
+.topic-card__wrapper {
+  display: inline-flex;
+  background-color: white;
+
+  &:hover {
+    @extend .clickable;
+    box-shadow: 0 4px 8px hsla(0, 0%, 67.1%, 0.5);
+  }
+
+  .topic-card-content__wrapper {
+    overflow-wrap: anywhere;
+    height: 100%;
+    overflow-y: auto;
+  }
+}

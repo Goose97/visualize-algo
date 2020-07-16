@@ -25,7 +25,7 @@ export const arrayInstruction = (
 
 const selectionSortInstruction = (data: number[], params: Array.SortParams) => {
   let instructions = new Instructions();
-  instructions.setDuration(500);
+  instructions.setDuration(750);
   let array = initArray(data);
   const codeLines = getCodeLine('selectionSort');
   let len = array.length;
@@ -37,8 +37,10 @@ const selectionSortInstruction = (data: number[], params: Array.SortParams) => {
     instructions.setCodeLine(codeLines.iteration);
     min = i;
     instructions.pushActionsAndEndStep('array', [
-      { name: 'label', params: [array[i].key, 'current'] },
+      { name: 'setUnsortedLine', params: [array[i].key] },
+      { name: 'label', params: [array[i].key, 'min'] },
     ]);
+
     for (j = i + 1; j < len; j++) {
       instructions.pushActionsAndEndStep('array', [
         { name: 'resetFocusAll', params: [] },
@@ -53,37 +55,35 @@ const selectionSortInstruction = (data: number[], params: Array.SortParams) => {
           { name: 'resetFocus', params: [array[min].key] },
           { name: 'unlabel', params: [array[min].key] },
           { name: 'label', params: [array[j].key, 'min'] },
-          { name: 'label', params: [array[i].key, 'current'] },
         ]);
         instructions.setCodeLine(codeLines.updateMin);
         min = j;
       }
     }
+
     if (min !== i) {
       instructions.pushActionsAndEndStep('array', [
         { name: 'swap', params: [array[min].key, array[i].key] },
         { name: 'resetFocusAll', params: [] },
-        { name: 'unlabel', params: [array[min].key] },
-        { name: 'unlabel', params: [array[i].key] },
+        { name: 'unlabelAll', params: [] },
       ]);
       instructions.setCodeLine(codeLines.swap);
       let tmp = array[i];
       array[i] = array[min];
       array[min] = tmp;
     }
-    instructions.pushActionsAndEndStep('array', [
-      { name: 'complete', params: [array[i].key] },
-      { name: 'resetFocusAll', params: [] },
-      { name: 'unlabel', params: [array[min].key] },
-    ]);
   }
+
+  instructions.pushActionsAndEndStep('array', [
+    { name: 'resetAll', params: [] },
+  ]);
 
   return instructions.get();
 };
 
 const bubbleSortInstruction = (data: number[], params: Array.SortParams) => {
   let instructions = new Instructions();
-  instructions.setDuration(500);
+  instructions.setDuration(750);
   let array = initArray(data);
   const codeLines = getCodeLine('bubbleSort');
 
@@ -114,15 +114,14 @@ const bubbleSortInstruction = (data: number[], params: Array.SortParams) => {
 
       if (j + 1 === stop) {
         instructions.pushActionsAndEndStep('array', [
-          { name: 'complete', params: [array[j + 1].key] },
+          { name: 'setUnsortedLine', params: [array[j + 1].key] },
         ]);
       }
     }
   }
 
   instructions.pushActionsAndEndStep('array', [
-    { name: 'complete', params: [array[0].key] },
-    { name: 'resetFocusAll', params: [] },
+    { name: 'resetAll', params: [] },
   ]);
 
   return instructions.get();
@@ -130,18 +129,28 @@ const bubbleSortInstruction = (data: number[], params: Array.SortParams) => {
 
 const insertionSortInstruction = (data: number[], params: Array.SortParams) => {
   let instructions = new Instructions();
-  instructions.setDuration(1000);
+  instructions.setDuration(750);
   let array = initArray(data);
   const codeLines = getCodeLine('insertionSort');
+  const swapArrayNodes = (indexA: number, indexB: number) => {
+    let tmp = array[indexA];
+    array[indexA] = array[indexB];
+    array[indexB] = tmp;
+  };
 
   // Start make instruction
-
   let len = array.length;
   let i, j, keyValue;
   for (i = 1; i < len; i++) {
     instructions.pushActionsAndEndStep('array', [
-      { name: 'setLine', params: [array[i].key] },
+      { name: 'focus', params: [array[i].key] },
+      { name: 'setUnsortedLine', params: [array[i - 1].key] },
     ]);
+    instructions.pushActionsAndEndStep('array', [
+      { name: 'resetFocus', params: [array[i].key] },
+      { name: 'setCurrentInsertionSortNode', params: [array[i].key] },
+    ]);
+
     keyValue = array[i].val;
     j = i - 1;
     /* Move elements of arr[0..i-1], that are 
@@ -149,16 +158,22 @@ const insertionSortInstruction = (data: number[], params: Array.SortParams) => {
           of their current position */
     for (j = i - 1; j >= 0 && array[j].val > keyValue; j--) {
       instructions.pushActionsAndEndStep('array', [
-        { name: 'setValue', params: [array[j + 1].key, array[j].val] },
-        { name: 'setValue', params: [array[j].key, null] },
+        { name: 'setIndex', params: [array[j].key, j + 1] },
       ]);
-      array[j + 1].val = array[j].val;
+      swapArrayNodes(j, j + 1);
     }
+
     instructions.pushActionsAndEndStep('array', [
+      { name: 'setIndex', params: [array[j + 1].key, j + 1] },
       { name: 'setValue', params: [array[j + 1].key, keyValue] },
+      { name: 'unsetCurrentInsertionSortNode', params: [] },
     ]);
     array[j + 1].val = keyValue;
   }
+
+  instructions.pushActionsAndEndStep('array', [
+    { name: 'resetAll', params: [] },
+  ]);
 
   return instructions.get();
 };
@@ -173,7 +188,7 @@ const getCodeLine = (operation: Array.Api): ObjectType<string> => {
         iteration: '12',
         step: '13',
       };
-    
+
     case 'selectionSort':
       return {
         init: '1',
@@ -183,7 +198,7 @@ const getCodeLine = (operation: Array.Api): ObjectType<string> => {
         updateMin: '6-7',
         compare: '6',
       };
-    
+
     case 'insertionSort':
       return {
         init: '1',
@@ -193,7 +208,7 @@ const getCodeLine = (operation: Array.Api): ObjectType<string> => {
         updateMin: '6-7',
         compare: '6',
       };
-    
+
     default:
       return {};
   }

@@ -23,12 +23,20 @@ export interface PointCoordinate {
 
 export type DataStructureMethod<T> = (model: T, params: any) => T;
 
+interface LabelWithDirection {
+  value: string;
+  direction: BaseMemoryBlockProps['labelDirection'];
+}
 export interface BaseMemoryBlockProps {
   visible?: boolean;
   focus?: boolean;
   value: string | number | null;
-  label?: string[];
   highlight?: boolean;
+  circleAround?: boolean;
+  blur?: boolean;
+  label?: string[] | LabelWithDirection[];
+  labelDirection?: 'top' | 'left' | 'right' | 'bottom';
+  transform?: string;
 }
 
 export interface HTMLRendererParams<T = {}> {
@@ -36,6 +44,7 @@ export interface HTMLRendererParams<T = {}> {
   wrapperElement: SVGGElement | null;
   coordinate: PointCoordinate;
   apiHandler?: (apiName: string, params?: ObjectType<any>) => void;
+  disabled?: boolean;
 }
 
 export interface BaseDSProps {
@@ -44,12 +53,19 @@ export interface BaseDSProps {
   currentStep?: number;
   totalStep?: number;
   interactive?: boolean;
-  controlled?: boolean;
   handleExecuteApi?: (apiName: string, params?: ObjectType<any>) => void;
+  executedApiCount?: number;
+  keepStateWhenSwitchingApi?: boolean;
+  dropdownDisabled?: boolean;
+  instructions: Action<string>[][];
+  initialData?: any;
+  data?: any; // In case of controlled component
+  controlled?: boolean;
 }
 
 export interface BaseDSPageState {
   currentStep?: number;
   stepDescription: StepInstruction[];
   autoPlay: boolean;
+  sideBarWidth?: number;
 }

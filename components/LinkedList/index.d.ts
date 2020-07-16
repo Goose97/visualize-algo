@@ -10,14 +10,14 @@ import { IProps as PointerLinkProps } from 'components/PointerLink/index.d';
 
 export interface IProps extends BaseDSProps {
   instructions: Action<LinkedList.Method>[][];
-  initialData: number[];
+  initialData?: Array<number | string>;
+  data?: Array<number | string>;
+  headArrowVisible?: boolean;
 }
 
 export interface IState {
-  linkedListModel: LinkedList.Model;
   nodeAboutToAppear: Set<number>;
   nodeAboutToVisit?: number;
-  isVisible: boolean;
 }
 
 export type LinkedListPointerProps = Pick<

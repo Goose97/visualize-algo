@@ -1,65 +1,80 @@
 import React, { Component } from 'react';
 import produce from 'immer';
-import { omit, flatMap, groupBy, pick, isFunction } from 'lodash';
+import { omit, pick, isFunction } from 'lodash';
 
+import { CanvasObserver } from 'components';
+import withDSCore, { WithDSCore } from 'hocs/withDSCore';
 import transformLinkedListModel from 'transformers/LinkedList';
 import HeadPointer from './HeadPointer';
 import LinkedListHTML from './LinkedListHTML';
 import LinkedListMemoryBlock from './LinkedListMemoryBlock';
 import LinkedListPointer from './LinkedListPointer';
-import withReverseStep, { WithReverseStep } from 'hocs/withReverseStep';
-import { getProgressDirection, keyExist } from 'utils';
 import { IProps, IState } from './index.d';
-import { Action, ActionWithStep, ObjectType } from 'types';
+import { ObjectType } from 'types';
 import { LinkedList } from 'types/ds/LinkedList';
-import {
-  LINKED_LIST_BLOCK_WIDTH,
-  LINKED_LIST_BLOCK_HEIGHT,
-} from '../../constants';
+import { LINKED_LIST_BLOCK_WIDTH } from '../../constants';
 
-type PropsWithHoc = IProps & WithReverseStep<LinkedList.Model>;
+type PropsWithHoc = IProps & WithDSCore<LinkedList.Model>;
 
 export class LinkedListDS extends Component<PropsWithHoc, IState> {
-  private initialLinkedListModel: LinkedList.Model;
+  // private initialLinkedListModel: LinkedList.Model;
   private wrapperRef: React.RefObject<SVGUseElement>;
+  private randomId: number;
 
   constructor(props: PropsWithHoc) {
     super(props);
 
-    this.initialLinkedListModel = this.initiateMemoryLinkedListModel(props);
     this.state = {
-      linkedListModel: this.initialLinkedListModel,
       nodeAboutToAppear: new Set([]),
-      isVisible: true,
     };
     this.wrapperRef = React.createRef();
+    this.randomId = Math.round(Math.random() * 100000);
+
+    // Register custom transformer
+    props.registerCustomTransformer({
+      visit: this.visit,
+      insert: this.insert,
+    });
+
+    // Register HTML injector
+    props.registerHTMLInjector(this.injectHTMLIntoCanvas);
   }
 
-  initiateMemoryLinkedListModel(props: PropsWithHoc): LinkedList.Model {
-    const { initialData } = props;
-    return initialData.map((value, index) => ({
-      ...this.caculateBlockCoordinate(index),
+  static initLinkedListModel(props: IProps): LinkedList.Model {
+    const getInitialData = () => {
+      const { initialData, data, controlled } = props;
+      let result;
+      if (controlled) result = data;
+      else result = initialData;
+      return result || [];
+    };
+
+    const data = getInitialData();
+    return data.map((value, index) => ({
+      ...LinkedListDS.caculateBlockCoordinate(index),
       value,
       index,
       visible: true,
       visited: false,
       key: index,
       focus: false,
-      pointer: index === initialData.length - 1 ? null : index + 1,
+      pointer: index === data.length - 1 ? null : index + 1,
     }));
   }
 
   componentDidMount() {
     const { interactive } = this.props;
-    if (interactive) this.injectHTMLIntoCanvas();
+    if (interactive) {
+      this.injectHTMLIntoCanvas();
+      CanvasObserver.register(this.injectHTMLIntoCanvas);
+    }
   }
 
-  injectHTMLIntoCanvas() {
-    const { linkedListModel } = this.state;
-    const { handleExecuteApi } = this.props;
+  injectHTMLIntoCanvas = () => {
+    const { handleExecuteApi, dropdownDisabled, model } = this.props;
     setTimeout(() => {
       LinkedListHTML.renderToView({
-        model: linkedListModel,
+        model,
         wrapperElement: this.wrapperRef.current,
         coordinate: pick(this.props, ['x', 'y']),
         apiHandler: (apiName: string, params?: ObjectType<any>) => {
@@ -70,22 +85,23 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
           );
           handleExecuteApi(apiName, paramsToInvoke);
         },
+        disabled: dropdownDisabled,
       });
     }, 0);
-  }
+  };
 
   produceParametersToExecuteApi = (
     apiName: string,
     params?: ObjectType<any>,
   ) => {
-    const { linkedListModel } = this.state;
+    const { model } = this.props;
     switch (apiName) {
       case 'search': {
         //@ts-ignore
         const { key, value } = params;
         let valueToSearch = value;
         if (valueToSearch == null) {
-          const nodeToSearch = linkedListModel.find(
+          const nodeToSearch = model.find(
             ({ key: nodeKey }) => nodeKey === key,
           );
           valueToSearch = nodeToSearch && nodeToSearch.value;
@@ -99,7 +115,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
         const { key, value, index } = params;
         let indexToInsert = index;
         if (indexToInsert == null) {
-          indexToInsert = linkedListModel.findIndex(
+          indexToInsert = model.findIndex(
             ({ key: nodeKey }) => nodeKey === key,
           );
         }
@@ -112,7 +128,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
         const { key, index } = params;
         let indexToDelete = index;
         if (indexToDelete == null) {
-          indexToDelete = linkedListModel.findIndex(
+          indexToDelete = model.findIndex(
             ({ key: nodeKey }) => nodeKey === key,
           );
         }
@@ -123,82 +139,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
   };
 
   componentDidUpdate(prevProps: IProps) {
-    const {
-      currentStep,
-      reverseToStep,
-      saveStepSnapshots,
-      totalStep,
-    } = this.props;
-    const { linkedListModel } = this.state;
-
-    // Update according to algorithm progression
-    if (keyExist(this.props, ['currentStep', 'totalStep', 'instructions'])) {
-      switch (
-        getProgressDirection(currentStep!, prevProps.currentStep!, totalStep!)
-      ) {
-        case 'forward':
-          this.checkIfHTMLNeedToRerender(prevProps.currentStep!);
-          saveStepSnapshots(linkedListModel, currentStep!);
-          this.handleForward();
-          break;
-
-        case 'backward':
-          reverseToStep(currentStep!);
-          break;
-
-        case 'fastForward':
-          this.handleFastForward();
-          break;
-
-        case 'fastBackward':
-          this.handleFastBackward();
-          break;
-      }
-    }
-  }
-
-  handleForward() {
-    // Treat each action as a transformation function which take a linkedListModel
-    // and return a new one. Consuming multiple actions is merely chaining those
-    // transformations together
-    // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
-    const { linkedListModel } = this.state;
-    const { currentStep, instructions } = this.props;
-    const actionsToMakeAtThisStep = instructions[currentStep!];
-    if (!actionsToMakeAtThisStep || !actionsToMakeAtThisStep.length) return;
-
-    // This consume pipeline have many side effect in each step. Each
-    // method handle each action has their own side effect
-    const newLinkedListModel = this.consumeMultipleActions(
-      actionsToMakeAtThisStep,
-      linkedListModel,
-    );
-    this.setState({ linkedListModel: newLinkedListModel });
-  }
-
-  consumeMultipleActions(
-    actionList: Action<LinkedList.Method>[],
-    currentModel: LinkedList.Model,
-    onlyTranformData?: boolean,
-  ): LinkedList.Model {
-    // Treat each action as a transformation function which take a linkedListModel
-    // and return a new one. Consuming multiple actions is merely chaining those
-    // transformations together
-    // linkedListModel ---- action1 ----> linkedListModel1 ---- action2 ----> linkedListMode2 ---- action3 ----> linkedListModel3
-    return actionList.reduce<LinkedList.Model>((finalModel, action) => {
-      // the main function of a handler is doing side effect before transform model
-      // a handler must also return a new model
-      // if no handler is specify, just transform model right away
-      const { name, params } = action;
-      //@ts-ignore
-      const customHandler = this[name];
-
-      if (typeof customHandler === 'function') {
-        return customHandler(finalModel, params, onlyTranformData);
-      } else {
-        return transformLinkedListModel(finalModel, name, params);
-      }
-    }, currentModel);
+    this.checkIfHTMLNeedToRerender(prevProps.currentStep!);
   }
 
   checkIfHTMLNeedToRerender(previousStep: number) {
@@ -218,12 +159,12 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
   }
 
   getCurrentFocusNode() {
-    const { linkedListModel } = this.state;
-    const focusNode = linkedListModel.find(({ focus }) => !!focus);
+    const { model } = this.props;
+    const focusNode = model.find(({ focus }) => !!focus);
     return focusNode ? focusNode.key : null;
   }
 
-  caculateBlockCoordinate(nodeIndex: number) {
+  static caculateBlockCoordinate(nodeIndex: number) {
     return { x: nodeIndex * (2 * LINKED_LIST_BLOCK_WIDTH), y: 0 };
   }
 
@@ -249,8 +190,8 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
   };
 
   followLinkToNode = (nodeIndex: number) => {
-    const { linkedListModel } = this.state;
-    this.setState({ nodeAboutToVisit: linkedListModel[nodeIndex].key });
+    const { model } = this.props;
+    this.setState({ nodeAboutToVisit: model[nodeIndex].key });
   };
 
   handleAfterVisitAnimationFinish = (
@@ -258,8 +199,8 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
     destinationNodeKey: number,
   ) => {
     // mark the node who hold the link as visited
-    const { linkedListModel } = this.state;
-    let newLinkedListModel = linkedListModel;
+    const { model, updateModel } = this.props;
+    let newLinkedListModel = model;
     if (typeof startNodeKey === 'number') {
       newLinkedListModel = transformLinkedListModel(
         newLinkedListModel,
@@ -276,8 +217,8 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
 
     this.setState({
       nodeAboutToVisit: undefined,
-      linkedListModel: newLinkedListModel,
     });
+    updateModel(newLinkedListModel);
   };
 
   insert = (
@@ -326,7 +267,7 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
       ({ key }) => key === prevNodeKey,
     );
     return {
-      ...this.caculateBlockCoordinate(previousNodeIndex + 1),
+      ...LinkedListDS.caculateBlockCoordinate(previousNodeIndex + 1),
       value,
       index: previousNodeIndex + 1,
       key: newNodeKey,
@@ -350,62 +291,38 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
   }
 
   toggleNodeVisibility(nodeKey: number) {
-    const { linkedListModel } = this.state;
-    const newPosition = produce(linkedListModel, draft => {
+    const { model, updateModel } = this.props;
+    const newPosition = produce(model, draft => {
       const targetBlock = draft.find(({ key }) => key === nodeKey);
       const oldVisibleState = targetBlock!.visible;
       targetBlock!.visible = !oldVisibleState;
     });
-    this.setState({ linkedListModel: newPosition });
-  }
-
-  caculateStartAndFinishOfPointer(nodeIndex: number) {
-    const { linkedListModel, nodeAboutToAppear } = this.state;
-    let { x, y, visible, key, pointer } = linkedListModel[nodeIndex];
-    let nextVisibleBlock = pointer ? this.findNodeByKey(pointer) : null;
-
-    const start = {
-      x: x + LINKED_LIST_BLOCK_WIDTH - 10,
-      y: y + LINKED_LIST_BLOCK_HEIGHT / 2,
-    };
-    let finish;
-    if (nextVisibleBlock && visible) {
-      let { x: x1, y: y1 } = nextVisibleBlock as LinkedList.NodeModel;
-
-      if (nodeAboutToAppear.has(key)) {
-        finish = { ...start };
-      } else {
-        finish = { x: x1, y: y1 + LINKED_LIST_BLOCK_HEIGHT / 2 };
-      }
-      return { start, finish };
-    } else {
-      return null;
-    }
-  }
-
-  findNodeByKey(key: number) {
-    const { linkedListModel } = this.state;
-    const nodeWithKey = linkedListModel.find(
-      ({ key: nodeKey }) => key === nodeKey,
-    );
-    return nodeWithKey || null;
+    updateModel(newPosition);
   }
 
   renderPointerLinkForMemoryBlock(nodeIndex: number) {
-    const { linkedListModel, nodeAboutToAppear } = this.state;
-    const { key, pointer, visible, visited } = linkedListModel[nodeIndex];
+    const { nodeAboutToAppear } = this.state;
+    const { model } = this.props;
+    const { key, pointer, visible, visited } = model[nodeIndex];
+    const pointToNode = this.findNodeByKey(pointer);
     return (
       <LinkedListPointer
         nodeAboutToAppear={nodeAboutToAppear}
         key={key}
         from={key}
         to={pointer}
-        linkedListModel={linkedListModel}
+        linkedListModel={model}
         following={this.isLinkNeedToBeFollowed(nodeIndex)}
         visited={visited}
-        visible={visible}
+        visible={visible && pointToNode?.visible}
       />
     );
+  }
+
+  findNodeByKey(key: number | null) {
+    const { model } = this.props;
+    const nodeWithKey = model.find(({ key: nodeKey }) => key === nodeKey);
+    return nodeWithKey || null;
   }
 
   // Start block is the block which hold the link and point to another block
@@ -419,100 +336,50 @@ export class LinkedListDS extends Component<PropsWithHoc, IState> {
 
   // Find block which is still visible or in about to appear state
   findNextBlock(index: number, getIndex = false) {
-    const { linkedListModel, nodeAboutToAppear } = this.state;
-    for (let i = index + 1; i < linkedListModel.length; i++) {
-      const { visible, key } = linkedListModel[i];
+    const { nodeAboutToAppear } = this.state;
+    const { model } = this.props;
+    for (let i = index + 1; i < model.length; i++) {
+      const { visible, key } = model[i];
       if (visible || nodeAboutToAppear.has(key)) {
-        return getIndex ? i : linkedListModel[i];
+        return getIndex ? i : model[i];
       }
     }
   }
 
-  handleReverse = (stateOfPreviousStep: LinkedList.Model) => {
-    this.setState({ linkedListModel: stateOfPreviousStep });
-  };
-
-  handleFastForward() {
-    const { linkedListModel } = this.state;
-    const { instructions, saveStepSnapshots } = this.props;
-    let allActions: ActionWithStep<LinkedList.Method>[] = [];
-    for (let i = 0; i < instructions.length; i++) {
-      // Replace visit action with vist + focus
-      // also add step attribute to each action
-      const replacedActions: ActionWithStep<LinkedList.Method>[] = flatMap(
-        instructions[i],
-        action => {
-          const { name, params } = action;
-          return name === 'visit'
-            ? [
-                { name: 'visited', params: params.slice(0, 1), step: i },
-                { name: 'focus', params: params.slice(1), step: i },
-              ]
-            : { ...action, step: i };
-        },
-      );
-
-      allActions.push(...replacedActions);
-    }
-
-    const actionsGroupedByStep = groupBy(allActions, item => item.step);
-
-    // Loop through all the action one by one and keep updating the final model
-    let finalLinkedListModel = Object.entries(actionsGroupedByStep).reduce<
-      LinkedList.Model
-    >((currentModel, [step, actionsToMakeAtThisStep]) => {
-      saveStepSnapshots(currentModel, +step);
-      return this.consumeMultipleActions(
-        actionsToMakeAtThisStep,
-        currentModel,
-        true,
-      );
-    }, linkedListModel);
-    this.updateWithoutAnimation(finalLinkedListModel);
-  }
-
-  handleFastBackward() {
-    this.updateWithoutAnimation(this.initialLinkedListModel);
-  }
-
-  updateWithoutAnimation(newLinkedListModel: LinkedList.Model) {
-    this.setState(
-      { linkedListModel: newLinkedListModel, isVisible: false },
-      () => this.setState({ isVisible: true }),
-    );
-  }
-
   render() {
-    const { linkedListModel, isVisible } = this.state;
-    const listMemoryBlock = linkedListModel.map(linkedListNode => (
+    const { headArrowVisible, model } = this.props;
+    const listMemoryBlock = model.map(linkedListNode => (
       <LinkedListMemoryBlock
         {...omit(linkedListNode, ['key'])}
         key={linkedListNode.key}
       />
     ));
-    const listPointerLink = linkedListModel.map((_, index) =>
+    const listPointerLink = model.map((_, index) =>
       this.renderPointerLinkForMemoryBlock(index),
     );
 
     return (
-      isVisible && (
-        <>
-          <use
-            href='#linked-list'
-            {...pick(this.props, ['x', 'y'])}
-            ref={this.wrapperRef}
-          />
-          <defs>
-            <g id='linked-list'>
+      <>
+        <use
+          href={`#linked-list-${this.randomId}`}
+          {...pick(this.props, ['x', 'y'])}
+          ref={this.wrapperRef}
+        />
+        <defs>
+          <g id={`linked-list-${this.randomId}`}>
+            {headArrowVisible && (
               <HeadPointer headBlock={this.findNextBlock(-1)} />
-              {listMemoryBlock}
-              {listPointerLink}
-            </g>
-          </defs>
-        </>
-      )
+            )}
+            {listMemoryBlock}
+            {listPointerLink}
+          </g>
+        </defs>
+      </>
     );
   }
 }
 
-export default withReverseStep<LinkedList.Model, PropsWithHoc>(LinkedListDS);
+export default withDSCore({
+  initModel: LinkedListDS.initLinkedListModel,
+  dataTransformer: transformLinkedListModel,
+})(LinkedListDS);

@@ -19,6 +19,14 @@ const transformLinkedListModel = (
       });
     }
 
+    case 'removeByValue': {
+      const [nodeValue] = payload;
+      return produce(currentModel, draft => {
+        const nodeToRemove = draft.find(({ value }) => value === nodeValue);
+        if (nodeToRemove) nodeToRemove.visible = false;
+      });
+    }
+
     case 'insert': {
       const [nodeData, previousNodeKey] = payload;
       return produce(currentModel, draft => {

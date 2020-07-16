@@ -1,6 +1,7 @@
 import { pick } from 'lodash';
-import { GRAPH_NODE_RADIUS } from '../constants';
+import BezierEasing from 'bezier-easing';
 
+import { GRAPH_NODE_RADIUS } from '../constants';
 import { ObjectType, Action, StepInstruction, PointCoordinate } from 'types';
 
 export const classNameHelper = (object: ObjectType<string | boolean>) => {
@@ -49,7 +50,9 @@ export const getProgressDirection = (
   currentStep: number,
   previousStep: number,
   totalStep: number,
+  switchingApi?: boolean,
 ) => {
+  if (switchingApi) return 'switch';
   if (previousStep === undefined) return 'forward';
   if (currentStep === previousStep) return 'stay';
   if (currentStep > previousStep) {
@@ -141,3 +144,113 @@ export const caculateDistanceToALine = (
   const area = Math.sqrt(s * (s - ab) * (s - bc) * (s - ca));
   return (area * 2) / bc;
 };
+
+interface PerformAnimationParams {
+  startValue: number;
+  endValue: number;
+  duration: number;
+  callback: (newValue: number) => void;
+  cubicBezierFunction?: (progress: number) => number;
+}
+export const performAnimation = (params: PerformAnimationParams) => {
+  const { duration, callback, endValue, startValue } = params;
+  const cubicBezierFunction =
+    params.cubicBezierFunction || BezierEasing(0.25, 0.1, 0.25, 1);
+  const originTime = performance.now();
+  const updateValueThroughFrame = () => {
+    window.requestAnimationFrame((currentTime: number) => {
+      const timeProgress = (currentTime - originTime) / duration;
+      const animationProgess =
+        timeProgress > 1 ? 1 : cubicBezierFunction(timeProgress);
+      if (animationProgess >= 1) callback(endValue);
+      else {
+        const currentValue =
+          animationProgess * (endValue - startValue) + startValue;
+        callback(currentValue);
+        updateValueThroughFrame();
+      }
+    });
+  };
+
+  updateValueThroughFrame();
+};
+
+export const getCanvasScaleFactor = () => {
+  try {
+    const canvasContainer = document.querySelector('.canvas-container');
+    //@ts-ignore
+    return parseFloat(canvasContainer?.getAttribute('scale-factor') || 1);
+  } catch (e) {
+    console.log(e);
+    return 1;
+  }
+};
+
+interface AnimationTaskQueueConstructor<T> {
+  callback: (task: T) => void;
+  isAdditiveTask?: boolean;
+  combineTaskCallback?: (tasks: T[]) => T;
+  taskQueueMax?: number; // if task queue reach this number of tasks, we start discarding tasks
+}
+export class AnimationTaskQueue<T> {
+  private taskQueue: any[];
+  private isRunning: boolean;
+  private callback: AnimationTaskQueueConstructor<T>['callback'];
+  private isAdditive: boolean;
+  private taskQueueMax: number;
+  private combineTaskCallback: AnimationTaskQueueConstructor<
+    T
+  >['combineTaskCallback'];
+
+  constructor(initObject: AnimationTaskQueueConstructor<T>) {
+    const {
+      callback,
+      isAdditiveTask,
+      combineTaskCallback,
+      taskQueueMax,
+    } = initObject;
+    this.taskQueue = [];
+    this.isRunning = false;
+    this.callback = callback;
+    this.isAdditive = isAdditiveTask;
+    this.combineTaskCallback = combineTaskCallback;
+    this.taskQueueMax = taskQueueMax || 2;
+  }
+
+  enqueue(task: any) {
+    this.taskQueue.push(task);
+    if (!this.isRunning) {
+      this.isRunning = true;
+      this.dequeue();
+    }
+  }
+
+  // Drop some tasks if tasks fill up too fast
+  // If task is additive (meaning drop task will alter result), we must combine many task into one
+  dequeue() {
+    if (this.taskQueue.length > this.taskQueueMax) this.discardTasks();
+
+    const nextTask = this.taskQueue.shift();
+    if (!nextTask) {
+      this.isRunning = false;
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      this.callback(nextTask);
+      this.dequeue();
+    });
+  }
+
+  discardTasks() {
+    // if task is additive, must combine them
+    // otherwise just drop them
+    if (this.isAdditive) {
+      const discardTasks = this.taskQueue.splice(0, this.taskQueueMax);
+      const combinedTask = this.combineTaskCallback!(discardTasks);
+      this.taskQueue.unshift(combinedTask);
+    } else {
+      this.taskQueue.splice(0, this.taskQueueMax);
+    }
+  }
+}

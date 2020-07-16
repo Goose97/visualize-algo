@@ -1,6 +1,5 @@
 import React, { Component, MouseEvent } from 'react';
 import ReactDOM from 'react-dom';
-import { Input } from 'antd';
 
 import { Button, CustomModal, GraphDS } from 'components';
 import withExtendClassName, {
@@ -15,8 +14,6 @@ import { IProps, IState } from './index.d';
 import { GRAPH_NODE_RADIUS } from '../../constants';
 import { PointCoordinate } from 'types';
 import { Graph } from 'types/ds/Graph';
-
-const { TextArea } = Input;
 
 type PropsWithHoc = IProps & WithExtendClassName;
 
@@ -63,26 +60,6 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
     const htmlInput = ReactDOM.findDOMNode(inputElement) as HTMLInputElement;
     htmlInput?.focus();
   };
-
-  handleRandomizeData = () => {
-    const randomData = this.generateRandomData();
-    let textToMatchThoseData = randomData
-      .map(item => (item === null ? 'null' : item.toString()))
-      .join(', ');
-    textToMatchThoseData = `[${textToMatchThoseData}]`;
-    this.setState({ input: randomData, textInput: textToMatchThoseData });
-  };
-
-  generateRandomData() {
-    return [4, 1, 8, -3, 2, 6, 9, null, -2, null, null, null, null, null, null];
-    return Array(8)
-      .fill(0)
-      .map(() => {
-        const value = Math.round(Math.random() * 12);
-        if (value > 10) return null;
-        else return value;
-      });
-  }
 
   renderGhostNode() {
     return (
@@ -180,7 +157,9 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
         return value != null ? parseInt(value) : 0;
       });
 
-      const inRangeOfLine = (mouseY - startY) * (mouseY - endY) < 0;
+      const inRangeOfLine =
+        (mouseY - startY) * (mouseY - endY) < 0 ||
+        (mouseX - startX) * (mouseX - endX) < 0;
       const distance = caculateDistanceToALine(
         { x: mouseX, y: mouseY },
         { x: startX, y: startY },
@@ -336,36 +315,20 @@ export class InitGraphInput extends Component<PropsWithHoc, IState> {
       </div>
     );
 
-    const inputTextArea = (
-      <div className='init-bst-modal__input fx-3'>
-        <TextArea
-          onChange={this.handleChange}
-          placeholder='[1,2,3,null,4,5]'
-          value={textInput}
-        />
-        <Button type='secondary' onClick={this.handleRandomizeData}>
-          Generate random data
-        </Button>
-      </div>
-    );
-
     return (
       <Button
         type='primary'
         className={className}
         onClick={() => this.setState({ isModalVisible: true })}
       >
-        Create new BST
+        Create new graph
         <CustomModal
           visible={isModalVisible}
-          title='Construct new BST'
+          title='Construct new graph'
           onCancel={() => this.setState({ isModalVisible: false })}
           onOk={this.handleOk}
         >
-          <div className='init-bst-modal__wrapper fx'>
-            {previewWindow}
-            {inputTextArea}
-          </div>
+          <div className='init-bst-modal__wrapper fx'>{previewWindow}</div>
         </CustomModal>
       </Button>
     );

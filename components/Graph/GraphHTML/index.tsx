@@ -2,6 +2,7 @@ import React from 'react';
 
 import { HTMLRenderer, DropdownWithParamsInput } from 'components';
 // import BSTNodeApiDropdown from './BSTNodeApiDropdown';
+import { getCanvasScaleFactor } from 'utils';
 import { HTMLRendererParams } from 'types';
 import { Graph } from 'types/ds/Graph';
 
@@ -18,18 +19,19 @@ const options: Array<{ label: string; value: string }> = [
 
 const requiredParams = {
   dfs: {
-    'startAt': 'number',
+    startAt: 'number',
   },
   bfs: {
-    'startAt': 'number',
+    startAt: 'number',
   },
 };
 
 export class GraphHTML {
   static renderToView(params: HTMLRendererParams<Graph.Model>) {
-    const { wrapperElement, coordinate, apiHandler, model } = params;
+    const { wrapperElement, coordinate, apiHandler, model, disabled } = params;
     if (wrapperElement) {
       const { width, height } = wrapperElement.getBoundingClientRect();
+      const scaledFactor = getCanvasScaleFactor();
       // const dropdownForEachTreeNode = model.map(({ value, x, y, key }) => (
       //   <BSTNodeApiDropdown
       //     value={value}
@@ -45,12 +47,21 @@ export class GraphHTML {
             options={options}
             requiredApiParams={requiredParams}
             handler={apiHandler}
+            disabled={disabled}
           />
           {/* {dropdownForEachTreeNode} */}
         </div>
       );
 
-      HTMLRenderer.inject(elementToRender, coordinate, `graph-html__wrapper`);
+      const scaledCoordinate = {
+        x: coordinate.x * scaledFactor,
+        y: coordinate.y * scaledFactor,
+      };
+      HTMLRenderer.inject(
+        elementToRender,
+        scaledCoordinate,
+        `graph-html__wrapper`,
+      );
     }
   }
 }

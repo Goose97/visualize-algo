@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { IProps, IState } from './index.d';
 
-const DEFAULT_ANIMATION_DURATION = 1200;
+const DEFAULT_ANIMATION_DURATION = 700;
 const STEP_COUNT = 80;
 // if max percent is 100 then the circle will disappear because start and end point are the same
 const MAX_PERCENT = 97;
@@ -23,8 +23,10 @@ export class HighlightCircle extends Component<IProps, IState> {
   }
 
   kickStartAnimationInterval = () => {
+    const { animationDuration } = this.props;
     const { completePercent } = this.state;
-    const stepInterval = DEFAULT_ANIMATION_DURATION / STEP_COUNT;
+    const duration = animationDuration || DEFAULT_ANIMATION_DURATION;
+    const stepInterval = duration / STEP_COUNT;
     const percentIncreaseAtEachStep = 100 / STEP_COUNT;
     const newPercent = Math.min(
       MAX_PERCENT,

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
+import { pick } from 'lodash';
 
-import { MemoryBlock, AutoTransformGroup, Line } from 'components';
+import { MemoryBlock, AutoTransformGroup } from 'components';
 import {
   ARRAY_BLOCK_WIDTH,
   ARRAY_BLOCK_HEIGHT,
@@ -12,7 +13,7 @@ import {
 import { ArrayMemoryBlockProps } from './index.d';
 import { PointCoordinate } from 'types';
 
-export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
+class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   private initialCoordinate: PointCoordinate;
   constructor(props: ArrayMemoryBlockProps) {
     super(props);
@@ -20,13 +21,13 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   }
 
   calculatePosition() {
-    const { index, blockType, value } = this.props;
+    const { index, blockType, value, isInsertionSorting } = this.props;
     const { height } = this.calculateSizeBlock(
       blockType,
       this.parseValueToNumber(value),
     );
     let xPosition = 0;
-    let yPosition = 0;
+    let yPosition = isInsertionSorting ? 100 : 0;
     switch (blockType) {
       case 'block':
         xPosition = ARRAY_BLOCK_WIDTH * index;
@@ -80,16 +81,18 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
   }
 
   render() {
-    const {
-      value,
-      visible,
-      focus,
-      visited,
-      label,
-      blockType,
-      hasLine,
-    } = this.props;
-    const { x1, y1, x2, y2 } = this.calculateLine();
+    const { value, visible, blockType } = this.props;
+    const propsToPass = [
+      'focus',
+      'visited',
+      'label',
+      'className',
+      'highlight',
+      'blur',
+      'transform',
+      'labelDirection',
+    ];
+    
     return (
       <AutoTransformGroup origin={this.calculatePosition()}>
         <MemoryBlock
@@ -98,24 +101,11 @@ export class ArrayMemoryBlock extends Component<ArrayMemoryBlockProps> {
             blockType,
             this.parseValueToNumber(value),
           )}
-          value={value}
-          visible={!!visible}
-          focus={focus}
-          visited={visited}
-          label={label}
           type='rectangle'
+          {...pick(this.props, propsToPass)}
+          visible={!!visible}
+          value={value}
         />
-        {hasLine && (
-          <g>
-            <text x={x2 - 90} y={y2}>
-              Đã sắp xếp
-            </text>
-            <Line x1={x1} x2={x2} y1={y1} y2={y2} />
-            <text x={x2 + 10} y={y2}>
-              Chưa sắp xếp
-            </text>
-          </g>
-        )}
       </AutoTransformGroup>
     );
   }

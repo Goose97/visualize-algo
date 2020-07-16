@@ -8,6 +8,7 @@ export interface IProps extends BaseMemoryBlockProps {
   y: number;
   visited?: boolean;
   textOffset?: PointCoordinate;
+  isNew?: boolean;
   type: 'rectangle' | 'round';
 }
 

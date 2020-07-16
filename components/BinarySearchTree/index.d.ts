@@ -4,8 +4,6 @@ import { BST } from 'types/ds/BST';
 
 export interface IState {
   nodeAboutToVisit: Set<number>;
-  bstModel: BST.Model;
-  isVisible: boolean;
 }
 
 export interface IProps extends BaseDSProps {

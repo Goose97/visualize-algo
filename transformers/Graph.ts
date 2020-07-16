@@ -53,7 +53,7 @@ const transformGraphModel = (
           : [keyToHighlight];
         listKey.forEach(item => {
           const nodeToHighlight = draft.find(({ key }) => key === item);
-          if (nodeToHighlight) nodeToHighlight.highlight = true;
+          if (nodeToHighlight) nodeToHighlight.circleAround = true;
         });
       });
     }
@@ -114,7 +114,7 @@ const transformGraphModel = (
       // reset highlight of node and edges
       return produce(currentModel, draft => {
         draft.forEach(item => {
-          item.highlight = false;
+          item.circleAround = false;
           item.highlightEdges = [];
         });
       });

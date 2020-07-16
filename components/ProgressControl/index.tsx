@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPlay,
@@ -12,7 +12,7 @@ import {
 import { classNameHelper } from 'utils';
 import { IProps } from './index.d';
 
-export class ProgressControl extends Component<IProps> {
+export class ProgressControl extends PureComponent<IProps> {
   handleControlProgress = (index: number) => () => {
     const handlerFunction = this.getHandlerFunction(index);
     handlerFunction && !this.isButtonDisabled(index) && handlerFunction();
@@ -59,11 +59,13 @@ export class ProgressControl extends Component<IProps> {
     return classNameHelper({
       base: 'progress-control__button',
       disabled: this.isButtonDisabled(buttonIndex),
+      ['play-button']: buttonIndex === 2,
     });
   }
 
   isButtonDisabled = (buttonIndex: number) => {
-    const { progress } = this.props;
+    const { progress, disabled } = this.props;
+    if (disabled) return true;
     switch (buttonIndex) {
       case 0:
       case 1:
@@ -89,15 +91,17 @@ export class ProgressControl extends Component<IProps> {
             autoPlay ? faStop : faPlay,
             faStepForward,
             faFastForward,
-          ].map((icon, index) => (
-            <span
-              className={this.produceButtonClassName(index)}
-              key={index}
-              onClick={this.handleControlProgress(index)}
-            >
-              <FontAwesomeIcon icon={icon} />
-            </span>
-          ))}
+          ].map((icon, index) => {
+            return (
+              <button
+                className={this.produceButtonClassName(index)}
+                key={index}
+                onClick={this.handleControlProgress(index)}
+              >
+                <FontAwesomeIcon icon={icon} />
+              </button>
+            );
+          })}
         </div>
         {this.renderProgressIndicator()}
       </div>

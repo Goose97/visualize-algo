@@ -1,0 +1,8 @@
+.hash-table-html__wrapper {
+  & > .dropdown__trigger {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(60px, -30px);
+  }
+}
