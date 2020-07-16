@@ -38,7 +38,9 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
   }
 
   static initBSTModel(props: IProps): BST.Model {
-    const bstModelWithoutCoordinate = produceInitialBSTData(props.initialData);
+    const { controlled, data, initialData } = props;
+    const dataToInitBST = controlled ? data : initialData;
+    const bstModelWithoutCoordinate = produceInitialBSTData(dataToInitBST);
     const nodeCoordinateByKey = BinarySearchTreeDS.getCoordinationsOfTreeNodes(
       bstModelWithoutCoordinate,
       props,
@@ -186,7 +188,10 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
   }
 
   // params: [parentKey, valueToInsert]
-  insert = (currentModel: BST.Model, params: [number, number]): BST.Model => {
+  insert = (
+    currentModel: BST.Model,
+    params: [number, number | string],
+  ): BST.Model => {
     const [parentKey, valueToInsert] = params;
     const parentNode = currentModel.find(({ key }) => key === parentKey);
     if (parentNode == null) return currentModel;
@@ -208,18 +213,35 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
     if (isNodeCoordinateCollideWithOtherNode(childCoordinate, currentModel)) {
       const allocatedBSTModel = this.reallocateAllTreeNode(currentModel);
       return this.insert(allocatedBSTModel, params);
-    } else {
-      const newChildNode = this.constructNewChildNode(
-        valueToInsert,
-        this.getBiggestKey(currentModel) + 1,
-        childCoordinate,
-      );
-      return transformBSTModel(currentModel, 'insert', [
-        parentKey,
-        newChildNode,
-      ]);
     }
+
+    const newChildNode = this.constructNewChildNode(
+      valueToInsert,
+      this.getBiggestKey(currentModel) + 1,
+      childCoordinate,
+    );
+    const modelAfterInsert = transformBSTModel(currentModel, 'insert', [
+      parentKey,
+      newChildNode,
+    ]);
+    if (this.isTreeOutOfView(modelAfterInsert))
+      return this.shiftTreeToView(modelAfterInsert);
+
+    return modelAfterInsert;
   };
+
+  isTreeOutOfView(bstModel: BST.Model) {
+    return bstModel.some(({ x }) => x < 0);
+  }
+
+  // Sometimes node in bst will have negative x value
+  // so we have to shift the whole tree to right some amount to make
+  // the whole tree visible
+  shiftTreeToView(bstModel: BST.Model) {
+    let amountToShiftRight = Math.min(...bstModel.map(({ x }) => x));
+    if (amountToShiftRight > 0) return bstModel;
+    return bstModel.map(item => ({ ...item, x: item.x - amountToShiftRight }));
+  }
 
   reallocateAllTreeNode(currentModel: BST.Model) {
     const nodeCoordinateByKey = BinarySearchTreeDS.getCoordinationsOfTreeNodes(

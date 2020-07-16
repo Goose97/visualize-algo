@@ -292,6 +292,14 @@ $default-dasharray: 8px;
   fill: $background-light-1;
 }
 
+.error-color {
+  color: $destructive-color;
+}
+
+.success-color {
+  color: $success-color;
+}
+
 .deemphasized {
   opacity: 0.15;
 }
