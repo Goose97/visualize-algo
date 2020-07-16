@@ -38,7 +38,9 @@ export class BinarySearchTreeDS extends Component<PropsWithHoc, IState> {
   }
 
   static initBSTModel(props: IProps): BST.Model {
-    const bstModelWithoutCoordinate = produceInitialBSTData(props.initialData);
+    const { controlled, data, initialData } = props;
+    const dataToInitBST = controlled ? data : initialData;
+    const bstModelWithoutCoordinate = produceInitialBSTData(dataToInitBST);
     const nodeCoordinateByKey = BinarySearchTreeDS.getCoordinationsOfTreeNodes(
       bstModelWithoutCoordinate,
       props,

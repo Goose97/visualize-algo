@@ -7,11 +7,14 @@ import { validateBinaryTree } from 'instructions/BST/helper';
 import withExtendClassName, {
   WithExtendClassName,
 } from 'hocs/withExtendClassName';
+import { initBSTbySequentiallyInsert } from 'instructions/BST/helper';
 import { IProps, IState } from './index.d';
 
 const { TextArea } = Input;
 
 type PropsWithHoc = IProps & WithExtendClassName;
+
+const PRESET_DATA = [4, 1, 8, -3, 2, 6, 9, null, -2];
 
 export class InitBSTInput extends Component<PropsWithHoc, IState> {
   private inputRef: React.RefObject<HTMLInputElement>;
@@ -35,19 +38,20 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
   getBSTRepresentationFromInputText(
     inputText: string,
   ): { input?: Array<number | null>; error?: string | null } {
-    const regex = /^\[([(\d|null)\-,\s]+)\]$/;
+    const regex = /^\[([(\-\d|\d),\s]+)\]$/;
     const match = inputText.match(regex);
     if (!match) return { error: 'Sai cú pháp' };
-
-    const input = match[1]
+    const allItemToInsert = match[1]
       .split(',')
       .map(string => (string.includes('null') ? null : parseInt(string)))
       .filter(item => item === null || typeof item === 'number');
+    const input = initBSTbySequentiallyInsert(
+      allItemToInsert,
+    ).getLayerRepresentation();
 
-    const isBSTValid = validateBinaryTree(input);
     return {
       input,
-      error: isBSTValid ? null : 'BST không hợp lệ',
+      error: null,
     };
   }
 
@@ -57,26 +61,13 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
     htmlInput?.focus();
   };
 
-  handleRandomizeData = () => {
-    const randomData = this.generateRandomData();
-    let textToMatchThoseData = randomData
-      .map(item => (item === null ? 'null' : item.toString()))
-      .join(', ');
+  handleUsingPresetData = () => {
+    let textToMatchThoseData = PRESET_DATA.map(item =>
+      item === null ? 'null' : item.toString(),
+    ).join(', ');
     textToMatchThoseData = `[${textToMatchThoseData}]`;
-    this.setState({ input: randomData, textInput: textToMatchThoseData });
+    this.setState({ input: PRESET_DATA, textInput: textToMatchThoseData });
   };
-
-  generateRandomData() {
-    return [2, -1, 6, null, 0, null, 8];
-    return [4, 1, 8, -3, 2, 6, 9, null, -2, null, null, null, null, null, null];
-    return Array(8)
-      .fill(0)
-      .map(() => {
-        const value = Math.round(Math.random() * 12);
-        if (value > 10) return null;
-        else return value;
-      });
-  }
 
   render() {
     const { isModalVisible, input, textInput, error } = this.state;
@@ -85,22 +76,32 @@ export class InitBSTInput extends Component<PropsWithHoc, IState> {
       <div className='init-bst-modal__preview fx-7'>
         <svg className='h-full w-full'>
           {!!input.length && (
-            <BinarySearchTreeDS x={10} y={50} initialData={input} controlled />
+            <BinarySearchTreeDS
+              x={10}
+              y={50}
+              data={input}
+              controlled
+              instructions={[]}
+            />
           )}
         </svg>
       </div>
     );
 
     const inputTextArea = (
-      <div className='init-bst-modal__input fx-3'>
-        <TextArea
-          onChange={this.handleChange}
-          placeholder='[1,2,3,null,4,5]'
-          value={textInput}
-        />
-        <span className='f-small-1 italic error-color mb-2'>{error}</span>
-        <Button type='secondary' onClick={this.handleRandomizeData}>
-          Generate random data
+      <div className='init-bst-modal__input fx-3 fx-col'>
+        <div className='fx-col'>
+          <span className='mb-2'>
+            Element to construct BST (insert sequentially):
+          </span>
+          <TextArea
+            onChange={this.handleChange}
+            placeholder='[4, 1, 8, -3, 2, 6, 9, null, -2]'
+            value={textInput}
+          />
+        </div>
+        <Button type='secondary' onClick={this.handleUsingPresetData}>
+          Generate preset data
         </Button>
       </div>
     );
