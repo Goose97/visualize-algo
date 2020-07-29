@@ -119,7 +119,7 @@ def printPostorder(root):
 `;
 
 
-export const code: Record<BST.Api, string[]> = {
+export const code: Record<BST.Api, string> = {
   search: searchCode,
   insert: insertCode,
   delete: deleteCode,
