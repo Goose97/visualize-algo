@@ -11,7 +11,7 @@
 
       &.focus {
         @extend .shadow;
-        background-color: $primary-color-5;
+        background-color: $primary-color-2;
         position: relative;
         &:after {
           content: '';

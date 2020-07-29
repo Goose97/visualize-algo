@@ -32,7 +32,7 @@
     top: 0;
     bottom: 0;
     left: 0;
-    width: 20px;
+    width: 5px;
     cursor: ew-resize;
 
     &:after {
@@ -69,7 +69,6 @@
       fill: $primary-text-color;
       stroke: $primary-text-color;
     }
-
     &:hover {
       @extend .clickable;
       background-color: $primary-color;
@@ -80,11 +79,17 @@
       }
     }
   }
+
+  .code-and-explanation__main {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
 }
 
 .code-container {
   background-color: #272822;
   overflow: auto;
+  height: 100vh;
 
   & > pre {
     @extend .pl-12;

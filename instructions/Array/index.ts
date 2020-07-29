@@ -91,6 +91,7 @@ const bubbleSortInstruction = (data: number[], params: Array.SortParams) => {
   let len = array.length;
   let i, j, stop;
   instructions.setCodeLine(codeLines.init);
+  instructions.setExplainationStep(1);
   for (i = 0; i < len; i++) {
     instructions.setCodeLine(codeLines.iteration);
     for (j = 0, stop = len - i - 1; j < stop; j++) {
@@ -101,16 +102,21 @@ const bubbleSortInstruction = (data: number[], params: Array.SortParams) => {
       ]);
 
       instructions.setCodeLine(codeLines.compare);
+      instructions.setExplainationStep(2);
+      
       if (array[j].val > array[j + 1].val) {
+        // instructions.setCodeLine(codeLines.swap);
         instructions.pushActionsAndEndStep('array', [
           { name: 'swap', params: [array[j].key, array[j + 1].key] },
         ]);
-        instructions.setCodeLine(codeLines.swap);
+        
+        instructions.setExplainationStep(3);
         let temp = array[j];
         array[j] = array[j + 1];
         array[j + 1] = temp;
       }
       instructions.setCodeLine(codeLines.step);
+      instructions.setExplainationStep(4);
 
       if (j + 1 === stop) {
         instructions.pushActionsAndEndStep('array', [
@@ -183,10 +189,10 @@ const getCodeLine = (operation: Array.Api): ObjectType<string> => {
     case 'bubbleSort':
       return {
         init: '12-18',
-        compare: '14',
-        swap: '15',
-        iteration: '12',
-        step: '13',
+        compare: '15',
+        swap: '16',
+        iteration: '6',
+        step: '10',
       };
 
     case 'selectionSort':
