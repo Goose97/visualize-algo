@@ -3,11 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_PATH=. next dev",
-    "prestart": "next build",    
-    "start": "next start",
-    "build": "next build",
-    "heroku-postbuild": "npm run build"
+    "prestart": "next build",
+ "start": "next start -p ${PORT}",
   },
   "dependencies": {
     "@ant-design/icons": "^4.2.1",
