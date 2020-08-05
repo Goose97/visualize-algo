@@ -22,20 +22,20 @@
 
 const bubbleSort = `
 def bubbleSort(arr): 
-    n = len(arr) 
-  
-    # Traverse through all array elements 
-    for i in range(n-1): 
-    # range(n) also work but outer loop will repeat one time more than needed. 
-  
-        # Last i elements are already in place 
-        for j in range(0, n-i-1): 
-  
-            # traverse the array from 0 to n-i-1 
-            # Swap if the element found is greater 
-            # than the next element 
-            if arr[j] > arr[j+1] : 
-                arr[j], arr[j+1] = arr[j+1], arr[j] 
+  n = len(arr) 
+
+  # Traverse through all array elements 
+  for i in range(n-1): 
+  # range(n) also work but outer loop will repeat one time more than needed. 
+
+    # Last i elements are already in place 
+    for j in range(0, n-i-1): 
+
+      # traverse the array from 0 to n-i-1 
+      # Swap if the element found is greater 
+      # than the next element 
+      if arr[j] > arr[j+1] : 
+          arr[j], arr[j+1] = arr[j+1], arr[j] 
 `;
 
 const selectionSort = `
@@ -56,25 +56,24 @@ def selection_sort(L):
 
 const insertionSort = `
 def insertion_sort(array):
-
   # We start from 1 since the first element is trivially sorted
   for index in range(1, len(array)):
-      currentValue = array[index]
-      currentPosition = index
+    currentValue = array[index]
+    currentPosition = index
 
-      # As long as we haven't reached the beginning and there is an element
-      # in our sorted array larger than the one we're trying to insert - move
-      # that element to the right
-      while currentPosition > 0 and array[currentPosition - 1] > currentValue:
-          array[currentPosition] = array[currentPosition -1]
-          currentPosition = currentPosition - 1
+    # As long as we haven't reached the beginning and there is an element
+    # in our sorted array larger than the one we're trying to insert - move
+    # that element to the right
+    while currentPosition > 0 and array[currentPosition - 1] > currentValue:
+        array[currentPosition] = array[currentPosition -1]
+        currentPosition = currentPosition - 1
 
 
-      # We have either reached the beginning of the array or we have found
-      # an element of the sorted array that is smaller than the element
-      # we're trying to insert at index currentPosition - 1.
-      # Either way - we insert the element at currentPosition
-      array[currentPosition] = currentValue
+    # We have either reached the beginning of the array or we have found
+    # an element of the sorted array that is smaller than the element
+    # we're trying to insert at index currentPosition - 1.
+    # Either way - we insert the element at currentPosition
+    array[currentPosition] = currentValue
 `;
 
 export const code = {
