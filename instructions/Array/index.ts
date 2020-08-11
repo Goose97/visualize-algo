@@ -6,7 +6,7 @@ import { Array } from 'types/ds/Array';
 export const arrayInstruction = (
   data: number[],
   operation: Array.Api,
-  parameters: any,
+  parameters: any
 ) => {
   switch (operation) {
     case 'bubbleSort':
@@ -83,7 +83,7 @@ const selectionSortInstruction = (data: number[], params: Array.SortParams) => {
 
 const bubbleSortInstruction = (data: number[], params: Array.SortParams) => {
   let instructions = new Instructions();
-  instructions.setDuration(750);
+  instructions.setDuration(500);
   let array = initArray(data);
   const codeLines = getCodeLine('bubbleSort');
 
@@ -91,8 +91,10 @@ const bubbleSortInstruction = (data: number[], params: Array.SortParams) => {
   let len = array.length;
   let i, j, stop;
   instructions.setCodeLine(codeLines.init);
+  instructions.setExplainationStep(1);
   for (i = 0; i < len; i++) {
     instructions.setCodeLine(codeLines.iteration);
+    instructions.setExplainationStep(2);
     for (j = 0, stop = len - i - 1; j < stop; j++) {
       instructions.pushActionsAndEndStep('array', [
         { name: 'resetFocusAll', params: [] },
@@ -101,23 +103,28 @@ const bubbleSortInstruction = (data: number[], params: Array.SortParams) => {
       ]);
 
       instructions.setCodeLine(codeLines.compare);
+      instructions.endStep();
       if (array[j].val > array[j + 1].val) {
+        instructions.setExplainationStep(3);
+        instructions.setCodeLine(codeLines.swap);
         instructions.pushActionsAndEndStep('array', [
           { name: 'swap', params: [array[j].key, array[j + 1].key] },
         ]);
-        instructions.setCodeLine(codeLines.swap);
+
         let temp = array[j];
         array[j] = array[j + 1];
         array[j + 1] = temp;
       }
       instructions.setCodeLine(codeLines.step);
-
+      instructions.setExplainationStep(4);
+      instructions.endStep();
       if (j + 1 === stop) {
         instructions.pushActionsAndEndStep('array', [
           { name: 'setUnsortedLine', params: [array[j + 1].key] },
         ]);
       }
     }
+    console.log('instructions', instructions);
   }
 
   instructions.pushActionsAndEndStep('array', [
@@ -183,10 +190,10 @@ const getCodeLine = (operation: Array.Api): ObjectType<string> => {
     case 'bubbleSort':
       return {
         init: '12-18',
-        compare: '14',
-        swap: '15',
-        iteration: '12',
-        step: '13',
+        compare: '15',
+        swap: '16',
+        iteration: '6',
+        step: '10',
       };
 
     case 'selectionSort':
