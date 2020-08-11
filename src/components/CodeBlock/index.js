@@ -30,7 +30,7 @@ export class CodeBlock extends Component {
     const { code, highlightLine } = this.props;
     return (
       <pre ref={this.codeBlockRef} data-line={highlightLine}>
-        <code className='language-javascript visual-algo-code'>{code}</code>
+        <code className='language-py visual-algo-code'>{code}</code>
       </pre>
     );
   }

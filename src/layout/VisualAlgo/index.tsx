@@ -1,5 +1,21 @@
 import React, { Component } from 'react';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { Tabs } from 'antd';
+import { StickyContainer, Sticky } from 'react-sticky';
+
+const { TabPane } = Tabs;
+
+const renderTabBar = (props, DefaultTabBar) => (
+  <Sticky bottomOffset={80}>
+    {({ style }) => (
+      <DefaultTabBar
+        {...props}
+        className="site-custom-tab-bar"
+        style={{ ...style }}
+      />
+    )}
+  </Sticky>
+);
 
 import { CodeBlock, ExplanationBlock, ProgressControl } from '../../components';
 import {
@@ -91,7 +107,7 @@ export class VisualAlgo extends Component<IProps, IState> {
   scheduleNextStepConsumation(wait: number) {
     this.nextStepTimeoutToken = setTimeout(
       this.increaseCurrentStep,
-      wait || DEFAULT_WAIT,
+      wait || DEFAULT_WAIT
     );
   }
 
@@ -218,8 +234,8 @@ export class VisualAlgo extends Component<IProps, IState> {
     const { codeLine, explanationStep, autoPlay, isCollapsing } = this.state;
 
     const visualizationScreen = (
-      <div className='fx-3 fx-col visual-container shadow'>
-        <div className='fx fx-between px-8 py-2'>
+      <div className="fx-3 fx-col visual-container shadow">
+        <div className="fx fx-between px-8 py-2">
           <ProgressControl
             onForward={this.increaseCurrentStep}
             onFastForward={this.goToFinalStep}
@@ -232,7 +248,7 @@ export class VisualAlgo extends Component<IProps, IState> {
             disabled={disableProgressControl}
           />
         </div>
-        <div className='fx-1'>{children}</div>
+        <div className="fx-1">{children}</div>
       </div>
     );
 
@@ -246,29 +262,41 @@ export class VisualAlgo extends Component<IProps, IState> {
         ref={this.codeAndExplanationRef}
       >
         <div
-          className='code-and-explanation__drag-handler'
+          className="code-and-explanation__drag-handler"
           onMouseDown={this.handleStartResize}
         ></div>
         <div
-          className='code-and-explanation__collapse-button'
+          className="code-and-explanation__collapse-button"
           onClick={this.handleCollapse}
         >
           {isCollapsing ? <LeftOutlined /> : <RightOutlined />}
         </div>
-        <div className='fx-3 code-container'>
-          <CodeBlock code={code} highlightLine={codeLine} />
-        </div>
-        <div className='fx-2'>
-          <ExplanationBlock
-            explanation={explanation}
-            currentStep={explanationStep}
-          />
+        <div
+          className="code-and-explanation__main"
+        >
+          <StickyContainer>
+            <Tabs defaultActiveKey="1" renderTabBar={renderTabBar}>
+              <TabPane tab="Mã giả" key="1">
+                <div className="fx-3 code-container">
+                  <CodeBlock code={code} highlightLine={codeLine} />
+                </div>
+              </TabPane>
+              <TabPane tab="Giải thích" key="2">
+                <div className="fx-2">
+                  <ExplanationBlock
+                    explanation={explanation}
+                    currentStep={explanationStep}
+                  />
+                </div>
+              </TabPane>
+            </Tabs>
+          </StickyContainer>
         </div>
       </div>
     );
 
     return (
-      <div className='fx-col vh-100'>
+      <div className="fx-col vh-100">
         {visualizationScreen}
         {codeAndExplanation}
       </div>

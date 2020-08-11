@@ -41,6 +41,10 @@ export class Instructions {
     this.buffer.codeLine = codeLine;
   }
 
+  setExplainationStep(explanationStep?: number) {
+    this.buffer.explanationStep = explanationStep;
+  }
+
   get() {
     return this.instructions;
   }

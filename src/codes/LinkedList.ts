@@ -81,7 +81,7 @@ const detectCycleCode = `function detectCycle(head) {
   return false;
 }`;
 
-export const code = {
+export const code: Record<LinkedList.Api, string> = {
   search: searchCode,
   insert: insertCode,
   delete: deleteCode,

@@ -1,3 +1,5 @@
+import BST from 'types/ds/BST';
+
 const searchCode = `function search(data) {
   let current = this.root;
   while (current !== null) {
@@ -66,13 +68,63 @@ const deleteCode = `function delete(value) {
   parentOfPredecessor.right = null;
 }`;
 
-export const code = {
+const preorderCode = `
+# A function to do preorder tree traversal 
+def printPreorder(root): 
+  
+    if root: 
+  
+        # First print the data of node 
+        print(root.val), 
+  
+        # Then recur on left child 
+        printPreorder(root.left) 
+  
+        # Finally recur on right child 
+        printPreorder(root.right) 
+
+`;
+
+const inorderCode = `
+# A function to do inorder tree traversal 
+def printInorder(root): 
+  
+    if root: 
+  
+        # First recur on left child 
+        printInorder(root.left) 
+  
+        # then print the data of node 
+        print(root.val), 
+  
+        # now recur on right child 
+        printInorder(root.right) 
+
+`;
+
+const postoderCode = `
+# A function to do postorder tree traversal 
+def printPostorder(root): 
+  
+    if root: 
+  
+        # First recur on left child 
+        printPostorder(root.left) 
+  
+        # the recur on right child 
+        printPostorder(root.right) 
+  
+        # now print the data of node 
+        print(root.val)
+`;
+
+export const code: Record<BST.Api, string> = {
   search: searchCode,
   insert: insertCode,
   delete: deleteCode,
-  preorder: '',
-  inorder: '',
-  postorder: '',
+  preorder: preorderCode,
+  inorder: inorderCode,
+  postorder: postoderCode,
 };
 
 export const explanation = {
@@ -96,5 +148,26 @@ export const explanation = {
     'Nếu node cần xoá không có children (là leaf node) thì chỉ cần xoá node đó đi',
     'Nếu node cần xoá có 1 children sao chép giá trị của child sang node cần xoá rồi xoá child đi',
     'Nếu node cần xoá có 2 children thì tìm node lớn nhất ở nhánh trái hoặc node nhỏ nhất của nhánh phải, sao chép giá trị sang node cần xoá rồi xoá node ấy',
+  ],
+  preorder: [
+    'Duyệt tiền thứ tự cây con gốc A',
+    'Nếu Cây là rỗng Return',
+    'Thăm A',
+    'Duyệt tiền thứ tự cây con gốc L',
+    'Duyệt tiền thứ tự cây con gốc R',
+  ],
+  inorder: [
+    'Duyệt trung thứ tự cây con gốc A',
+    'Nếu Cây là rỗng Return',
+    'Duyệt trung thứ tự cây con gốc L',
+    'Thăm A',
+    'Duyệt trung thứ tự cây con gốc R',
+  ],
+  postorder: [
+    'Duyệt hậu thứ tự cây con gốc A',
+    'Nếu Cây là rỗng Return',
+    'Duyệt hậu thứ tự cây con gốc L',
+    'Duyệt hậu thứ tự cây con gốc R',
+    'Thăm A',
   ],
 };
