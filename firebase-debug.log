@@ -1,0 +1,702 @@
+[debug] [2020-08-04T15:09:13.074Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:09:13.077Z] Command:       /usr/local/bin/node /Users/nguyenvanduc/Documents/workspace/visualize-algo/node_modules/.bin/firebase deploy --only functions,hosting --debug
+[debug] [2020-08-04T15:09:13.077Z] CLI Version:   8.6.0
+[debug] [2020-08-04T15:09:13.077Z] Platform:      darwin
+[debug] [2020-08-04T15:09:13.077Z] Node Version:  v10.16.0
+[debug] [2020-08-04T15:09:13.078Z] Time:          Tue Aug 04 2020 22:09:13 GMT+0700 (Indochina Time)
+[debug] [2020-08-04T15:09:13.079Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:09:13.079Z] 
+[debug] [2020-08-04T15:09:13.091Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-08-04T15:09:13.093Z] > authorizing via signed-in user
+[debug] [2020-08-04T15:09:13.094Z] [iam] checking project visualize-algo for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-08-04T15:09:13.098Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/visualize-algo:testIamPermissions  
+ {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-08-04T15:09:14.085Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:09:14 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=824","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:09:14.087Z] >>> HTTP REQUEST POST https://iam.googleapis.com/v1/projects/visualize-algo/serviceAccounts/visualize-algo@appspot.gserviceaccount.com:testIamPermissions  
+ {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2020-08-04T15:09:14.620Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:09:14 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:09:14.621Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/visualize-algo  
+ 
+[debug] [2020-08-04T15:09:15.338Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:09:15 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'visualize-algo'...
+[info] 
+[info] i  deploying functions, hosting 
+[info] Running command: npm --prefix "$PROJECT_DIR" install
+[error] 
+[error] Error: functions predeploy error: Command terminated with non-zero exit code1
+[debug] [2020-08-04T15:10:03.285Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:10:03.287Z] Command:       /usr/local/bin/node /Users/nguyenvanduc/Documents/workspace/visualize-algo/node_modules/.bin/firebase deploy --only functions,hosting --debug
+[debug] [2020-08-04T15:10:03.288Z] CLI Version:   8.6.0
+[debug] [2020-08-04T15:10:03.288Z] Platform:      darwin
+[debug] [2020-08-04T15:10:03.288Z] Node Version:  v10.16.0
+[debug] [2020-08-04T15:10:03.289Z] Time:          Tue Aug 04 2020 22:10:03 GMT+0700 (Indochina Time)
+[debug] [2020-08-04T15:10:03.289Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:10:03.289Z] 
+[debug] [2020-08-04T15:10:03.298Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-08-04T15:10:03.299Z] > authorizing via signed-in user
+[debug] [2020-08-04T15:10:03.300Z] [iam] checking project visualize-algo for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-08-04T15:10:03.303Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/visualize-algo:testIamPermissions  
+ {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-08-04T15:10:04.287Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:10:04 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=821","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:10:04.290Z] >>> HTTP REQUEST POST https://iam.googleapis.com/v1/projects/visualize-algo/serviceAccounts/visualize-algo@appspot.gserviceaccount.com:testIamPermissions  
+ {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2020-08-04T15:10:05.426Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:10:05 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:10:05.428Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/visualize-algo  
+ 
+[debug] [2020-08-04T15:10:05.903Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:10:05 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'visualize-algo'...
+[info] 
+[info] i  deploying functions, hosting 
+[info] Running command: npm --prefix "$PROJECT_DIR" install
+[error] 
+[error] Error: functions predeploy error: Command terminated with non-zero exit code1
+[debug] [2020-08-04T15:10:50.589Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:10:50.591Z] Command:       /usr/local/bin/node /Users/nguyenvanduc/Documents/workspace/visualize-algo/node_modules/.bin/firebase deploy --only functions,hosting --debug
+[debug] [2020-08-04T15:10:50.591Z] CLI Version:   8.6.0
+[debug] [2020-08-04T15:10:50.591Z] Platform:      darwin
+[debug] [2020-08-04T15:10:50.591Z] Node Version:  v10.16.0
+[debug] [2020-08-04T15:10:50.592Z] Time:          Tue Aug 04 2020 22:10:50 GMT+0700 (Indochina Time)
+[debug] [2020-08-04T15:10:50.592Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:10:50.592Z] 
+[debug] [2020-08-04T15:10:50.600Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-08-04T15:10:50.602Z] > authorizing via signed-in user
+[debug] [2020-08-04T15:10:50.602Z] [iam] checking project visualize-algo for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-08-04T15:10:50.606Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/visualize-algo:testIamPermissions  
+ {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-08-04T15:10:51.596Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:10:51 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=816","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:10:51.598Z] >>> HTTP REQUEST POST https://iam.googleapis.com/v1/projects/visualize-algo/serviceAccounts/visualize-algo@appspot.gserviceaccount.com:testIamPermissions  
+ {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2020-08-04T15:10:52.897Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:10:52 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:10:52.899Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/visualize-algo  
+ 
+[debug] [2020-08-04T15:10:53.433Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:10:53 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'visualize-algo'...
+[info] 
+[info] i  deploying functions, hosting 
+[info] Running command: npm --prefix "$PROJECT_DIR" install
+[error] 
+[error] Error: functions predeploy error: Command terminated with non-zero exit code1
+[debug] [2020-08-04T15:12:39.084Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:12:39.086Z] Command:       /usr/local/bin/node /Users/nguyenvanduc/Documents/workspace/visualize-algo/node_modules/.bin/firebase deploy --only functions,hosting --debug
+[debug] [2020-08-04T15:12:39.086Z] CLI Version:   8.6.0
+[debug] [2020-08-04T15:12:39.087Z] Platform:      darwin
+[debug] [2020-08-04T15:12:39.087Z] Node Version:  v10.16.0
+[debug] [2020-08-04T15:12:39.087Z] Time:          Tue Aug 04 2020 22:12:39 GMT+0700 (Indochina Time)
+[debug] [2020-08-04T15:12:39.087Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:12:39.088Z] 
+[debug] [2020-08-04T15:12:39.096Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-08-04T15:12:39.098Z] > authorizing via signed-in user
+[debug] [2020-08-04T15:12:39.098Z] [iam] checking project visualize-algo for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-08-04T15:12:39.102Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/visualize-algo:testIamPermissions  
+ {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-08-04T15:12:40.152Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:12:40 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=837","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:12:40.154Z] >>> HTTP REQUEST POST https://iam.googleapis.com/v1/projects/visualize-algo/serviceAccounts/visualize-algo@appspot.gserviceaccount.com:testIamPermissions  
+ {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2020-08-04T15:12:41.368Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:12:41 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:12:41.369Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/visualize-algo  
+ 
+[debug] [2020-08-04T15:12:42.244Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:12:42 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'visualize-algo'...
+[info] 
+[info] i  deploying functions, hosting 
+[info] Running command: yarn --prefix "$PROJECT_DIR" install
+[error] 
+[error] Error: functions predeploy error: Command terminated with non-zero exit code1
+[debug] [2020-08-04T15:13:09.319Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:13:09.321Z] Command:       /usr/local/bin/node /Users/nguyenvanduc/Documents/workspace/visualize-algo/node_modules/.bin/firebase deploy --only functions,hosting --debug
+[debug] [2020-08-04T15:13:09.321Z] CLI Version:   8.6.0
+[debug] [2020-08-04T15:13:09.321Z] Platform:      darwin
+[debug] [2020-08-04T15:13:09.321Z] Node Version:  v10.16.0
+[debug] [2020-08-04T15:13:09.322Z] Time:          Tue Aug 04 2020 22:13:09 GMT+0700 (Indochina Time)
+[debug] [2020-08-04T15:13:09.322Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:13:09.322Z] 
+[debug] [2020-08-04T15:13:09.331Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-08-04T15:13:09.332Z] > authorizing via signed-in user
+[debug] [2020-08-04T15:13:09.333Z] [iam] checking project visualize-algo for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-08-04T15:13:09.336Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/visualize-algo:testIamPermissions  
+ {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-08-04T15:13:10.406Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:13:10 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=820","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:13:10.408Z] >>> HTTP REQUEST POST https://iam.googleapis.com/v1/projects/visualize-algo/serviceAccounts/visualize-algo@appspot.gserviceaccount.com:testIamPermissions  
+ {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2020-08-04T15:13:11.679Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:13:11 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:13:11.680Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/visualize-algo  
+ 
+[debug] [2020-08-04T15:13:12.391Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:13:12 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'visualize-algo'...
+[info] 
+[info] i  deploying functions, hosting 
+[info] Running command: yarn install
+[info] Running command: yarn run build
+[info] ✔  functions: Finished running predeploy script. 
+[debug] [2020-08-04T15:13:39.561Z] > [functions] package.json contents: {
+  "name": "visual-algo",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "10"
+  },
+  "scripts": {
+    "dev": "NODE_PATH=./src next dev src/",
+    "build": "NODE_PATH=./src next build src/",
+    "start": "next start src/",
+    "serve": "npm run build && firebase emulators:start --only functions,hosting",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions,hosting --debug",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.2.1",
+    "@babel/helper-validator-identifier": "^7.9.5",
+    "@fortawesome/fontawesome-svg-core": "^1.2.27",
+    "@fortawesome/free-solid-svg-icons": "^5.12.1",
+    "@fortawesome/react-fontawesome": "^0.1.9",
+    "@types/lodash": "^4.14.150",
+    "@types/next": "^9.0.0",
+    "@types/react": "^16.9.34",
+    "@types/react-select": "^3.0.11",
+    "@zeit/next-css": "^1.0.1",
+    "@zeit/next-less": "^1.0.1",
+    "@zeit/next-sass": "^1.0.1",
+    "@zeit/next-typescript": "^1.1.1",
+    "antd": "^4.2.4",
+    "babel-plugin-import": "^1.13.0",
+    "babel-plugin-lodash": "^3.3.4",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "bezier-easing": "^2.1.0",
+    "immer": "^6.0.1",
+    "less": "^3.11.1",
+    "lodash": "^4.17.15",
+    "next": "9.2.2",
+    "node-sass": "^4.13.1",
+    "null-loader": "^4.0.0",
+    "path": "^0.12.7",
+    "prismjs": "https://github.com/Goose97/forked-prism.git",
+    "react": "16.13.0",
+    "react-dom": "16.13.0",
+    "react-resizable": "^1.10.1",
+    "react-resize-panel": "^0.3.5",
+    "react-select": "^3.0.8",
+    "webpack-bundle-analyzer": "^3.6.0",
+    "webpack-filter-warnings-plugin": "^1.2.1",
+    "firebase-admin": "^8.9.0",
+    "firebase-functions": "^3.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.0",
+    "typescript": "^3.8.3",
+    "firebase-functions-test": "^0.1.6",
+    "firebase-tools": "^8.0.1"
+  }
+}
+[error] 
+[error] Error: There was an error reading ./package.json:
+
+ index.js does not exist, can't deploy Cloud Functions
+[debug] [2020-08-04T15:21:17.179Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:21:17.181Z] Command:       /usr/local/bin/node /Users/nguyenvanduc/Documents/workspace/visualize-algo/node_modules/.bin/firebase deploy --only functions,hosting --debug
+[debug] [2020-08-04T15:21:17.182Z] CLI Version:   8.6.0
+[debug] [2020-08-04T15:21:17.182Z] Platform:      darwin
+[debug] [2020-08-04T15:21:17.182Z] Node Version:  v10.16.0
+[debug] [2020-08-04T15:21:17.183Z] Time:          Tue Aug 04 2020 22:21:17 GMT+0700 (Indochina Time)
+[debug] [2020-08-04T15:21:17.183Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:21:17.183Z] 
+[debug] [2020-08-04T15:21:17.194Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-08-04T15:21:17.195Z] > authorizing via signed-in user
+[debug] [2020-08-04T15:21:17.196Z] [iam] checking project visualize-algo for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-08-04T15:21:17.200Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/visualize-algo:testIamPermissions  
+ {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-08-04T15:21:18.276Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:21:18 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=825","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:21:18.279Z] >>> HTTP REQUEST POST https://iam.googleapis.com/v1/projects/visualize-algo/serviceAccounts/visualize-algo@appspot.gserviceaccount.com:testIamPermissions  
+ {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2020-08-04T15:21:20.338Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:21:20 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:21:20.340Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/visualize-algo  
+ 
+[debug] [2020-08-04T15:21:21.877Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:21:21 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'visualize-algo'...
+[info] 
+[info] i  deploying functions, hosting 
+[info] Running command: yarn install
+[info] Running command: yarn run build
+[info] ✔  functions: Finished running predeploy script. 
+[debug] [2020-08-04T15:21:48.970Z] > [functions] package.json contents: {
+  "name": "visual-algo",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "10"
+  },
+  "scripts": {
+    "dev": "NODE_PATH=./src next dev src/",
+    "build": "NODE_PATH=./src next build src/",
+    "start": "next start src/",
+    "serve": "npm run build && firebase emulators:start --only functions,hosting",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions,hosting --debug",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.2.1",
+    "@babel/helper-validator-identifier": "^7.9.5",
+    "@fortawesome/fontawesome-svg-core": "^1.2.27",
+    "@fortawesome/free-solid-svg-icons": "^5.12.1",
+    "@fortawesome/react-fontawesome": "^0.1.9",
+    "@types/lodash": "^4.14.150",
+    "@types/next": "^9.0.0",
+    "@types/react": "^16.9.34",
+    "@types/react-select": "^3.0.11",
+    "@zeit/next-css": "^1.0.1",
+    "@zeit/next-less": "^1.0.1",
+    "@zeit/next-sass": "^1.0.1",
+    "@zeit/next-typescript": "^1.1.1",
+    "antd": "^4.2.4",
+    "babel-plugin-import": "^1.13.0",
+    "babel-plugin-lodash": "^3.3.4",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "bezier-easing": "^2.1.0",
+    "immer": "^6.0.1",
+    "less": "^3.11.1",
+    "lodash": "^4.17.15",
+    "next": "9.2.2",
+    "node-sass": "^4.13.1",
+    "null-loader": "^4.0.0",
+    "path": "^0.12.7",
+    "prismjs": "https://github.com/Goose97/forked-prism.git",
+    "react": "16.13.0",
+    "react-dom": "16.13.0",
+    "react-resizable": "^1.10.1",
+    "react-resize-panel": "^0.3.5",
+    "react-select": "^3.0.8",
+    "webpack-bundle-analyzer": "^3.6.0",
+    "webpack-filter-warnings-plugin": "^1.2.1",
+    "firebase-admin": "^8.9.0",
+    "firebase-functions": "^3.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.0",
+    "typescript": "^3.8.3",
+    "firebase-functions-test": "^0.1.6",
+    "firebase-tools": "^8.0.1"
+  }
+}
+[error] 
+[error] Error: There was an error reading ./package.json:
+
+ index.js does not exist, can't deploy Cloud Functions
+[debug] [2020-08-04T15:27:49.259Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:27:49.261Z] Command:       /usr/local/bin/node /Users/nguyenvanduc/Documents/workspace/visualize-algo/node_modules/.bin/firebase deploy --only functions,hosting --debug
+[debug] [2020-08-04T15:27:49.262Z] CLI Version:   8.6.0
+[debug] [2020-08-04T15:27:49.262Z] Platform:      darwin
+[debug] [2020-08-04T15:27:49.262Z] Node Version:  v10.16.0
+[debug] [2020-08-04T15:27:49.263Z] Time:          Tue Aug 04 2020 22:27:49 GMT+0700 (Indochina Time)
+[debug] [2020-08-04T15:27:49.263Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:27:49.263Z] 
+[debug] [2020-08-04T15:27:49.277Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-08-04T15:27:49.279Z] > authorizing via signed-in user
+[debug] [2020-08-04T15:27:49.279Z] [iam] checking project visualize-algo for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-08-04T15:27:49.284Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2020-08-04T15:27:49.284Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2020-08-04T15:27:50.792Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:27:50 GMT","server":"scaffolding on HTTPServer2","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:27:50.802Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/visualize-algo:testIamPermissions  
+ {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-08-04T15:27:52.079Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:27:51 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=876","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:27:52.080Z] >>> HTTP REQUEST POST https://iam.googleapis.com/v1/projects/visualize-algo/serviceAccounts/visualize-algo@appspot.gserviceaccount.com:testIamPermissions  
+ {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2020-08-04T15:27:53.718Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:27:53 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:27:53.720Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/visualize-algo  
+ 
+[debug] [2020-08-04T15:27:54.658Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:27:54 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'visualize-algo'...
+[info] 
+[info] i  deploying functions, hosting 
+[info] Running command: yarn install
+[info] Running command: yarn run build
+[info] ✔  functions: Finished running predeploy script. 
+[debug] [2020-08-04T15:28:23.089Z] > [functions] package.json contents: {
+  "name": "visual-algo",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "10"
+  },
+  "main": "firebaseFunctions.js",
+  "scripts": {
+    "dev": "NODE_PATH=./src next dev src/",
+    "build": "NODE_PATH=./src next build src/",
+    "start": "next start src/",
+    "serve": "npm run build && firebase emulators:start --only functions,hosting",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy": "firebase deploy --only functions,hosting --debug",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.2.1",
+    "@babel/helper-validator-identifier": "^7.9.5",
+    "@fortawesome/fontawesome-svg-core": "^1.2.27",
+    "@fortawesome/free-solid-svg-icons": "^5.12.1",
+    "@fortawesome/react-fontawesome": "^0.1.9",
+    "@types/lodash": "^4.14.150",
+    "@types/next": "^9.0.0",
+    "@types/react": "^16.9.34",
+    "@types/react-select": "^3.0.11",
+    "@zeit/next-css": "^1.0.1",
+    "@zeit/next-less": "^1.0.1",
+    "@zeit/next-sass": "^1.0.1",
+    "@zeit/next-typescript": "^1.1.1",
+    "antd": "^4.2.4",
+    "babel-plugin-import": "^1.13.0",
+    "babel-plugin-lodash": "^3.3.4",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "bezier-easing": "^2.1.0",
+    "immer": "^6.0.1",
+    "less": "^3.11.1",
+    "lodash": "^4.17.15",
+    "next": "9.2.2",
+    "node-sass": "^4.13.1",
+    "null-loader": "^4.0.0",
+    "path": "^0.12.7",
+    "prismjs": "https://github.com/Goose97/forked-prism.git",
+    "react": "16.13.0",
+    "react-dom": "16.13.0",
+    "react-resizable": "^1.10.1",
+    "react-resize-panel": "^0.3.5",
+    "react-select": "^3.0.8",
+    "webpack-bundle-analyzer": "^3.6.0",
+    "webpack-filter-warnings-plugin": "^1.2.1",
+    "firebase-admin": "^8.9.0",
+    "firebase-functions": "^3.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.0",
+    "typescript": "^3.8.3",
+    "firebase-functions-test": "^0.1.6",
+    "firebase-tools": "^8.0.1"
+  }
+}
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[debug] [2020-08-04T15:28:27.025Z] >>> HTTP REQUEST GET https://serviceusage.googleapis.com/v1/projects/visualize-algo/services/cloudfunctions.googleapis.com  
+ 
+[debug] [2020-08-04T15:28:27.027Z] >>> HTTP REQUEST GET https://serviceusage.googleapis.com/v1/projects/visualize-algo/services/runtimeconfig.googleapis.com  
+ 
+[debug] [2020-08-04T15:28:27.028Z] >>> HTTP REQUEST GET https://serviceusage.googleapis.com/v1/projects/visualize-algo/services/cloudbuild.googleapis.com  
+ 
+[debug] [2020-08-04T15:28:39.817Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:28:37 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:28:40.333Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:28:37 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[warn] ⚠  functions: missing required API cloudbuild.googleapis.com. Enabling now... 
+[debug] [2020-08-04T15:28:40.335Z] >>> HTTP REQUEST POST https://serviceusage.googleapis.com/v1/projects/visualize-algo/services/cloudbuild.googleapis.com:enable  
+ 
+[debug] [2020-08-04T15:28:42.381Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:28:37 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] ✔  functions: required API cloudfunctions.googleapis.com is enabled 
+[debug] [2020-08-04T15:28:45.652Z] <<< HTTP RESPONSE 400 {"vary":"X-Origin, Referer, Origin,Accept-Encoding","content-type":"application/json; charset=UTF-8","date":"Tue, 04 Aug 2020 15:28:45 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:28:45.652Z] <<< HTTP RESPONSE BODY {"error":{"code":400,"message":"Billing must be enabled for activation of service '[cloudbuild.googleapis.com, containerregistry.googleapis.com]' in project '822706069161' to proceed.","status":"FAILED_PRECONDITION","details":[{"@type":"type.googleapis.com/google.rpc.PreconditionFailure","violations":[{"type":"serviceusage/billing-enabled","subject":"822706069161","description":"billing-enabled: Project's billing account is not found. https://console.developers.google.com/project/822706069161/settings"}]}]}}
+[error] 
+[error] Error: Cloud Functions deployment requires the pay-as-you-go (Blaze) billing plan. To upgrade your project, visit the following URL:
+      
+https://console.firebase.google.com/project/visualize-algo/usage/details
+
+For additional information about this requirement, see Firebase FAQs:
+
+https://firebase.google.com/support/faq#functions-runtime
+[debug] [2020-08-04T15:31:52.940Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:31:52.942Z] Command:       /usr/local/bin/node /Users/nguyenvanduc/Documents/workspace/visualize-algo/node_modules/.bin/firebase deploy --only hosting --debug
+[debug] [2020-08-04T15:31:52.942Z] CLI Version:   8.6.0
+[debug] [2020-08-04T15:31:52.942Z] Platform:      darwin
+[debug] [2020-08-04T15:31:52.942Z] Node Version:  v10.16.0
+[debug] [2020-08-04T15:31:52.943Z] Time:          Tue Aug 04 2020 22:31:52 GMT+0700 (Indochina Time)
+[debug] [2020-08-04T15:31:52.943Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:31:52.943Z] 
+[debug] [2020-08-04T15:31:52.953Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-08-04T15:31:52.954Z] > authorizing via signed-in user
+[debug] [2020-08-04T15:31:52.955Z] [iam] checking project visualize-algo for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-08-04T15:31:52.958Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/visualize-algo:testIamPermissions  
+ {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-08-04T15:31:54.076Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:31:53 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=826","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:31:54.080Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/visualize-algo  
+ 
+[debug] [2020-08-04T15:31:54.682Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:31:54 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'visualize-algo'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2020-08-04T15:31:57.923Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/versions  
+ {"config":{"rewrites":[{"glob":"**","function":"nextjsFunc"}]},"labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2020-08-04T15:31:59.571Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:31:59 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] i  hosting[visualize-algo]: beginning deploy... 
+[info] i  hosting[visualize-algo]: found 0 files in public 
+[debug] [2020-08-04T15:31:59.579Z] [hosting] hash cache [cHVibGlj] not populated
+[info] ✔  hosting[visualize-algo]: file upload complete 
+[debug] [2020-08-04T15:31:59.580Z] [hosting] deploy completed after 7ms
+[debug] [2020-08-04T15:31:59.796Z] [
+  {
+    "config": {
+      "public": "public",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "function": "nextjsFunc"
+        }
+      ],
+      "site": "visualize-algo"
+    },
+    "site": "visualize-algo",
+    "version": "sites/visualize-algo/versions/db07652409823d9f"
+  }
+]
+[info] i  hosting[visualize-algo]: finalizing version... 
+[debug] [2020-08-04T15:31:59.797Z] >>> HTTP REQUEST PATCH https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/versions/db07652409823d9f?updateMask=status  
+ {"status":"FINALIZED"}
+[debug] [2020-08-04T15:32:01.269Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:32:01 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:32:01.270Z] [hosting] finalized version for visualize-algo: {"name":"sites/visualize-algo/versions/db07652409823d9f","status":"FINALIZED","config":{"rewrites":[{"glob":"**","function":"nextjsFunc"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2020-08-04T15:31:59.065335Z","createUser":{"email":"purification1997@gmail.com"},"finalizeTime":"2020-08-04T15:32:01.081181Z","finalizeUser":{"email":"purification1997@gmail.com"}}
+[info] ✔  hosting[visualize-algo]: version finalized 
+[info] i  hosting[visualize-algo]: releasing new version... 
+[debug] [2020-08-04T15:32:01.272Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/releases?version_name=sites/visualize-algo/versions/db07652409823d9f  
+ {"message":null}
+[debug] [2020-08-04T15:32:02.653Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:32:02 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:32:02.653Z] [hosting] release: {"name":"sites/visualize-algo/releases/1596555121883156","version":{"name":"sites/visualize-algo/versions/db07652409823d9f","status":"FINALIZED","config":{"rewrites":[{"glob":"**","function":"nextjsFunc"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2020-08-04T15:31:59.065335Z","createUser":{"email":"purification1997@gmail.com"},"finalizeTime":"2020-08-04T15:32:01.081181Z","finalizeUser":{"email":"purification1997@gmail.com"},"preview":{}},"type":"DEPLOY","releaseTime":"2020-08-04T15:32:01.883156975Z","releaseUser":{"email":"purification1997@gmail.com"}}
+[info] ✔  hosting[visualize-algo]: release complete 
+[info] 
+[info] ✔  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/visualize-algo/overview
+[info] Hosting URL: https://visualize-algo.web.app
+[debug] [2020-08-04T15:36:01.604Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:36:01.606Z] Command:       /usr/local/bin/node /Users/nguyenvanduc/Documents/workspace/visualize-algo/node_modules/.bin/firebase deploy --only hosting --debug
+[debug] [2020-08-04T15:36:01.607Z] CLI Version:   8.6.0
+[debug] [2020-08-04T15:36:01.607Z] Platform:      darwin
+[debug] [2020-08-04T15:36:01.607Z] Node Version:  v10.16.0
+[debug] [2020-08-04T15:36:01.607Z] Time:          Tue Aug 04 2020 22:36:01 GMT+0700 (Indochina Time)
+[debug] [2020-08-04T15:36:01.607Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:36:01.608Z] 
+[debug] [2020-08-04T15:36:01.617Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-08-04T15:36:01.618Z] > authorizing via signed-in user
+[debug] [2020-08-04T15:36:01.619Z] [iam] checking project visualize-algo for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-08-04T15:36:01.622Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/visualize-algo:testIamPermissions  
+ {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-08-04T15:36:02.797Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:36:02 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=901","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:36:02.799Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/visualize-algo  
+ 
+[debug] [2020-08-04T15:36:03.723Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:36:03 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'visualize-algo'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2020-08-04T15:36:07.355Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/versions  
+ {"config":{"rewrites":[{"glob":"**","function":"nextjsFunc"}]},"labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2020-08-04T15:36:08.920Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:36:08 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] i  hosting[visualize-algo]: beginning deploy... 
+[info] i  hosting[visualize-algo]: found 1 files in public 
+[debug] [2020-08-04T15:36:08.930Z] [hosting] hash cache [cHVibGlj] not populated
+[debug] [2020-08-04T15:36:08.938Z] [hosting] hash cache [cHVibGlj] stored for 1 files
+[debug] [2020-08-04T15:36:08.939Z] [hosting][hash queue][FINAL] {"max":6,"min":6,"avg":6,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":9}
+[debug] [2020-08-04T15:36:08.939Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/versions/241ea27f05b2e1e0:populateFiles  
+ <request body omitted>
+[debug] [2020-08-04T15:36:10.270Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:36:10 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:36:10.273Z] [hosting][populate queue][FINAL] {"max":1334,"min":1334,"avg":1334,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":1336}
+[debug] [2020-08-04T15:36:10.274Z] [hosting] uploads queued: 1
+[info] i  hosting: uploading new files [0/1] (0%) 
+[debug] [2020-08-04T15:36:11.934Z] [hosting][upload queue][FINAL] {"max":1663,"min":1663,"avg":1663,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":1663}
+[info] ✔  hosting[visualize-algo]: file upload complete 
+[debug] [2020-08-04T15:36:11.935Z] [hosting] deploy completed after 3013ms
+[debug] [2020-08-04T15:36:12.125Z] [
+  {
+    "config": {
+      "public": "public",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "function": "nextjsFunc"
+        }
+      ],
+      "site": "visualize-algo"
+    },
+    "site": "visualize-algo",
+    "version": "sites/visualize-algo/versions/241ea27f05b2e1e0"
+  }
+]
+[info] i  hosting[visualize-algo]: finalizing version... 
+[debug] [2020-08-04T15:36:12.126Z] >>> HTTP REQUEST PATCH https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/versions/241ea27f05b2e1e0?updateMask=status  
+ {"status":"FINALIZED"}
+[debug] [2020-08-04T15:36:13.405Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:36:13 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:36:13.405Z] [hosting] finalized version for visualize-algo: {"name":"sites/visualize-algo/versions/241ea27f05b2e1e0","status":"FINALIZED","config":{"rewrites":[{"glob":"**","function":"nextjsFunc"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2020-08-04T15:36:08.548958Z","createUser":{"email":"purification1997@gmail.com"},"finalizeTime":"2020-08-04T15:36:13.291793Z","finalizeUser":{"email":"purification1997@gmail.com"}}
+[info] ✔  hosting[visualize-algo]: version finalized 
+[info] i  hosting[visualize-algo]: releasing new version... 
+[debug] [2020-08-04T15:36:13.407Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/releases?version_name=sites/visualize-algo/versions/241ea27f05b2e1e0  
+ {"message":null}
+[debug] [2020-08-04T15:36:14.891Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:36:14 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:36:14.892Z] [hosting] release: {"name":"sites/visualize-algo/releases/1596555373974723","version":{"name":"sites/visualize-algo/versions/241ea27f05b2e1e0","status":"FINALIZED","config":{"rewrites":[{"glob":"**","function":"nextjsFunc"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2020-08-04T15:36:08.548958Z","createUser":{"email":"purification1997@gmail.com"},"finalizeTime":"2020-08-04T15:36:13.291793Z","finalizeUser":{"email":"purification1997@gmail.com"},"preview":{}},"type":"DEPLOY","releaseTime":"2020-08-04T15:36:13.974723818Z","releaseUser":{"email":"purification1997@gmail.com"}}
+[info] ✔  hosting[visualize-algo]: release complete 
+[info] 
+[info] ✔  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/visualize-algo/overview
+[info] Hosting URL: https://visualize-algo.web.app
+[debug] [2020-08-04T15:49:16.979Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:49:16.981Z] Command:       /usr/local/bin/node /Users/nguyenvanduc/Documents/workspace/visualize-algo/node_modules/.bin/firebase deploy --only hosting --debug
+[debug] [2020-08-04T15:49:16.981Z] CLI Version:   8.6.0
+[debug] [2020-08-04T15:49:16.982Z] Platform:      darwin
+[debug] [2020-08-04T15:49:16.982Z] Node Version:  v10.16.0
+[debug] [2020-08-04T15:49:16.982Z] Time:          Tue Aug 04 2020 22:49:16 GMT+0700 (Indochina Time)
+[debug] [2020-08-04T15:49:16.983Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:49:16.983Z] 
+[debug] [2020-08-04T15:49:16.994Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-08-04T15:49:16.996Z] > authorizing via signed-in user
+[debug] [2020-08-04T15:49:16.996Z] [iam] checking project visualize-algo for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-08-04T15:49:17.000Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/visualize-algo:testIamPermissions  
+ {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-08-04T15:49:18.127Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:49:18 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=867","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:49:18.130Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/visualize-algo  
+ 
+[debug] [2020-08-04T15:49:18.887Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:49:18 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'visualize-algo'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2020-08-04T15:49:22.465Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/versions  
+ {"config":{"rewrites":[{"glob":"**","function":"nextjsFunc"}]},"labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2020-08-04T15:49:24.090Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:49:23 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] i  hosting[visualize-algo]: beginning deploy... 
+[info] i  hosting[visualize-algo]: found 1 files in public 
+[debug] [2020-08-04T15:49:24.103Z] [hosting] hash cache [cHVibGlj] stored for 1 files
+[debug] [2020-08-04T15:49:24.104Z] [hosting][hash queue][FINAL] {"max":1,"min":1,"avg":1,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":4}
+[debug] [2020-08-04T15:49:24.104Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/versions/44caded1806f04a5:populateFiles  
+ <request body omitted>
+[debug] [2020-08-04T15:49:25.403Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:49:25 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:49:25.404Z] [hosting][populate queue][FINAL] {"max":1302,"min":1302,"avg":1302,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":1302}
+[debug] [2020-08-04T15:49:25.405Z] [hosting] uploads queued: 0
+[debug] [2020-08-04T15:49:25.405Z] [hosting][upload queue][FINAL] {"max":0,"min":9999999999,"avg":0,"active":0,"complete":0,"success":0,"errored":0,"retried":0,"total":0,"elapsed":1596556165405}
+[info] ✔  hosting[visualize-algo]: file upload complete 
+[debug] [2020-08-04T15:49:25.406Z] [hosting] deploy completed after 1315ms
+[debug] [2020-08-04T15:49:25.561Z] [
+  {
+    "config": {
+      "public": "public",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "function": "nextjsFunc"
+        }
+      ],
+      "site": "visualize-algo"
+    },
+    "site": "visualize-algo",
+    "version": "sites/visualize-algo/versions/44caded1806f04a5"
+  }
+]
+[info] i  hosting[visualize-algo]: finalizing version... 
+[debug] [2020-08-04T15:49:25.562Z] >>> HTTP REQUEST PATCH https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/versions/44caded1806f04a5?updateMask=status  
+ {"status":"FINALIZED"}
+[debug] [2020-08-04T15:49:26.945Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:49:26 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:49:26.946Z] [hosting] finalized version for visualize-algo: {"name":"sites/visualize-algo/versions/44caded1806f04a5","status":"FINALIZED","config":{"rewrites":[{"glob":"**","function":"nextjsFunc"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2020-08-04T15:49:23.629657Z","createUser":{"email":"purification1997@gmail.com"},"finalizeTime":"2020-08-04T15:49:26.716304Z","finalizeUser":{"email":"purification1997@gmail.com"}}
+[info] ✔  hosting[visualize-algo]: version finalized 
+[info] i  hosting[visualize-algo]: releasing new version... 
+[debug] [2020-08-04T15:49:26.947Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/releases?version_name=sites/visualize-algo/versions/44caded1806f04a5  
+ {"message":null}
+[debug] [2020-08-04T15:49:28.260Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:49:28 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:49:28.260Z] [hosting] release: {"name":"sites/visualize-algo/releases/1596556167526496","version":{"name":"sites/visualize-algo/versions/44caded1806f04a5","status":"FINALIZED","config":{"rewrites":[{"glob":"**","function":"nextjsFunc"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2020-08-04T15:49:23.629657Z","createUser":{"email":"purification1997@gmail.com"},"finalizeTime":"2020-08-04T15:49:26.716304Z","finalizeUser":{"email":"purification1997@gmail.com"},"preview":{}},"type":"DEPLOY","releaseTime":"2020-08-04T15:49:27.526496805Z","releaseUser":{"email":"purification1997@gmail.com"}}
+[info] ✔  hosting[visualize-algo]: release complete 
+[info] 
+[info] ✔  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/visualize-algo/overview
+[info] Hosting URL: https://visualize-algo.web.app
+[debug] [2020-08-04T15:53:46.933Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:53:46.935Z] Command:       /usr/local/bin/node /Users/nguyenvanduc/Documents/workspace/visualize-algo/node_modules/.bin/firebase deploy --only hosting --debug
+[debug] [2020-08-04T15:53:46.935Z] CLI Version:   8.6.0
+[debug] [2020-08-04T15:53:46.936Z] Platform:      darwin
+[debug] [2020-08-04T15:53:46.936Z] Node Version:  v10.16.0
+[debug] [2020-08-04T15:53:46.936Z] Time:          Tue Aug 04 2020 22:53:46 GMT+0700 (Indochina Time)
+[debug] [2020-08-04T15:53:46.936Z] ----------------------------------------------------------------------
+[debug] [2020-08-04T15:53:46.937Z] 
+[debug] [2020-08-04T15:53:46.946Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-08-04T15:53:46.947Z] > authorizing via signed-in user
+[debug] [2020-08-04T15:53:46.947Z] [iam] checking project visualize-algo for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2020-08-04T15:53:46.951Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/visualize-algo:testIamPermissions  
+ {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2020-08-04T15:53:47.973Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:53:47 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=824","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:53:47.976Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/visualize-algo  
+ 
+[debug] [2020-08-04T15:53:48.435Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:53:48 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] 
+[info] === Deploying to 'visualize-algo'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2020-08-04T15:53:52.005Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/versions  
+ {"config":{"rewrites":[{"glob":"**","function":"nextjsFunc"}]},"labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2020-08-04T15:53:53.767Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:53:53 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] i  hosting[visualize-algo]: beginning deploy... 
+[info] i  hosting[visualize-algo]: found 43 files in src/out 
+[debug] [2020-08-04T15:53:53.787Z] [hosting] hash cache [c3JjL291dA] not populated
+[debug] [2020-08-04T15:53:53.865Z] [hosting] hash cache [c3JjL291dA] stored for 43 files
+[debug] [2020-08-04T15:53:53.866Z] [hosting][hash queue][FINAL] {"max":69,"min":18,"avg":26.837209302325583,"active":0,"complete":43,"success":43,"errored":0,"retried":0,"total":43,"elapsed":78}
+[debug] [2020-08-04T15:53:53.866Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/versions/396e6a7afec7fab1:populateFiles  
+ <request body omitted>
+[debug] [2020-08-04T15:53:55.760Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:53:55 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:53:55.779Z] [hosting][populate queue][FINAL] {"max":1898,"min":1898,"avg":1898,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":1915}
+[debug] [2020-08-04T15:53:55.780Z] [hosting] uploads queued: 30
+[info] i  hosting: uploading new files [0/30] (0%) 
+[info] i  hosting: uploading new files [6/30] (20%) 
+[info] i  hosting: uploading new files [29/30] (96%) 
+[debug] [2020-08-04T15:53:59.843Z] [hosting][upload queue][FINAL] {"max":4081,"min":1835,"avg":2574.866666666667,"active":0,"complete":30,"success":30,"errored":0,"retried":0,"total":30,"elapsed":4082}
+[info] ✔  hosting[visualize-algo]: file upload complete 
+[debug] [2020-08-04T15:53:59.844Z] [hosting] deploy completed after 6075ms
+[debug] [2020-08-04T15:54:00.097Z] [
+  {
+    "config": {
+      "public": "src/out",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "function": "nextjsFunc"
+        }
+      ],
+      "site": "visualize-algo"
+    },
+    "site": "visualize-algo",
+    "version": "sites/visualize-algo/versions/396e6a7afec7fab1"
+  }
+]
+[info] i  hosting[visualize-algo]: finalizing version... 
+[debug] [2020-08-04T15:54:00.098Z] >>> HTTP REQUEST PATCH https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/versions/396e6a7afec7fab1?updateMask=status  
+ {"status":"FINALIZED"}
+[debug] [2020-08-04T15:54:01.436Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:54:01 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:54:01.437Z] [hosting] finalized version for visualize-algo: {"name":"sites/visualize-algo/versions/396e6a7afec7fab1","status":"FINALIZED","config":{"rewrites":[{"glob":"**","function":"nextjsFunc"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2020-08-04T15:53:53.342414Z","createUser":{"email":"purification1997@gmail.com"},"finalizeTime":"2020-08-04T15:54:01.232029Z","finalizeUser":{"email":"purification1997@gmail.com"}}
+[info] ✔  hosting[visualize-algo]: version finalized 
+[info] i  hosting[visualize-algo]: releasing new version... 
+[debug] [2020-08-04T15:54:01.438Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/visualize-algo/releases?version_name=sites/visualize-algo/versions/396e6a7afec7fab1  
+ {"message":null}
+[debug] [2020-08-04T15:54:03.245Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Tue, 04 Aug 2020 15:54:02 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-29=\":443\"; ma=2592000,h3-27=\":443\"; ma=2592000,h3-T050=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2020-08-04T15:54:03.246Z] [hosting] release: {"name":"sites/visualize-algo/releases/1596556442394335","version":{"name":"sites/visualize-algo/versions/396e6a7afec7fab1","status":"FINALIZED","config":{"rewrites":[{"glob":"**","function":"nextjsFunc"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2020-08-04T15:53:53.342414Z","createUser":{"email":"purification1997@gmail.com"},"finalizeTime":"2020-08-04T15:54:01.232029Z","finalizeUser":{"email":"purification1997@gmail.com"},"preview":{}},"type":"DEPLOY","releaseTime":"2020-08-04T15:54:02.394335963Z","releaseUser":{"email":"purification1997@gmail.com"}}
+[info] ✔  hosting[visualize-algo]: release complete 
+[info] 
+[info] ✔  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/visualize-algo/overview
+[info] Hosting URL: https://visualize-algo.web.app

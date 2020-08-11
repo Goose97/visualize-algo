@@ -1,0 +1,12 @@
+{
+  "name": "visual-algo",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "10"
+  },
+  "scripts": {
+    "dev": "NODE_PATH=. next dev",
+    "build": "next build"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "hosting": {
+    "public": "src/out",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "nextjsFunc"
+      }
+    ]
+  },
+  "functions": {
+    "source": ".",
+    "predeploy": [
+      "yarn install",
+      "yarn run build"
+    ]
+  }
+}
