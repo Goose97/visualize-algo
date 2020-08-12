@@ -1,3 +1,5 @@
+import { LinkedList } from 'types/ds/LinkedList';
+
 const searchCode = `function search(value) {
   let current = this.list;
   let index = 0;

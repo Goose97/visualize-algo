@@ -1,4 +1,4 @@
-import BST from 'types/ds/BST';
+import { BST } from 'types/ds/BST';
 
 const searchCode = `function search(data) {
   let current = this.root;
