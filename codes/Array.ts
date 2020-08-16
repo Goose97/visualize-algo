@@ -54,16 +54,11 @@ def selection_sort(L):
       L[i], L[min_index] = L[min_index], L[i]
 `;
 
-const insertionSort = `
-def insertion_sort(array):
-  # We start from 1 since the first element is trivially sorted
+const insertionSort = 
+`def insertion_sort(array):
   for index in range(1, len(array)):
     currentValue = array[index]
     currentPosition = index
-
-    # As long as we haven't reached the beginning and there is an element
-    # in our sorted array larger than the one we're trying to insert - move
-    # that element to the right
     while currentPosition > 0 and array[currentPosition - 1] > currentValue:
         array[currentPosition] = array[currentPosition -1]
         currentPosition = currentPosition - 1
@@ -99,8 +94,8 @@ export const explanation = {
     'Sau lần duyệt thứ i, nếu min không phải phần tử thứ i, đổi chỗ  min, i',
   ],
   insertionSort: [
-    'Khởi tạo mảng với mảng con được sắp xếp với phần tử k = 1 (phần tử đầu tiên, phần tử có chỉ số 0)',
-    'Duyệt từng phần tử từ phần tử thứ hai, tại mỗi phần tử chỉ mục i, nó được đặt ở một vị trí nhất định trong đoạn [0 ... i] sao cho dãy số từ [0 ... i] vẫn đảm bảo nhân vật của chuỗi tăng dần. Sau mỗi lần duyệt, số phần tử được sắp xếp k trong mảng tăng thêm 1.',
-    'Lặp lại cho đến khi tất cả các yếu tố của mảng đã được duyệt.',
+    'Sắp xếp dãy N phần tử bằng các sắp xếp lần lượt các dãy con',
+    'Bắt đầu từ đầu tới phần tử thứ index',
+    'Duyệt phần tử trong mảng con, nếu phần tử này lớn hơn phần tử index đang xét, đổi chỗ hai phần tử',
   ],
 };
