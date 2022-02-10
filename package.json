@@ -41,7 +41,7 @@
     "less": "^3.11.1",
     "lodash": "^4.17.15",
     "next": "9.2.2",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "null-loader": "^4.0.0",
     "path": "^0.12.7",
     "prismjs": "https://github.com/Goose97/forked-prism.git",
